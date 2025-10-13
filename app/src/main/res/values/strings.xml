@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FinancialTrack</string>
+    
+    <!-- Authentication Module -->
+    <string name="auth_title">Sign In</string>
+    <string name="auth_google_signin">Sign in with Google</string>
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Password</string>
+    
+    <!-- Dashboard Module -->
+    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_total_balance">Total Balance</string>
+    <string name="dashboard_income">Income</string>
+    <string name="dashboard_expense">Expense</string>
+    
+    <!-- Transaction Module -->
+    <string name="transaction_title">Transactions</string>
+    <string name="transaction_add">Add Transaction</string>
+    <string name="transaction_amount">Amount</string>
+    <string name="transaction_category">Category</string>
+    <string name="transaction_description">Description</string>
+    
+    <!-- Budget Module -->
+    <string name="budget_title">Budget Management</string>
+    <string name="budget_set">Set Budget</string>
+    <string name="budget_remaining">Remaining</string>
+    
+    <!-- Reports Module -->
+    <string name="reports_title">Reports &amp; Analytics</string>
+    <string name="reports_monthly">Monthly Report</string>
+    <string name="reports_category">Category Breakdown</string>
+    
+    <!-- Profile Module -->
+    <string name="profile_title">User Profile</string>
+    <string name="profile_edit">Edit Profile</string>
+    <string name="profile_settings">Settings</string>
+    
+    <!-- Notification Module -->
+    <string name="notification_title">Notifications</string>
+    <string name="notification_budget_alert">Budget Alert</string>
+    
+    <!-- Debt & Loan Module -->
+    <string name="debt_title">Debt &amp; Loan Tracker</string>
+    <string name="debt_add">Add Debt/Loan</string>
+    <string name="debt_amount_owed">Amount Owed</string>
+    <string name="debt_due_date">Due Date</string>
+    
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+</resources>
