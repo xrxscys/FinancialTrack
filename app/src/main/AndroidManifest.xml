@@ -16,14 +16,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinancialTrack"
         tools:targetApi="31">
+
+        <!-- LoginActivity is now the starting point of the app -->
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- MainActivity is a regular activity, no longer the launcher -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
