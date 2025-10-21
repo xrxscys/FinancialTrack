@@ -27,9 +27,19 @@
             </intent-filter>
         </activity>
 
-        <!-- MainActivity is a regular activity, no longer the launcher -->
+        <!-- MainActivity -->
         <activity
             android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- Notification Activity -->
+        <activity
+            android:name=".ui.notifications.NotificationActivity"
+            android:exported="false" />
+
+        <!-- Debt & Loan Activity -->
+        <activity
+            android:name=".ui.debt.DebtActivity"
             android:exported="false" />
 
     </application>

@@ -7,8 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.financialtrack.databinding.ActivityMainBinding
 import com.example.financialtrack.ui.auth.AuthViewModel
 import com.example.financialtrack.ui.auth.LoginActivity
+import com.example.financialtrack.ui.debt.DebtActivity
+import com.example.financialtrack.ui.notifications.NotificationActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,6 +39,17 @@ class MainActivity : AppCompatActivity() {
         binding.btnSignOut.setOnClickListener {
             signOut()
         }
+
+        // Open Notifications screen
+        binding.btnNotification.setOnClickListener {
+            startActivity(Intent(this, NotificationActivity::class.java))
+        }
+
+        // Open Debt & Loan screen
+        binding.btnDebts.setOnClickListener {
+            startActivity(Intent(this, DebtActivity::class.java))
+        }
+
     }
 
     private fun signOut() {
