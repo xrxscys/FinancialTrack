@@ -16,32 +16,33 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinancialTrack"
         tools:targetApi="31">
-
-        <!-- LoginActivity is now the starting point of the app -->
+        <activity
+            android:name=".ui.profile.FinancialGoals"
+            android:exported="false" />
+        <activity
+            android:name=".ui.profile.ProfileActivity"
+            android:exported="false" /> <!-- LoginActivity is the starting point of the app -->
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- MainActivity -->
+        </activity> <!-- RegisterActivity for user sign-up -->
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false" /> <!-- MainActivity -->
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
-
-        <!-- Notification Activity -->
+            android:exported="false" /> <!-- Notification Activity -->
         <activity
             android:name=".ui.notifications.NotificationActivity"
-            android:exported="false" />
-
-        <!-- Debt & Loan Activity -->
+            android:exported="false" /> <!-- Debt & Loan Activity -->
         <activity
             android:name=".ui.debt.DebtActivity"
             android:exported="false" />
-
     </application>
 
 </manifest>

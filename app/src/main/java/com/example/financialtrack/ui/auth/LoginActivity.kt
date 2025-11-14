@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts // 1. IMPORT the new contract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.financialtrack.MainActivity
@@ -22,16 +22,15 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var binding: ActivityLoginBinding
 
-    // 2. REPLACED 'startActivityForResult' with the new Activity Result Launcher
     private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val data: Intent? = result.data
         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
         try {
-            // Google Sign In was successful, authenticate with Firebase
             val account = task.getResult(ApiException::class.java)!!
-            firebaseAuthWithGoogle(account.idToken!!)
+            val displayName = account.displayName
+            val photoUrl = account.photoUrl?.toString()
+            firebaseAuthWithGoogle(account.idToken!!, displayName, photoUrl)
         } catch (e: ApiException) {
-            // Google Sign In failed, update UI and log
             Log.w("LoginActivity", "Google sign in failed", e)
             Toast.makeText(this, "Google sign in failed: ${e.statusCode}", Toast.LENGTH_SHORT).show()
         }
@@ -50,10 +49,36 @@ class LoginActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        binding.signInButton.setOnClickListener {
-            signIn()
+        binding.btnLogin.setOnClickListener {
+            val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
+            if (email.isNotEmpty() && password.isNotEmpty()) {
+                authViewModel.signInWithEmail(email, password)
+            } else {
+                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
+            }
         }
 
+        binding.signInButton.setOnClickListener {
+            signInWithGoogle()
+        }
+
+        binding.tvRegister.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.tvForgotPassword.setOnClickListener {
+            val email = binding.etEmail.text.toString().trim()
+            if (email.isNotEmpty()) {
+                authViewModel.sendPasswordResetEmail(email)
+                Toast.makeText(this, "Password reset email sent", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Observer for user state
         authViewModel.currentUser.observe(this) { user ->
             if (user != null) {
                 val intent = Intent(this, MainActivity::class.java)
@@ -63,17 +88,13 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun signIn() {
+    private fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
-        // 3. LAUNCH the new launcher instead of calling the old method
         googleSignInLauncher.launch(signInIntent)
     }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
+    private fun firebaseAuthWithGoogle(idToken: String, displayName: String?, photoUrl: String?) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        authViewModel.signInWithGoogle(credential)
+        authViewModel.signInWithGoogle(credential, displayName, photoUrl)
     }
-
-    // 4. REMOVED: The old `onActivityResult` is no longer needed
-    // override fun onActivityResult(...) { ... }
 }
