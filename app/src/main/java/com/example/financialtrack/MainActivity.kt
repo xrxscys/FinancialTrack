@@ -11,6 +11,7 @@ import com.example.financialtrack.ui.debt.DebtActivity
 import com.example.financialtrack.ui.notifications.NotificationActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.example.financialtrack.ui.profile.ProfileActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -50,6 +51,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, DebtActivity::class.java))
         }
 
+        // Open Profile screen
+        binding.btnProfile.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun signOut() {
