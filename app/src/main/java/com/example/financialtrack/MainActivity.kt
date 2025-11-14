@@ -12,6 +12,7 @@ import com.example.financialtrack.ui.notifications.NotificationActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.example.financialtrack.ui.profile.ProfileActivity
+import com.google.firebase.auth.FirebaseAuth
 
 
 class MainActivity : AppCompatActivity() {
@@ -24,15 +25,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Observe the current user's data
-        authViewModel.currentUser.observe(this) { firebaseUser ->
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            return
+        }
+
+        authViewModel.currentUser.observe(this){ firebaseUser ->
             if (firebaseUser != null) {
-                // User is logged in, display their email
                 binding.tvUserEmail.text = firebaseUser.email
-            } else {
-                // User is signed out, navigate back to LoginActivity
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
             }
         }
 
@@ -53,8 +56,13 @@ class MainActivity : AppCompatActivity() {
 
         // Open Profile screen
         binding.btnProfile.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
+            val currentUser = authViewModel.currentUser.value
+            if (currentUser != null){
+                val intent = Intent(this, ProfileActivity::class.java)
+                intent.putExtra("USER_ID", currentUser.uid)
+                startActivity(intent)
+            }
+
         }
     }
 
@@ -62,14 +70,18 @@ class MainActivity : AppCompatActivity() {
         // Sign out from Firebase
         authViewModel.signOut()
 
-        // Sign out from Google
-        // We need to build the GoogleSignInClient again here to sign out properly
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id)) // The phantom error might appear here too, it's okay
             .requestEmail()
             .build()
 
         val googleSignInClient = GoogleSignIn.getClient(this, gso)
-        googleSignInClient.signOut()
+        googleSignInClient.signOut().addOnCompleteListener {
+            val intent = Intent(this, LoginActivity::class.java)
+
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
     }
 }

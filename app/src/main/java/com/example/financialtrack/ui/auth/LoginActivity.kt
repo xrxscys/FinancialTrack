@@ -14,6 +14,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginActivity : AppCompatActivity() {
@@ -36,10 +37,17 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        authViewModel.currentUser.observe(this) { user ->
+            if (user != null) {
+                goToMainActivity()
+            }
+        }
 
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -77,15 +85,6 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show()
             }
         }
-
-        // Observer for user state
-        authViewModel.currentUser.observe(this) { user ->
-            if (user != null) {
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
-        }
     }
 
     private fun signInWithGoogle() {
@@ -96,5 +95,12 @@ class LoginActivity : AppCompatActivity() {
     private fun firebaseAuthWithGoogle(idToken: String, displayName: String?, photoUrl: String?) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         authViewModel.signInWithGoogle(credential, displayName, photoUrl)
+    }
+
+    private fun goToMainActivity(){
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

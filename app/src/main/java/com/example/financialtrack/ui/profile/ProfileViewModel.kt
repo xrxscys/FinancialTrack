@@ -13,29 +13,61 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import kotlinx.coroutines.tasks.await
 import android.net.Uri
+import com.example.financialtrack.data.repository.FinancialGoalRepository
 import com.google.firebase.storage.FirebaseStorage
+import com.example.financialtrack.data.model.FinancialGoal
 
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
 
     private val userRepository: UserRepository
+    private val goalRepository: FinancialGoalRepository
     private val _user = MutableLiveData<User?>()
     val user: LiveData<User?> = _user
+    lateinit var activeGoals: LiveData<List<FinancialGoal>>
+
 
     init {
-        val userDao = AppDatabase.getDatabase(application).userDao()
-        userRepository = UserRepository(userDao)
-        loadCurrentUser()
+        val db = AppDatabase.getDatabase(application)
+        userRepository = UserRepository(db.userDao())
+        goalRepository = FinancialGoalRepository(db.financialGoalDao())
+
+         loadCurrentUser()
+    }
+
+    fun addGoal(goal: FinancialGoal) = viewModelScope.launch {
+        goalRepository.insert(goal)
+    }
+
+    fun loadUser(userId: String){
+        viewModelScope.launch{
+            val userFromDb = userRepository.getUserById(userId)
+            if (userFromDb == null || userFromDb.displayName.isNullOrBlank() || userFromDb.email.isNullOrBlank()) {
+                val firebaseUser = FirebaseAuth.getInstance().currentUser
+                if (firebaseUser != null) {
+                    val fallbackUser = User(
+                        id = firebaseUser.uid,
+                        displayName = firebaseUser.displayName ?: "Set Display Name",
+                        email = firebaseUser.email ?: "",
+                        photoUrl = firebaseUser.photoUrl?.toString()
+                    )
+                    _user.postValue(fallbackUser)
+                } else {
+                    _user.postValue(userFromDb)
+                }
+            } else {
+                _user.postValue(userFromDb)
+            }
+        }
     }
 
     private fun loadCurrentUser(){
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         firebaseUser?.let {fbUser ->
-            viewModelScope.launch {
-                userRepository.getUser(fbUser.uid).observeForever { dbUser ->
-                    _user.postValue(dbUser)
-                }
+            userRepository.getUser(fbUser.uid).observeForever { dbUser ->
+                _user.postValue(dbUser)
             }
+            activeGoals = goalRepository.getActiveGoals(fbUser.uid)
         }
     }
 
@@ -59,8 +91,10 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             firebaseUser.updateProfile(profileUpdates).await()
 
             val updatedLocalUser = localUser.copy(displayName = newName)
-
             userRepository.update(updatedLocalUser)
+
+            // Reload user data so LiveData updates immediately
+            loadUser(firebaseUser.uid)
         }
     }
 
