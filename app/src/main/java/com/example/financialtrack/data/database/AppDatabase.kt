@@ -4,22 +4,28 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.example.financialtrack.data.model.*
+import com.example.financialtrack.data.database.*
 import com.example.financialtrack.utils.Converters
+import com.example.financialtrack.data.database.dao.FinancialGoalDao
+import com.example.financialtrack.data.model.FinancialGoal
 
+@TypeConverters(Converters::class)
 @Database(
     entities = [
         User::class,
         Transaction::class,
         Budget::class,
         Debt::class,
-        Notification::class
+        Notification::class,
+        FinancialGoal::class
     ],
-    version = 1,
+    version = 3,
     exportSchema = false
 )
-@TypeConverters(Converters::class)
+
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
@@ -27,6 +33,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun budgetDao(): BudgetDao
     abstract fun debtDao(): DebtDao
     abstract fun notificationDao(): NotificationDao
+    abstract fun financialGoalDao(): FinancialGoalDao
+
 
     companion object {
         @Volatile
@@ -46,4 +54,12 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
     }
+}
+
+class Converters {
+    @TypeConverter
+    fun fromGoalStatus(status: GoalStatus): String = status.name
+
+    @TypeConverter
+    fun toGoalStatus(status: String): GoalStatus = GoalStatus.valueOf(status)
 }

@@ -20,39 +20,26 @@ import com.google.firebase.auth.userProfileChangeRequest
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: UserRepository
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private val _firebaseUser = MutableLiveData<FirebaseUser?>()
-    lateinit var currentUser: LiveData<User?>
+    private val _currentUser = MutableLiveData<FirebaseUser?>()
+    val currentUser: LiveData<FirebaseUser?> = _currentUser
 
     val passwordChangeResult = MutableLiveData<Boolean>()
 
-    private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-        _firebaseUser.value = firebaseAuth.currentUser
-    }
-
     init {
-        val userDao = AppDatabase.getDatabase(application).userDao()
-        repository = UserRepository(userDao)
-
-        currentUser = _firebaseUser.switchMap { firebaseUser: FirebaseUser? ->
-            if (firebaseUser == null) {
-                MutableLiveData<User?>(null)
-            } else {
-                repository.getUser(firebaseUser.uid)
-            }
-        }
-
-        auth = FirebaseAuth.getInstance()
-        auth.addAuthStateListener(authStateListener)
+        repository = UserRepository(AppDatabase.getDatabase(application).userDao())
+        _currentUser.value = auth.currentUser
     }
 
     fun signInWithEmail(email: String, password: String) = viewModelScope.launch {
         try {
             auth.signInWithEmailAndPassword(email, password).await()
-            // AuthStateListener will handle success
+            _currentUser.value = auth.currentUser
         } catch (e: Exception) {
             e.printStackTrace()
+            _currentUser.value = null
         }
     }
 
@@ -73,10 +60,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                     email = userToUpdate.email!!,
                     photoUrl = null
                 )
-                insertUser(newUserForDb)
+                repository.insert(newUserForDb)
+                _currentUser.value = auth.currentUser
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            _currentUser.value = null
         }
     }
 
@@ -93,7 +82,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             auth.signInWithCredential(credential).await()
             val firebaseUser = auth.currentUser
             firebaseUser?.let { fbUser ->
-                val existingUser = repository.getUser(fbUser.uid)
+                val existingUser = repository.getUserById(fbUser.uid)
                 if (existingUser == null) {
                     val newUser = User(
                         id = fbUser.uid,
@@ -101,11 +90,13 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                         email = fbUser.email!!,
                         photoUrl = photoUrl
                     )
-                    insertUser(newUser)
+                    repository.insert(newUser)
                 }
             }
+            _currentUser.value = auth.currentUser
         } catch (e: Exception) {
             e.printStackTrace()
+            _currentUser.value = null
         }
     }
 
@@ -127,7 +118,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
-        auth.removeAuthStateListener(authStateListener)
     }
 
     fun changeUserPassword(currentPassword: String, newPassword: String) = viewModelScope.launch {

@@ -40,14 +40,20 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val userId = intent.getStringExtra("USER_ID")
+
+        if (userId != null) {
+            profileViewModel.loadUser(userId)
+        }
+
         profileViewModel.user.observe(this) { user ->
-            user?.let {
-                binding.tvDisplayName.text = it.displayName ?: "Set Display Name"
-                binding.tvEmail.text = it.email
+            if (user != null) {
+                binding.tvDisplayName.text = user.displayName ?: "Set Display Name"
+                binding.tvEmail.text = user.email
 
 
                 Glide.with(this)
-                    .load(it.photoUrl)
+                    .load(user.photoUrl)
                     .placeholder(R.drawable.ic_profile)
                     .circleCrop()
                     .into(binding.ivProfilePicture)
