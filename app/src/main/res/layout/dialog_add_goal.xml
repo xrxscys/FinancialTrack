@@ -8,7 +8,7 @@
         android:id="@+id/et_goal_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Goal Name (e.g., New Car)"
+        android:hint="Goal Name"
         android:inputType="textCapWords" />
 
     <EditText
@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Target Amount (e.g., 20000)"
+        android:hint="Target Amount"
         android:inputType="numberDecimal" />
 
     <Button
@@ -25,6 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Select Deadline" />
+        android:text="Deadline" />
 
 </LinearLayout>

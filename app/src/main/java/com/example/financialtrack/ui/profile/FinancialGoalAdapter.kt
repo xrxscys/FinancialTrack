@@ -14,7 +14,10 @@ import com.example.financialtrack.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+
 class FinancialGoalAdapter : ListAdapter<FinancialGoal, FinancialGoalAdapter.GoalViewHolder>(GoalDiffCallback()) {
+
+    var onGoalClickListener: ((FinancialGoal) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GoalViewHolder {
         val binding = ItemFinancialGoalBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -26,6 +29,16 @@ class FinancialGoalAdapter : ListAdapter<FinancialGoal, FinancialGoalAdapter.Goa
     }
 
     inner class GoalViewHolder(private val binding: ItemFinancialGoalBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onGoalClickListener?.invoke(getItem(position))
+                }
+            }
+        }
+
         fun bind(goal: FinancialGoal) {
             binding.tvGoalName.text = goal.goalName
 

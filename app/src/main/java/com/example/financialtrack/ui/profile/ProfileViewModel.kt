@@ -39,6 +39,21 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         goalRepository.insert(goal)
     }
 
+
+    fun updateSavedAMount(goal: FinancialGoal, amountToChange: Double, isAdding: Boolean) = viewModelScope.launch {
+        val newSavedAmount = if (isAdding){
+            goal.savedAmount + amountToChange
+        }else{
+            goal.savedAmount - amountToChange
+        }
+
+        val updateGoal = goal.copy(
+            savedAmount = newSavedAmount.coerceIn(0.0, goal.targetAmount)
+        )
+
+        goalRepository.update(updateGoal)
+    }
+
     fun loadUser(userId: String){
         viewModelScope.launch{
             val userFromDb = userRepository.getUserById(userId)

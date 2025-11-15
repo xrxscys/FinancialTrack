@@ -53,7 +53,7 @@
             android:id="@+id/pb_goal_progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="8dp"
+            android:layout_height="10dp"
             android:layout_marginTop="8dp"
             android:max="100"
             tools:progress="60" />

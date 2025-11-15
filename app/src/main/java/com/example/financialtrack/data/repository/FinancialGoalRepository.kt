@@ -15,4 +15,8 @@ class FinancialGoalRepository(private val financialGoalDao: FinancialGoalDao) {
     suspend fun insert(goal: FinancialGoal) {
         financialGoalDao.insert(goal)
     }
+
+    suspend fun update(goal: FinancialGoal) {
+        financialGoalDao.update(goal)
+    }
 }
