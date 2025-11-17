@@ -10,54 +10,93 @@ import com.example.financialtrack.data.database.AppDatabase
 import com.example.financialtrack.data.model.User
 import com.example.financialtrack.data.repository.UserRepository
 import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.auth.userProfileChangeRequest
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: UserRepository
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private val _firebaseUser = MutableLiveData<FirebaseUser?>()
-    lateinit var currentUser: LiveData<User?>
+    private val _currentUser = MutableLiveData<FirebaseUser?>()
+    val currentUser: LiveData<FirebaseUser?> = _currentUser
 
-    private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-        _firebaseUser.value = firebaseAuth.currentUser
-    }
+    val passwordChangeResult = MutableLiveData<Boolean>()
 
     init {
-        val userDao = AppDatabase.getDatabase(application).userDao()
-        repository = UserRepository(userDao)
-
-        currentUser = _firebaseUser.switchMap { firebaseUser: FirebaseUser? ->
-            if (firebaseUser == null) {
-                MutableLiveData<User?>(null)
-            } else {
-                repository.getUser(firebaseUser.uid)
-            }
-        }
-
-        auth = FirebaseAuth.getInstance()
-        auth.addAuthStateListener(authStateListener)
+        repository = UserRepository(AppDatabase.getDatabase(application).userDao())
+        _currentUser.value = auth.currentUser
     }
 
-    fun signInWithGoogle(credential: AuthCredential) = viewModelScope.launch {
+    fun signInWithEmail(email: String, password: String) = viewModelScope.launch {
         try {
-            auth.signInWithCredential(credential).await()
-            val firebaseUser = auth.currentUser
-            firebaseUser?.let {
-                val user = User(
-                    id = it.uid,
-                    displayName = it.displayName,
-                    email = it.email!!,
-                    photoUrl = it.photoUrl?.toString()
+            auth.signInWithEmailAndPassword(email, password).await()
+            _currentUser.value = auth.currentUser
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _currentUser.value = null
+        }
+    }
+
+
+    fun createUserWithEmail(email: String, password: String, displayName: String) = viewModelScope.launch {
+        try{
+            val result = auth.createUserWithEmailAndPassword(email, password).await()
+            val firebaseUser = result.user
+            firebaseUser?.let { userToUpdate ->
+                val profileUpdates = userProfileChangeRequest {
+                    this.displayName = displayName
+                }
+                userToUpdate.updateProfile(profileUpdates).await()
+
+                val newUserForDb = User(
+                    id = userToUpdate.uid,
+                    displayName = userToUpdate.displayName,
+                    email = userToUpdate.email!!,
+                    photoUrl = null
                 )
-                insertUser(user)
+                repository.insert(newUserForDb)
+                _currentUser.value = auth.currentUser
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            _currentUser.value = null
+        }
+    }
+
+    fun sendPasswordResetEmail(email: String) = viewModelScope.launch {
+        try {
+            auth.sendPasswordResetEmail(email).await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun signInWithGoogle(credential: AuthCredential, displayName: String?, photoUrl: String?) = viewModelScope.launch {
+        try {
+            auth.signInWithCredential(credential).await()
+            val firebaseUser = auth.currentUser
+            firebaseUser?.let { fbUser ->
+                val existingUser = repository.getUserById(fbUser.uid)
+                if (existingUser == null) {
+                    val newUser = User(
+                        id = fbUser.uid,
+                        displayName = fbUser.displayName,
+                        email = fbUser.email!!,
+                        photoUrl = photoUrl
+                    )
+                    repository.insert(newUser)
+                }
+            }
+            _currentUser.value = auth.currentUser
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _currentUser.value = null
         }
     }
 
@@ -79,6 +118,29 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
-        auth.removeAuthStateListener(authStateListener)
     }
+
+    fun changeUserPassword(currentPassword: String, newPassword: String) = viewModelScope.launch {
+        val user = auth.currentUser
+        if (user?.email == null) {
+            passwordChangeResult.value = false
+            return@launch
+        }
+        val credential = EmailAuthProvider.getCredential(user.email!!, currentPassword)
+
+        user.reauthenticate(credential).addOnCompleteListener { reauthTask ->
+            if (reauthTask.isSuccessful) {
+                user.updatePassword(newPassword).addOnCompleteListener { updateTask ->
+                    if (updateTask.isSuccessful) {
+                        passwordChangeResult.value = true
+                    } else {
+                        passwordChangeResult.value = false
+                    }
+                }
+            } else {
+                passwordChangeResult.postValue(false)
+            }
+        }
+    }
+
 }

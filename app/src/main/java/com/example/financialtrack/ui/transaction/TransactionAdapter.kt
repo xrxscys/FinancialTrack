@@ -15,11 +15,11 @@ class TransactionAdapter
 //    (private val transactions: List<Transaction>)
 //    : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder()>
 {
-    inner class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class TransactionItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
-        private val amountText: TextView = itemView.findViewById(R.id.textAmount)
-        private val categoryText: TextView = itemView.findViewById(R.id.textAmount)
-
+        private val itemTransactionAmount: TextView = itemView.findViewById(R.id.itemTransAmount)
+        private val itemTransactionDate: TextView = itemView.findViewById(R.id.itemTransDate)
+        private val itemTransactionName: TextView = itemView.findViewById(R.id.itemTransHeader)
 
     }
 }

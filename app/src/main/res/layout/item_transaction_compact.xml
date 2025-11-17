@@ -16,7 +16,7 @@
 
         <TextView
             android:id="@+id/itemTransHeader"
-            android:layout_width="wrap_content"
+            android:layout_width="177dp"
             android:layout_height="wrap_content"
             android:paddingLeft="10px"
             android:paddingEnd="20px"
@@ -35,11 +35,11 @@
             tools:text="100.00" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/itemTransDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="TextView" />
+            android:text="Date" />
 
     </LinearLayout>
 
