@@ -9,6 +9,7 @@ import com.example.financialtrack.ui.auth.AuthViewModel
 import com.example.financialtrack.ui.auth.LoginActivity
 import com.example.financialtrack.ui.debt.DebtActivity
 import com.example.financialtrack.ui.notifications.NotificationActivity
+import com.example.financialtrack.ui.transaction.TransactionActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.example.financialtrack.ui.profile.ProfileActivity
@@ -52,6 +53,11 @@ class MainActivity : AppCompatActivity() {
         // Open Debt & Loan screen
         binding.btnDebts.setOnClickListener {
             startActivity(Intent(this, DebtActivity::class.java))
+        }
+
+        //Open Transaction Screen
+        binding.btnTransactions.setOnClickListener {
+            startActivity(Intent(this, TransactionActivity::class.java))
         }
 
         // Open Profile screen

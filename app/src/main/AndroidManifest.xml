@@ -43,6 +43,9 @@
         <activity
             android:name=".ui.debt.DebtActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.transaction.TransactionActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
