@@ -23,5 +23,8 @@ class TransactionActivity : AppCompatActivity(){
         binding.btnBackTrans.setOnClickListener {
             finish()
         }
+
+        val fakeTransactions = listOf("Transportation", "Food", "Rent")
+        adapter = TransactionAdapter(fakeTransactions)
     }
 }

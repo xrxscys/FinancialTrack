@@ -11,15 +11,26 @@ import com.example.financialtrack.data.model.TransactionType
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TransactionAdapter
-//    (private val transactions: List<Transaction>)
-//    : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder()>
+class TransactionAdapter(
+    private val transactions: List<Transaction>)
+    : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>()
 {
-    inner class TransactionItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
-        private val itemTransactionAmount: TextView = itemView.findViewById(R.id.itemTransAmount)
-        private val itemTransactionDate: TextView = itemView.findViewById(R.id.itemTransDate)
-        private val itemTransactionName: TextView = itemView.findViewById(R.id.itemTransHeader)
+        val itemTransactionDate: TextView = itemView.findViewById(R.id.itemTransDate)
+        val itemTransactionName: TextView = itemView.findViewById(R.id.itemTransHeader)
+        val itemTransactionAmount: TextView = itemView.findViewById(R.id.itemTransAmount)
+    }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getItemCount(): Int {
+        TODO("Not yet implemented")
     }
 }
