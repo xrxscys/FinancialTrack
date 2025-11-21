@@ -7,8 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Transaction
-import com.example.financialtrack.data.model.TransactionType
-import com.google.type.Date
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -16,11 +14,21 @@ class TransactionAdapter(
     private val transactions: List<Transaction>)
     : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>()
 {
+//    private var transactionClickListener : ((Transaction) -> Unit)? = null
     class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
         val itemTransactionDate: TextView = itemView.findViewById(R.id.itemTransDate)
         val itemTransactionName: TextView = itemView.findViewById(R.id.itemTransHeader)
         val itemTransactionAmount: TextView = itemView.findViewById(R.id.itemTransAmount)
+        //TODO recyclerview clickable
+//        init {
+//            itemView.setOnClickListener{
+//                val position = adapterPosition
+//                if (position != RecyclerView.NO_POSITION){
+//                    transactionClickListener?.invoke()
+//                }
+//            }
+//        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
