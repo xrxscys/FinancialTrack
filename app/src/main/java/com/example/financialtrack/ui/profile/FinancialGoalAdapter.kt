@@ -28,6 +28,13 @@ class FinancialGoalAdapter : ListAdapter<FinancialGoal, FinancialGoalAdapter.Goa
         holder.bind(getItem(position))
     }
 
+    private fun formatAsPHP(amount: Double): String {
+        val format = NumberFormat.getNumberInstance(Locale.US)
+        format.minimumFractionDigits = 2
+        format.maximumFractionDigits = 2
+        return "₱${format.format(amount)}"
+    }
+
     inner class GoalViewHolder(private val binding: ItemFinancialGoalBinding) : RecyclerView.ViewHolder(binding.root) {
 
         init {
@@ -47,7 +54,9 @@ class FinancialGoalAdapter : ListAdapter<FinancialGoal, FinancialGoalAdapter.Goa
 
 
             val format = NumberFormat.getCurrencyInstance()
-            binding.tvGoalAmounts.text = "${format.format(goal.savedAmount)} / ${format.format(goal.targetAmount)}"
+            val savedAmountFormatted = formatAsPHP(goal.savedAmount)
+            val targetAmountFormatted = formatAsPHP(goal.targetAmount)
+            binding.tvGoalAmounts.text = "$savedAmountFormatted / $targetAmountFormatted"
 
             val progress = if (goal.targetAmount > 0) (goal.savedAmount / goal.targetAmount * 100).toInt() else 0
             binding.pbGoalProgress.progress = progress
