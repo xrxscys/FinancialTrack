@@ -23,14 +23,16 @@ class TransactionAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
-        TODO("Not yet implemented")
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_transaction_compact,parent,false)
+        return TransactionViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val transaction = transactions[position]
+        holder.itemTransactionName.text = transaction.description
+        holder.itemTransactionAmount.text = transaction.amount.toString()
+        holder.itemTransactionDate.text = transaction.date.toString()
     }
 
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getItemCount(): Int = transactions.size
 }

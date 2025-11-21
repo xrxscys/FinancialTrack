@@ -4,10 +4,13 @@ package com.example.financialtrack.ui.transaction
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.financialtrack.data.model.Transaction
+import com.example.financialtrack.data.model.TransactionType
 import com.example.financialtrack.databinding.ActivityNotificationBinding
 import com.example.financialtrack.databinding.ActivityTransactionBinding
 import com.example.financialtrack.ui.notification.NotificationAdapter // ✅ import
 import com.example.financialtrack.ui.transaction.TransactionAdapter
+import com.google.api.Distribution
 
 class TransactionActivity : AppCompatActivity(){
 
@@ -24,7 +27,19 @@ class TransactionActivity : AppCompatActivity(){
             finish()
         }
 
-        val fakeTransactions = listOf("Transportation", "Food", "Rent")
+        val fakeTransaction = Transaction(
+            userId = intent.getStringExtra("USER_ID").toString(),
+            type = TransactionType.EXPENSE,
+            category = "Food",
+            description = "Jolly Hot dog",
+            amount = 100.00,
+            date = System.currentTimeMillis(),
+        )
+        val fakeTransactions = listOf(fakeTransaction)
+
+
         adapter = TransactionAdapter(fakeTransactions)
+        binding.rvTransactions.layoutManager = LinearLayoutManager(this)
+        binding.rvTransactions.adapter = adapter
     }
 }
