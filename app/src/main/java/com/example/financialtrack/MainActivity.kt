@@ -12,6 +12,7 @@ import com.example.financialtrack.ui.notifications.NotificationActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.example.financialtrack.ui.profile.ProfileActivity
+import com.example.financialtrack.ui.reports.ReportsActivity
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -52,6 +53,10 @@ class MainActivity : AppCompatActivity() {
         // Open Debt & Loan screen
         binding.btnDebts.setOnClickListener {
             startActivity(Intent(this, DebtActivity::class.java))
+        }
+
+        binding.btnReports.setOnClickListener {
+            startActivity(Intent(this, ReportsActivity::class.java))
         }
 
         // Open Profile screen
