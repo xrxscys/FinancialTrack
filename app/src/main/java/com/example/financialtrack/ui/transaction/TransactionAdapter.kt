@@ -31,7 +31,7 @@ class TransactionAdapter(
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         val transaction = transactions[position]
         val date = Date(transaction.date)
-        val dateFormatter = SimpleDateFormat("dd-MM-yyyy",Locale.getDefault())
+        val dateFormatter = SimpleDateFormat("MM/dd/yyyy",Locale.getDefault())
         val formattedDate = dateFormatter.format(date)
 
         holder.itemTransactionName.text = transaction.description
