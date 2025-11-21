@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
+import com.google.type.Date
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,9 +30,13 @@ class TransactionAdapter(
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         val transaction = transactions[position]
+        val date = Date(transaction.date)
+        val dateFormatter = SimpleDateFormat("dd-MM-yyyy",Locale.getDefault())
+        val formattedDate = dateFormatter.format(date)
+
         holder.itemTransactionName.text = transaction.description
         holder.itemTransactionAmount.text = transaction.amount.toString()
-        holder.itemTransactionDate.text = transaction.date.toString()
+        holder.itemTransactionDate.text = formattedDate
     }
 
     override fun getItemCount(): Int = transactions.size
