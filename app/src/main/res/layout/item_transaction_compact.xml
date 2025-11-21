@@ -41,6 +41,15 @@
             android:layout_weight="1"
             android:text="Date" />
 
+        <Button
+            android:id="@+id/btn_Trans_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#66D15F"
+            android:text="Edit"
+            android:visibility="gone"
+            app:strokeColor="#66D05F" />
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
