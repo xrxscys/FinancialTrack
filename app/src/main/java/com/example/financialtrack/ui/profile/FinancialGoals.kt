@@ -85,7 +85,7 @@ class FinancialGoals : AppCompatActivity() {
         }
 
         builder.setView(dialogView)
-            .setTitle("New Financial Goal")
+            .setTitle("New Goal")
             .setPositiveButton("Add") { dialog, _ ->
                 val goalName = etGoalName.text.toString().trim()
                 val targetAmount = etTargetAmount.text.toString().toDoubleOrNull()
@@ -124,7 +124,7 @@ class FinancialGoals : AppCompatActivity() {
         val radioGroup = dialogView.findViewById<RadioGroup>(R.id.rg_operation)
 
         builder.setView(dialogView)
-            .setTitle("Update: ${goal.goalName}")
+            .setTitle("${goal.goalName}")
             .setPositiveButton("Save") { dialog, _ ->
                 val amountText = etAmountToChange.text.toString().trim()
                 if (amountText.isNotEmpty()) {
