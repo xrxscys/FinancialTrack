@@ -1,68 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <ScrollView
+    android:padding="12dp"
+    tools:context=".ui.reports.ReportsActivity">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="BACK"
+            android:textColor="@color/black"
+            android:padding="8dp"
+            android:drawableLeft="@drawable/ic_back" />
 
-        <LinearLayout
-            android:orientation="vertical"
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <!-- Back button -->
-            <ImageButton
-                android:id="@+id/btnBackReports"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back"
-                android:padding="8dp"
-                android:src="@drawable/ic_back" />
-
-            <TextView
-                android:id="@+id/txtTitle"
-                android:text="Financial Analytics"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Expense Breakdown by Category"
-                android:layout_marginTop="20dp"
-                android:textSize="16sp" />
-
-<!--            <com.github.mikephil.charting.charts.PieChart-->
-<!--                android:id="@+id/pieChart"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="300dp"-->
-<!--                android:layout_marginTop="10dp" />-->
-
-            <TextView
-                android:text="Monthly Spending Trend"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:textSize="16sp" />
-
-<!--            <com.github.mikephil.charting.charts.LineChart-->
-<!--                android:id="@+id/lineChart"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="300dp"-->
-<!--                android:layout_marginTop="10dp" />-->
-
-        </LinearLayout>
-    </ScrollView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:text="Reports"
+            android:textSize="30dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</RelativeLayout>
