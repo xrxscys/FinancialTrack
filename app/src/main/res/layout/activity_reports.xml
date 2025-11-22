@@ -50,9 +50,9 @@
                     android:textSize="27sp"
                     android:textStyle="bold" />
 
-                <!-- back -->
+                <!-- drawer -->
                 <ImageButton
-                    android:id="@+id/btn_back"
+                    android:id="@+id/btn_drawer"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -102,14 +102,38 @@
                                 android:layout_height="4sp"
                                 android:layout_width="wrap_content"
                                 android:layout_margin="0sp" />
-                            <TextView
-                                android:layout_width="match_parent"
+                            <LinearLayout
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_horizontal"
-                                android:textSize="20sp"
-                                android:textColor="@color/black"
-                                android:textStyle="bold"
-                                android:text="PHP 1200"/>
+                                android:layout_gravity="center"
+                                android:orientation="horizontal">
+                                <FrameLayout
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_gravity="center">
+                                    <ImageView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:src="@drawable/ic_circle"
+                                        android:tint="@color/material_dynamic_primary50" />
+                                    <ImageView
+                                        android:rotation="180"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:src="@drawable/ic_arrow" />
+                                </FrameLayout>
+                                <TextView
+                                    android:layout_width="4dp"
+                                    android:layout_height="4dp" />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_horizontal"
+                                    android:textSize="20sp"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"
+                                    android:text="PHP 1200"/>
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
                     <TextView
@@ -140,14 +164,37 @@
                                 android:layout_height="4sp"
                                 android:layout_width="wrap_content"
                                 android:layout_margin="0sp" />
-                            <TextView
-                                android:layout_width="match_parent"
+                            <LinearLayout
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_horizontal"
-                                android:textSize="20sp"
-                                android:textColor="@color/black"
-                                android:textStyle="bold"
-                                android:text="PHP 1200"/>
+                                android:layout_gravity="center"
+                                android:orientation="horizontal">
+                                <FrameLayout
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_gravity="center">
+                                    <ImageView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:src="@drawable/ic_circle"
+                                        android:tint="@color/expense_red" />
+                                    <ImageView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:src="@drawable/ic_arrow" />
+                                </FrameLayout>
+                                <TextView
+                                    android:layout_width="4dp"
+                                    android:layout_height="4dp" />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_horizontal"
+                                    android:textSize="20sp"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"
+                                    android:text="PHP 1200"/>
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
