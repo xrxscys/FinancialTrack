@@ -229,9 +229,7 @@
                             android:text="Chart" />
                     </LinearLayout>
                 </LinearLayout>
-
+                 </LinearLayout>
             </LinearLayout>
-
         </LinearLayout>
-    </LinearLayout>
 </ScrollView>

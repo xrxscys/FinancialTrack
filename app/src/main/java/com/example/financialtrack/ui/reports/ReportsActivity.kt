@@ -10,7 +10,6 @@ import com.example.financialtrack.databinding.ActivityProfileBinding
 import com.example.financialtrack.databinding.ActivityReportsBinding
 
 class ReportsActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityReportsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
