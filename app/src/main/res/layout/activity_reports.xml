@@ -1,33 +1,211 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="12dp"
+    android:orientation="vertical"
     tools:context=".ui.reports.ReportsActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
+        android:paddingTop="20sp"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <Button
-            android:id="@+id/btn_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:text="BACK"
-            android:textColor="@color/black"
-            android:padding="8dp"
-            android:drawableLeft="@drawable/ic_back" />
 
-        <TextView
+        <!-- body -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:text="Reports"
-            android:textSize="30dp"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
+
+            <!-- header -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginBottom="12dp">
+
+                <!-- back -->
+                <ImageButton
+                    android:id="@+id/btn_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_back"
+                    android:padding="8dp" />
+
+                <!-- title -->
+                <TextView
+                    android:textAlignment="gravity"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Reports"
+                    android:textColor="@color/black"
+                    android:textSize="27sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <!-- list -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:divider="@drawable/divider"
+                android:showDividers="middle"
+                android:layout_marginBottom="12dp">
+
+                <!-- total income and expenses cards -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="12sp"
+                        android:background="@drawable/card"
+                        android:backgroundTint="@color/material_dynamic_primary95"
+                        android:orientation="vertical"
+                        android:layout_gravity="center">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+                            <TextView
+                                android:gravity="center_horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="Total Income"
+                                android:textStyle="bold"
+                                android:textColor="@color/material_dynamic_secondary60"/>
+                            <TextView
+                                android:layout_height="4sp"
+                                android:layout_width="wrap_content"
+                                android:layout_margin="0sp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:textSize="20sp"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:text="PHP 1200"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4sp"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="12sp"
+                        android:background="@drawable/card"
+                        android:backgroundTint="@color/material_dynamic_tertiary95"
+                        android:orientation="vertical"
+                        android:layout_gravity="center">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+                            <TextView
+                                android:gravity="center_horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="Total Expenses"
+                                android:textStyle="bold"
+                                android:textColor="@color/material_dynamic_secondary60"/>
+                            <TextView
+                                android:layout_height="4sp"
+                                android:layout_width="wrap_content"
+                                android:layout_margin="0sp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:textSize="20sp"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:text="PHP 1200"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- statistics bar chart -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center">
+
+                    <TextView
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:text="Top Spending"
+                        android:layout_marginBottom="6dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="280dp"
+                        android:background="@drawable/card"
+                        android:backgroundTint="@color/cardview_light_background"
+                        android:orientation="vertical"
+                        android:layout_gravity="center">
+
+                        <TextView
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Chart" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center">
+
+                    <TextView
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:text="Top Spending"
+                        android:layout_marginBottom="6dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="280dp"
+                        android:background="@drawable/card"
+                        android:backgroundTint="@color/cardview_light_background"
+                        android:orientation="vertical"
+                        android:layout_gravity="center">
+
+                        <TextView
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Chart" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
     </LinearLayout>
-</RelativeLayout>
+</ScrollView>
