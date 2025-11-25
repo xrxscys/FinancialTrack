@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        authViewModel.currentUser.observe(this){ firebaseUser ->
+        authViewModel.currentUser.observe(this) { firebaseUser ->
             if (firebaseUser != null) {
                 binding.tvUserEmail.text = firebaseUser.email
             }
@@ -64,11 +64,12 @@ class MainActivity : AppCompatActivity() {
         //Open Transaction Screen
         binding.btnTransactions.setOnClickListener {
             startActivity(Intent(this, TransactionActivity::class.java))
+        }
 
-            // Open Profile screen
+        // Open Profile screen
         binding.btnProfile.setOnClickListener {
             val currentUser = authViewModel.currentUser.value
-            if (currentUser != null){
+            if (currentUser != null) {
                 val intent = Intent(this, ProfileActivity::class.java)
                 intent.putExtra("USER_ID", currentUser.uid)
                 startActivity(intent)
@@ -76,23 +77,23 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+         fun signOut() {
+            // Sign out from Firebase
+            authViewModel.signOut()
 
-    private fun signOut() {
-        // Sign out from Firebase
-        authViewModel.signOut()
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id)) // The phantom error might appear here too, it's okay
+                .requestEmail()
+                .build()
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id)) // The phantom error might appear here too, it's okay
-            .requestEmail()
-            .build()
+            val googleSignInClient = GoogleSignIn.getClient(this, gso)
+            googleSignInClient.signOut().addOnCompleteListener {
+                val intent = Intent(this, LoginActivity::class.java)
 
-        val googleSignInClient = GoogleSignIn.getClient(this, gso)
-        googleSignInClient.signOut().addOnCompleteListener {
-            val intent = Intent(this, LoginActivity::class.java)
-
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
         }
-    }
+
 }
