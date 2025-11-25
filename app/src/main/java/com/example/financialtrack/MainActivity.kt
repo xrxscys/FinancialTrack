@@ -13,6 +13,7 @@ import com.example.financialtrack.ui.transaction.TransactionActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.example.financialtrack.ui.profile.ProfileActivity
+import com.example.financialtrack.ui.reports.ReportsActivity
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -55,12 +56,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, DebtActivity::class.java))
         }
 
+        binding.btnReports.setOnClickListener {
+            startActivity(Intent(this, ReportsActivity::class.java))
+
+        }
+
         //Open Transaction Screen
         binding.btnTransactions.setOnClickListener {
             startActivity(Intent(this, TransactionActivity::class.java))
-        }
 
-        // Open Profile screen
+            // Open Profile screen
         binding.btnProfile.setOnClickListener {
             val currentUser = authViewModel.currentUser.value
             if (currentUser != null){

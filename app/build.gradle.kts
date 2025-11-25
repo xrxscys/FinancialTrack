@@ -91,4 +91,7 @@ dependencies {
 
     //Image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    //Charts
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
