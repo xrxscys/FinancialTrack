@@ -9,6 +9,7 @@ import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Transaction
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.text.format
 
 class TransactionAdapter(
     private val transactions: List<Transaction>)
@@ -29,6 +30,18 @@ class TransactionAdapter(
 //                }
 //            }
 //        }
+        fun bind(transaction: Transaction){
+            //Date format
+            val date = Date(transaction.date)
+            val dateFormatter = SimpleDateFormat("MM/dd/yyyy",Locale.getDefault())
+            val formattedDate = dateFormatter.format(date)
+
+            //set values on layout
+            itemTransactionName.text = transaction.description
+            itemTransactionAmount.text = "₱${transaction.amount}"
+            itemTransactionDate.text = formattedDate
+
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
@@ -37,14 +50,7 @@ class TransactionAdapter(
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        val transaction = transactions[position]
-        val date = Date(transaction.date)
-        val dateFormatter = SimpleDateFormat("MM/dd/yyyy",Locale.getDefault())
-        val formattedDate = dateFormatter.format(date)
-
-        holder.itemTransactionName.text = transaction.description
-        holder.itemTransactionAmount.text = transaction.amount.toString()
-        holder.itemTransactionDate.text = formattedDate
+        holder.bind(transactions[position])
     }
 
     override fun getItemCount(): Int = transactions.size
