@@ -6,11 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
-import com.example.financialtrack.databinding.ActivityNotificationBinding
 import com.example.financialtrack.databinding.ActivityTransactionBinding
-import com.example.financialtrack.ui.notification.NotificationAdapter // ✅ import
-import com.example.financialtrack.ui.transaction.TransactionAdapter
-import com.google.api.Distribution
 
 class TransactionActivity : AppCompatActivity(){
 
@@ -41,5 +37,11 @@ class TransactionActivity : AppCompatActivity(){
         adapter = TransactionAdapter(fakeTransactions)
         binding.rvTransactions.layoutManager = LinearLayoutManager(this)
         binding.rvTransactions.adapter = adapter
+
+        adapter.setOnClickListener { transaction ->
+            val dialog = AddEditTransactionDialogFragment.newInstance(transaction)
+//            dialog.setListener(this)
+            dialog.show(supportFragmentManager, "TransactionDialog")
+        }
     }
 }

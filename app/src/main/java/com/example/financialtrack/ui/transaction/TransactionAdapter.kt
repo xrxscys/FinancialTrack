@@ -15,7 +15,11 @@ class TransactionAdapter(
     private val transactions: List<Transaction>)
     : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>()
 {
-//    private var transactionClickListener : ((Transaction) -> Unit)? = null
+    private var transactionClickListener : ((Transaction) -> Unit)? = null
+
+    fun setOnClickListener(listener: (Transaction) -> Unit){
+        transactionClickListener = listener
+    }
     class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
         val itemTransactionDate: TextView = itemView.findViewById(R.id.itemTransDate)
@@ -42,6 +46,7 @@ class TransactionAdapter(
             itemTransactionDate.text = formattedDate
 
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
@@ -50,7 +55,12 @@ class TransactionAdapter(
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
+        val item = transactions[position]
         holder.bind(transactions[position])
+
+        holder.itemView.setOnClickListener {
+            transactionClickListener?.invoke(item)
+        }
     }
 
     override fun getItemCount(): Int = transactions.size
