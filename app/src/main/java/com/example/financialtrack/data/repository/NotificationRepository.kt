@@ -33,4 +33,8 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
     suspend fun markAsRead(id: Long) {
         notificationDao.markAsRead(id)
     }
+    
+    suspend fun deleteAllUserNotifications(userId: String) {
+        notificationDao.deleteAllUserNotifications(userId)
+    }
 }

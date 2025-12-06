@@ -42,6 +42,8 @@
     <string name="notification_transaction_reminder">Transaction Reminder</string>
     <string name="notification_goal_tracking">Goal Tracking Reminder</string>
     <string name="notification_general">General Notification</string>
+    <string name="notification_bill_reminder">Bill Reminder</string>
+    <string name="notification_large_transaction">Large Transaction Alert</string>
 
     <!-- Debt & Loan Module -->
     <string name="debt_title">Debt &amp; Loan Tracker</string>

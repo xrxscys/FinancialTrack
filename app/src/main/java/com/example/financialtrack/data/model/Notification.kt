@@ -11,6 +11,7 @@ data class Notification(
     val message: String,
     val type: NotificationType,
     val isRead: Boolean = false,
+    val navigationType: String = "none",  // Target page to navigate: "transactions", "debts", "profile", "reports", "none"
     val createdAt: Long = System.currentTimeMillis()
 )
 
