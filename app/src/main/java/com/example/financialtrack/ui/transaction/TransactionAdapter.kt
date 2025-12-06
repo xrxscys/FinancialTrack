@@ -17,7 +17,7 @@ class TransactionAdapter(
 {
     private var transactionClickListener : ((Transaction) -> Unit)? = null
 
-    fun setOnClickListener(listener: (Transaction) -> Unit){
+    fun setOnClickListener(listener: (Transaction) -> Unit){ //setting up the listener
         transactionClickListener = listener
     }
     class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -25,15 +25,7 @@ class TransactionAdapter(
         val itemTransactionDate: TextView = itemView.findViewById(R.id.itemTransDate)
         val itemTransactionName: TextView = itemView.findViewById(R.id.itemTransHeader)
         val itemTransactionAmount: TextView = itemView.findViewById(R.id.itemTransAmount)
-        //TODO recyclerview clickable
-//        init {
-//            itemView.setOnClickListener{
-//                val position = adapterPosition
-//                if (position != RecyclerView.NO_POSITION){
-//                    transactionClickListener?.invoke()
-//                }
-//            }
-//        }
+
         fun bind(transaction: Transaction){
             //Date format
             val date = Date(transaction.date)
@@ -55,9 +47,10 @@ class TransactionAdapter(
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        val item = transactions[position]
-        holder.bind(transactions[position])
+        val item = transactions[position] //stores the position of the item in a reusable var
+        holder.bind(item)
 
+        // setting click listener on the item view as they bind
         holder.itemView.setOnClickListener {
             transactionClickListener?.invoke(item)
         }
