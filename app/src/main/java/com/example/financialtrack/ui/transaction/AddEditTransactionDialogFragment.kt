@@ -11,7 +11,16 @@ import com.example.financialtrack.data.model.TransactionType
 import com.example.financialtrack.databinding.DialogAddEditTransactionBinding
 import java.util.*
 
-
+/*TODO
+*  change the dialog xml to have the rest of the attributes
+*  make the date mutable with a date dropdown format
+*  the type should be a dropdown
+*  the description should be a text box with a limited number of characters
+*  style the delete button properly
+*  make a way for me to reuse this fragment for add as well, will find out later
+*  make the view items more pleasant to look at
+*
+* */
 class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragment(){
 
     //get bound idiot lol; for accessing
@@ -100,9 +109,9 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupDialog()
-        populateFields()
-        setupClickListeners()
+        setupDialog() //sets up the layout of the dialog, it would look weird after, I might just change the xml later
+        populateFields() //puts the data from the transaction reformed from the bundle into the fields
+        setupClickListeners() //sets up the listeners for the buttons in the dialog, will do later
     }
 
     private fun setupDialog(){
@@ -113,12 +122,12 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
     }
     private fun populateFields(){
         transaction?.let { trans ->
+            val dateFormatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
+
             binding.etAmount.setText(trans.amount.toString())
             binding.etDescription.setText(trans.description)
             binding.etCategory.setText(trans.category)
-            val date = Date(trans.date)
-            val dateFormatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
-            binding.tvDate.text = "Date: ${dateFormatter.format(date)}"
+            binding.tvDate.text = "Date: ${dateFormatter.format(trans.date)}"
         }
     }
 
