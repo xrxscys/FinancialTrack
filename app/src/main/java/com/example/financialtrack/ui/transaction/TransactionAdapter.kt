@@ -1,18 +1,23 @@
 package com.example.financialtrack.ui.transaction
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Transaction
+import com.example.financialtrack.data.model.TransactionType
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.text.format
+import androidx.core.graphics.toColorInt
 
 class TransactionAdapter(
-    private val transactions: List<Transaction>)
+    private val transactions: MutableList<Transaction>)
     : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>()
 {
     private var transactionClickListener : ((Transaction) -> Unit)? = null
@@ -25,7 +30,7 @@ class TransactionAdapter(
         val itemTransactionDate: TextView = itemView.findViewById(R.id.itemTransDate)
         val itemTransactionName: TextView = itemView.findViewById(R.id.itemTransHeader)
         val itemTransactionAmount: TextView = itemView.findViewById(R.id.itemTransAmount)
-
+        val transactionLayout: LinearLayout = itemView.findViewById(R.id.itemTransLayout)
         fun bind(transaction: Transaction){
             //Date format
             val date = Date(transaction.date)
@@ -37,6 +42,14 @@ class TransactionAdapter(
             itemTransactionAmount.text = "₱${transaction.amount}"
             itemTransactionDate.text = formattedDate
 
+            when (transaction.type) {
+                TransactionType.EXPENSE -> {
+                    transactionLayout.setBackgroundColor("#F6A6A6".toColorInt())
+                }
+                TransactionType.INCOME -> {
+                    transactionLayout.setBackgroundColor("#BCF0CE".toColorInt())
+                }
+            }
         }
 
     }

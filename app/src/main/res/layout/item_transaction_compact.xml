@@ -3,24 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
     app:cardBackgroundColor="#FCF5FD"
     app:cardCornerRadius="10dp">
 
     <LinearLayout
+        android:id="@+id/itemTransLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="25dp"
-        android:background="#EBEBEB"
+        android:background="#BCF0CE"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="12dp"
+        android:weightSum="3">
 
         <TextView
             android:id="@+id/itemTransHeader"
-            android:layout_width="177dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:paddingLeft="10dp"
-            android:paddingEnd="20dp"
+            android:paddingEnd="10dp"
             android:paddingRight="10dp"
             android:text="Transaction Header"
             android:textSize="16sp"
@@ -28,18 +31,20 @@
 
         <TextView
             android:id="@+id/itemTransAmount"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#00FAFAFA"
+            android:gravity="center"
             android:text="TextView"
             tools:text="100.00" />
 
         <TextView
             android:id="@+id/itemTransDate"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="Date" />
 
         <Button
