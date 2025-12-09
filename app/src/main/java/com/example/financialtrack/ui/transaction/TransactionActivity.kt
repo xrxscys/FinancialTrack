@@ -108,6 +108,9 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
     }
 
     override fun onTransactionDelete(transaction: Transaction) {
-        TODO("Not yet implemented")
+        transactionList.removeAll {
+            it.id == transaction.id
+        }
+        adapter.updateTransactions(transactionList)
     }
 }

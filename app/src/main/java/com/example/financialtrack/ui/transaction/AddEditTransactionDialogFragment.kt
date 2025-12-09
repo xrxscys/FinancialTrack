@@ -230,8 +230,19 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
         dismiss()
     }
 
-    private fun deleteTransaction(){
-        dismiss()
+    private fun deleteTransaction() {
+        transaction?.let { trans ->
+            androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Delete Transaction")
+                .setMessage("Are you sure you want to delete this transaction?")
+                .setPositiveButton("Delete") { _, _ ->
+                    listener?.onTransactionDelete(trans)
+                    Toast.makeText(context, "Transaction deleted", Toast.LENGTH_SHORT).show()
+                    dismiss()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
     }
 
     fun setListener(listener: TransactionDialogListener){
