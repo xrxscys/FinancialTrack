@@ -1,10 +1,12 @@
 package com.example.financialtrack.ui.transaction
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.icu.text.SimpleDateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
@@ -33,6 +35,7 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
     //for when transactions get updated, these get overridden by activity and get called here
     private var listener: TransactionDialogListener? = null
 
+    private var selectedDate: Long = System.currentTimeMillis()
     //interface so that activity can override, and can get accessed from here
     interface TransactionDialogListener{
         fun onTransactionUpdate(transaction: Transaction)
@@ -110,6 +113,8 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
         super.onViewCreated(view, savedInstanceState)
 
         setupDialog() //sets up the layout of the dialog, it would look weird after, I might just change the xml later
+        setupTypeDropdown()
+        setupDatePicker()
         populateFields() //puts the data from the transaction reformed from the bundle into the fields
         setupClickListeners() //sets up the listeners for the buttons in the dialog, will do later
     }
@@ -120,6 +125,58 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
             ViewGroup.LayoutParams.WRAP_CONTENT   // Height adjusts to content
         )
     }
+
+    private fun setupTypeDropdown(){
+        val types = arrayOf("Expense", "Income") // string array of Transaction Types
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, types)
+        binding.actvType.setAdapter(adapter)
+
+        binding.actvType.setText(
+            when(transaction?.type){
+                TransactionType.INCOME -> "Income"
+                else -> "Expense"
+            },
+            false
+        )
+    }
+
+
+    private fun setupDatePicker(){
+
+        updateDatePicker()
+
+        binding.etDate.setOnClickListener {
+            showDatePickerDialog()
+        }
+    }
+
+    private fun showDatePickerDialog(){
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = selectedDate
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                // Update the selected date
+                calendar.set(year, month, dayOfMonth)
+                selectedDate = calendar.timeInMillis
+                updateDatePicker()
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+
+        )
+
+        datePickerDialog.show()
+
+    }
+
+    private fun updateDatePicker(){
+        val date = Date(selectedDate)
+        val dateFormatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
+        binding.etDate.setText(dateFormatter.format(date))
+    }
     private fun populateFields(){
         transaction?.let { trans ->
             val dateFormatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
@@ -127,7 +184,7 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
             binding.etAmount.setText(trans.amount.toString())
             binding.etDescription.setText(trans.description)
             binding.etCategory.setText(trans.category)
-            binding.tvDate.text = "Date: ${dateFormatter.format(trans.date)}"
+            binding.etDate.setText("${dateFormatter.format(trans.date)}")
         }
     }
 
