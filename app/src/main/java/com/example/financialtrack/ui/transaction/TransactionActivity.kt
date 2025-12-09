@@ -54,7 +54,7 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
         transactionList.clear()
         transactionList.addAll(getFakeTransactions(userId))
         Log.d("name", transactionList[1].userId)
-        adapter = TransactionAdapter(transactionList)
+        adapter.updateTransactions(transactionList)
     }
 
     private fun getFakeTransactions(userId: String): List<Transaction> {
@@ -96,7 +96,15 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
     }
 
     override fun onTransactionUpdate(transaction: Transaction){
-        TODO("Not yet implemented")
+        val index = transactionList.indexOfFirst {
+            it.id == transaction.id
+        }
+        if (index != -1){
+            transactionList[index] = transaction
+            adapter.updateTransactions(transactionList)
+
+            //add database change here
+        }
     }
 
     override fun onTransactionDelete(transaction: Transaction) {

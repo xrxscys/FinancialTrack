@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
@@ -14,10 +15,10 @@ import com.example.financialtrack.databinding.DialogAddEditTransactionBinding
 import java.util.*
 
 /*TODO
-*  change the dialog xml to have the rest of the attributes
-*  make the date mutable with a date dropdown format
-*  the type should be a dropdown
-*  the description should be a text box with a limited number of characters
+*  change the dialog xml to have the rest of the attributes --done--
+*  make the date mutable with a date dropdown format --done--
+*  the type should be a dropdown --done--
+*  the description should be a text box with a limited number of characters --done--
 *  style the delete button properly
 *  make a way for me to reuse this fragment for add as well, will find out later
 *  make the view items more pleasant to look at
@@ -201,10 +202,44 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
     }
 
     private fun saveTransaction(){
+        val typeString = binding.actvType.text.toString()
+        val type = when(typeString){
+            "Income" -> TransactionType.INCOME
+            else -> TransactionType.EXPENSE
+        }
+
+        val description = binding.etDescription.text.toString().trim()
+        val amountStr = binding.etAmount.text.toString().trim()
+        val amount = amountStr.toDouble()
+        val category = binding.etCategory.text.toString().trim()
+
+
+        transaction?.let { trans ->
+            val updated = trans.copy(
+                type = type,
+                description = description,
+                category = category,
+                amount = amount,
+                date = selectedDate,
+            )
+
+            listener?.onTransactionUpdate(updated)
+            Toast.makeText(context, "Transaction updated", Toast.LENGTH_SHORT).show()
+        }
+
         dismiss()
     }
 
     private fun deleteTransaction(){
         dismiss()
+    }
+
+    fun setListener(listener: TransactionDialogListener){
+        this.listener = listener
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

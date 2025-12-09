@@ -17,7 +17,7 @@ import kotlin.text.format
 import androidx.core.graphics.toColorInt
 
 class TransactionAdapter(
-    private val transactions: MutableList<Transaction>)
+    private var transactions: List<Transaction>)
     : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>()
 {
     private var transactionClickListener : ((Transaction) -> Unit)? = null
@@ -25,6 +25,12 @@ class TransactionAdapter(
     fun setOnClickListener(listener: (Transaction) -> Unit){ //setting up the listener
         transactionClickListener = listener
     }
+
+    fun updateTransactions(newTransactions: List<Transaction>){
+        transactions = newTransactions
+        notifyDataSetChanged()
+    }
+
     class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
         val itemTransactionDate: TextView = itemView.findViewById(R.id.itemTransDate)
