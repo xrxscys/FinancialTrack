@@ -21,7 +21,7 @@ import java.util.*
 *  the description should be a text box with a limited number of characters --done--
 *  style the delete button properly
 *  make a way for me to reuse this fragment for add as well, will find out later
-*  make the view items more pleasant to look at
+*  make the view items more pleasant to look at --done--
 *
 * */
 class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragment(){
