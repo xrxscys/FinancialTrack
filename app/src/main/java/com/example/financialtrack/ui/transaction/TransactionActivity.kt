@@ -29,8 +29,15 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
 
         setupRecyclerView()
         setupBackButton()
+        setupCreateButton()
         loadTransactions(user)
     }
+
+    private fun setupCreateButton(){
+        binding.btnAddTrans.setOnClickListener {
+            showCreateDialog()
+        }
+1    }
 
     private fun setupRecyclerView(){
         adapter = TransactionAdapter(transactionList)
@@ -95,6 +102,12 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
         dialog.show(supportFragmentManager, "EditTransactionDialog")
     }
 
+    private fun showCreateDialog(){
+        val dialog = AddEditTransactionDialogFragment.newInstanceForCreate(userId)
+        dialog.setListener(this)
+        dialog.show(supportFragmentManager, "AddTransactionDialog")
+    }
+
     override fun onTransactionUpdate(transaction: Transaction){
         val index = transactionList.indexOfFirst {
             it.id == transaction.id
@@ -112,5 +125,12 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
             it.id == transaction.id
         }
         adapter.updateTransactions(transactionList)
+    }
+
+    override fun onTransactionCreated(transaction: Transaction) {
+        transactionList.add(0, transaction)
+        adapter.updateTransactions(transactionList)
+
+        binding.rvTransactions.smoothScrollToPosition(0)
     }
 }

@@ -24,7 +24,7 @@ import java.util.*
 *  make the view items more pleasant to look at --done--
 *
 * */
-class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragment(){
+class AddEditTransactionDialogFragment() : DialogFragment(){
 
     //get bound idiot lol; for accessing
     private var _binding: DialogAddEditTransactionBinding? = null
@@ -35,12 +35,14 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
 
     //for when transactions get updated, these get overridden by activity and get called here
     private var listener: TransactionDialogListener? = null
+    private var isNewTrans = false
 
     private var selectedDate: Long = System.currentTimeMillis()
     //interface so that activity can override, and can get accessed from here
     interface TransactionDialogListener{
         fun onTransactionUpdate(transaction: Transaction)
         fun onTransactionDelete(transaction: Transaction)
+        fun onTransactionCreated(transaction: Transaction)
     }
 
     companion object{
@@ -52,10 +54,11 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
         private const val ARG_DESCRIPTION = "description"
         private const val ARG_AMOUNT ="amount"
         private const val ARG_DATE = "date"
+        private const val ARG_IS_NEW = "isNew"
 
         //parameters contain the transaction to be edited
         fun newInstance(transaction: Transaction): AddEditTransactionDialogFragment {
-            val fragment = AddEditTransactionDialogFragment(transaction)
+            val fragment = AddEditTransactionDialogFragment()
             val args = Bundle()
 
             //from the transaction into the bundle
@@ -66,9 +69,21 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
             args.putString(ARG_DESCRIPTION, transaction.description)
             args.putDouble(ARG_AMOUNT, transaction.amount)
             args.putLong(ARG_DATE, transaction.date)
+            args.putBoolean(ARG_IS_NEW, false)
 
             fragment.arguments = args
             //returns a fragment with all the data from the transaction being edited.
+            return fragment
+        }
+
+        fun newInstanceForCreate(userId: String): AddEditTransactionDialogFragment{
+            val fragment = AddEditTransactionDialogFragment()
+            val args = Bundle()
+
+
+            args.putString(ARG_USER_ID, userId)
+            args.putBoolean(ARG_IS_NEW, true)
+            fragment.arguments = args
             return fragment
         }
     }
@@ -79,25 +94,43 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
 
         //uses the keys to retrieve data from the bundle.
         arguments?.let {args ->
-            val id = args.getLong(ARG_ID)
-            val userId = args.getString(ARG_USER_ID)?: ""
-            val typeString = args.getString(ARG_TYPE)?: TransactionType.EXPENSE.name
-            val type = TransactionType.valueOf(typeString)
-            val category = args.getString(ARG_CATEGORY)?: ""
-            val description = args.getString(ARG_DESCRIPTION)?: ""
-            val amount = args.getDouble(ARG_AMOUNT, 0.0)
-            val date = args.getLong(ARG_DATE, System.currentTimeMillis())
+            isNewTrans = args.getBoolean(ARG_IS_NEW, false)
 
-            //reforms the data from the bundle into a Transaction object
-            transaction = Transaction(
-                id = id,
-                userId = userId,
-                type = type,
-                category = category,
-                description = description,
-                amount = amount,
-                date = date
-            )
+            if (isNewTrans) {
+                val userId = args.getString(ARG_USER_ID)?: ""
+
+                transaction = Transaction(
+                    id = 0, //placeholder ID, supposedly the db will assign this
+                    userId = userId,
+                    type = TransactionType.EXPENSE,
+                    category = "",
+                    description = "",
+                    amount = 0.0,
+                    date = System.currentTimeMillis()
+                )
+
+
+            } else{
+                val id = args.getLong(ARG_ID)
+                val userId = args.getString(ARG_USER_ID)?: ""
+                val typeString = args.getString(ARG_TYPE)?: TransactionType.EXPENSE.name
+                val type = TransactionType.valueOf(typeString)
+                val category = args.getString(ARG_CATEGORY)?: ""
+                val description = args.getString(ARG_DESCRIPTION)?: ""
+                val amount = args.getDouble(ARG_AMOUNT, 0.0)
+                val date = args.getLong(ARG_DATE, System.currentTimeMillis())
+
+                //reforms the data from the bundle into a Transaction object
+                transaction = Transaction(
+                    id = id,
+                    userId = userId,
+                    type = type,
+                    category = category,
+                    description = description,
+                    amount = amount,
+                    date = date
+                )
+            }
         }
     }
     //creates and inflates
@@ -118,6 +151,8 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
         setupDatePicker()
         populateFields() //puts the data from the transaction reformed from the bundle into the fields
         setupClickListeners() //sets up the listeners for the buttons in the dialog, will do later
+
+        changeDialogIfNew()
     }
 
     private fun setupDialog(){
@@ -125,6 +160,16 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
             ViewGroup.LayoutParams.MATCH_PARENT,  // Full width
             ViewGroup.LayoutParams.WRAP_CONTENT   // Height adjusts to content
         )
+    }
+
+    private fun changeDialogIfNew(){
+        if(isNewTrans){
+            binding.btnDelete.visibility = View.GONE
+            binding.btnSave.text = "Create"
+        }else{
+            binding.btnDelete.visibility = View.VISIBLE
+            binding.btnSave.text = "Save"
+        }
     }
 
     private fun setupTypeDropdown(){
@@ -178,14 +223,20 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
         val dateFormatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
         binding.etDate.setText(dateFormatter.format(date))
     }
+
     private fun populateFields(){
         transaction?.let { trans ->
             val dateFormatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
+            if (!isNewTrans){
+                binding.etAmount.setText(trans.amount.toString())
+                binding.etDescription.setText(trans.description)
+                binding.etCategory.setText(trans.category)
+                binding.etDate.setText("${dateFormatter.format(trans.date)}")
+            } else{
+                binding.etDate.setText("${dateFormatter.format(trans.date)}")
 
-            binding.etAmount.setText(trans.amount.toString())
-            binding.etDescription.setText(trans.description)
-            binding.etCategory.setText(trans.category)
-            binding.etDate.setText("${dateFormatter.format(trans.date)}")
+            }
+
         }
     }
 
@@ -215,16 +266,30 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
 
 
         transaction?.let { trans ->
-            val updated = trans.copy(
-                type = type,
-                description = description,
-                category = category,
-                amount = amount,
-                date = selectedDate,
-            )
+            if (isNewTrans){
+                val newTrans = trans.copy(
+                    id = genFakeId(), //once again placeholder
+                    type = type,
+                    description = description,
+                    category = category,
+                    amount = amount,
+                    date = selectedDate,
+                )
 
-            listener?.onTransactionUpdate(updated)
-            Toast.makeText(context, "Transaction updated", Toast.LENGTH_SHORT).show()
+                listener?.onTransactionCreated(newTrans)
+                Toast.makeText(context, "Transaction created", Toast.LENGTH_SHORT).show()
+            }else{
+                val updated = trans.copy(
+                    type = type,
+                    description = description,
+                    category = category,
+                    amount = amount,
+                    date = selectedDate,
+                )
+
+                listener?.onTransactionUpdate(updated)
+                Toast.makeText(context, "Transaction updated", Toast.LENGTH_SHORT).show()
+            }
         }
 
         dismiss()
@@ -245,6 +310,9 @@ class AddEditTransactionDialogFragment(transaction: Transaction) : DialogFragmen
         }
     }
 
+    fun genFakeId(): Long{
+        return "${System.currentTimeMillis()}${(1000..9999).random()}".toLong()
+    }
     fun setListener(listener: TransactionDialogListener){
         this.listener = listener
     }
