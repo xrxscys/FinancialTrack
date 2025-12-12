@@ -166,9 +166,12 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
         if(isNewTrans){
             binding.btnDelete.visibility = View.GONE
             binding.btnSave.text = "Create"
+            binding.tvDialogHead.text = "Create Transaction"
         }else{
             binding.btnDelete.visibility = View.VISIBLE
             binding.btnSave.text = "Save"
+            binding.tvDialogHead.text = "Edit Transaction"
+
         }
     }
 
@@ -261,9 +264,29 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
 
         val description = binding.etDescription.text.toString().trim()
         val amountStr = binding.etAmount.text.toString().trim()
-        val amount = amountStr.toDouble()
+        val amount = amountStr.toDoubleOrNull()
         val category = binding.etCategory.text.toString().trim()
 
+
+        if (description.isEmpty()){
+            Toast.makeText(context, "Please enter description", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (amountStr.isEmpty()){
+            Toast.makeText(context, "Please enter an amount", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if ((amount == null || amount <= 0)){
+            Toast.makeText(context, "Please enter amount that is valid", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (category.isEmpty()){
+            Toast.makeText(context, "Please enter category", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         transaction?.let { trans ->
             if (isNewTrans){
