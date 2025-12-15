@@ -13,7 +13,19 @@ data class Debt(
     val dueDate: Long,
     val interestRate: Double = 0.0,
     val type: DebtType,
-    val description: String = ""
+    val description: String = "",
+    val isActive: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis(),
+    val paidAt: Long? = null,
+    val lastNotificationTime: Long? = null,
+    // Notification flags - track which notification ranges have fired
+    val notified5Days: Boolean = false,
+    val notified3Days: Boolean = false,
+    val notified1Day: Boolean = false,
+    val notified5Hours: Boolean = false,
+    val notified3Hours: Boolean = false,
+    val notified1Hour: Boolean = false,
+    val notifiedOverdue: Boolean = false
 )
 
 enum class DebtType {

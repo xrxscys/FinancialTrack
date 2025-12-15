@@ -22,7 +22,7 @@ import com.example.financialtrack.data.model.FinancialGoal
         Notification::class,
         FinancialGoal::class
     ],
-    version = 4,
+    version = 6,
     exportSchema = false
 )
 

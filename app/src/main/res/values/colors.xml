@@ -31,4 +31,10 @@
     <color name="progress_medium">#2196F3</color>
     <color name="progress_starting">#FF9800</color>
 
+    <!-- Urgency colors for loans -->
+    <color name="urgency_low">#4CAF50</color>
+    <color name="urgency_medium">#FFD700</color>
+    <color name="urgency_high">#FF9800</color>
+    <color name="urgency_critical">#F44336</color>
+
 </resources>
