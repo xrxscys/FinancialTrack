@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
-    id("com.google.devtools.ksp")
+    id("com.android.application") version "8.6.0"
+    id("org.jetbrains.kotlin.android") version "1.9.22"
+    id("com.google.gms.google-services") version "4.4.0"
+    id("com.google.devtools.ksp") version "1.9.22-1.0.17"
 }
 
 android {

@@ -14,10 +14,12 @@ class FinancialTrackApp : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(/*context=*/this)
-        val firebaseAppCheck = FirebaseAppCheck.getInstance()
-        firebaseAppCheck.installAppCheckProviderFactory(
-            PlayIntegrityAppCheckProviderFactory.getInstance()
-        )
+        // Disable App Check for development - causing reCAPTCHA token issues
+        // Re-enable in production after proper setup
+        // val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        // firebaseAppCheck.installAppCheckProviderFactory(
+        //     PlayIntegrityAppCheckProviderFactory.getInstance()
+        // )
 
         createNotificationChannels()
     }

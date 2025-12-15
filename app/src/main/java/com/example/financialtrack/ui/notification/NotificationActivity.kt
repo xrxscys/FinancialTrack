@@ -63,10 +63,10 @@ class NotificationActivity : AppCompatActivity() {
 
         viewModel.getAllNotifications(userId).observe(this) { notifications ->
             if (notifications.isEmpty()) {
-                binding.tvEmptyNotifications.visibility = View.VISIBLE
+                binding.emptyStateLayout.visibility = View.VISIBLE
                 binding.rvNotifications.visibility = View.GONE
             } else {
-                binding.tvEmptyNotifications.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.GONE
                 binding.rvNotifications.visibility = View.VISIBLE
                 // Sort by newest first
                 val sortedNotifications = notifications.sortedByDescending { it.createdAt }

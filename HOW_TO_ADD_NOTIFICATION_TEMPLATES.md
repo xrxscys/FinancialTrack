@@ -198,14 +198,7 @@ if (notification.type == NotificationType.DEBT_REMINDER) {
 Help teammates understand what it does:
 
 ```kotlin
-/**
- * Notification triggered when savings milestone is reached.
- * Congratulates user and shows progress percentage.
- * 
- * @param amount Current savings amount in dollars
- * @param percentage Percentage of goal completed (0-100)
- * @return Notification object or null if user not logged in
- */
+
 fun createSavingsMilestoneNotification(
     amount: Double,
     percentage: Int
