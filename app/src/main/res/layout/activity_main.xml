@@ -56,6 +56,14 @@
                 android:layout_marginTop="8dp"
                 android:text="View Profile" />
 
+            <!-- Accounts Button -->
+            <Button
+                android:id="@+id/btn_accounts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Accounts" />
+
             <!-- Notification Button -->
             <Button
                 android:id="@+id/btn_notification"

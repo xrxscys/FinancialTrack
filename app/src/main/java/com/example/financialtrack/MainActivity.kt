@@ -19,6 +19,7 @@ import com.example.financialtrack.ui.notification.NotificationViewModel
 import com.example.financialtrack.utils.DebugNotificationHelper
 import com.google.firebase.auth.FirebaseAuth
 import android.content.SharedPreferences
+import com.example.financialtrack.ui.accounts.AccountsActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -81,6 +82,11 @@ class MainActivity : AppCompatActivity() {
         //Open Transaction Screen
         binding.btnTransactions.setOnClickListener {
             startActivity(Intent(this, TransactionActivity::class.java))
+        }
+
+        // Open Accounts screen
+        binding.btnAccounts.setOnClickListener {
+            startActivity(Intent(this, AccountsActivity::class.java))
         }
 
         // Open Profile screen
