@@ -9,6 +9,7 @@ data class Transaction(
     val userId: String,
     val amount: Double,
     val accountId: Int,
+    val transferToId: Int,
     val type: TransactionType,
     val category: String,
     val description: String,
