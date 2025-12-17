@@ -37,7 +37,7 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
         binding.btnAddTrans.setOnClickListener {
             showCreateDialog()
         }
-1    }
+    }
 
     private fun setupRecyclerView(){
         adapter = TransactionAdapter(emptyList())//passes an empty list, too lazy to change adapter cuh
