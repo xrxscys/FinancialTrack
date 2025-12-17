@@ -49,4 +49,65 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     fun getAllAccounts(userId: String): LiveData<List<Account>> {
         return repository2.getAccountsByUser(userId)
     }
+
+
+    fun performTransactionEdit(newTransaction: Transaction) = viewModelScope.launch {
+        // grab the old transaction
+        val oldTransaction = repository.getTransactionById(newTransaction.id)
+
+        if (oldTransaction != null) {
+            //delete old to go back to base
+            updateAccountBalance(oldTransaction.accountId, oldTransaction, "Del")
+
+            //soft update to move changes
+            updateAccountBalance(newTransaction.accountId, newTransaction, "Add")
+
+            //real update
+            updateTransaction(newTransaction)
+        }
+    }
+
+    fun deleteTransactionAndBalanceChange(transaction: Transaction) = viewModelScope.launch{
+        updateAccountBalance(transaction.accountId, transaction, "Del")
+        deleteTransaction(transaction)
+    }
+
+    fun insertTransactionAndBalanceChange(transaction: Transaction) = viewModelScope.launch{
+        updateAccountBalance(transaction.accountId, transaction, "Add")
+        insertTransaction(transaction)
+    }
+    suspend fun updateAccountBalance(accountId: Int, transaction: Transaction, tag: String) {
+        //if the tag is del, reverse multiplier for balance change
+        val multiplier = if (tag == "Del") -1.0 else 1.0
+
+
+        val account = repository2.getAccountById(accountId)
+
+        if (account != null) {
+            var currentBalance = account.balance
+
+            when (transaction.type) {
+                TransactionType.INCOME -> {
+                    currentBalance += (transaction.amount * multiplier)
+                }
+                TransactionType.EXPENSE -> {
+                    currentBalance -= (transaction.amount * multiplier)
+                }
+                TransactionType.TRANSFER -> {
+                    currentBalance -= (transaction.amount * multiplier)
+
+                    val transferAccount = repository2.getAccountById(transaction.transferToId)
+                    if (transferAccount != null) {
+                        val newTargetBalance = transferAccount.balance + (transaction.amount * multiplier)
+
+                        val updatedTransferAccount = transferAccount.copy(balance = newTargetBalance)
+                        repository2.update(updatedTransferAccount)
+                    }
+                }
+            }
+            val updatedAccount = account.copy(balance = currentBalance)
+            repository2.update(updatedAccount)
+        }
+    }
+
 }
