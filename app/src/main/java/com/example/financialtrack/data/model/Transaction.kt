@@ -8,6 +8,7 @@ data class Transaction(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val userId: String,
     val amount: Double,
+    val accountId: Int,
     val type: TransactionType,
     val category: String,
     val description: String,
