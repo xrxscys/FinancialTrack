@@ -166,14 +166,15 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
     }
 
     private fun setupTypeDropdown(){
-        val types = arrayOf("Expense", "Income") // string array of Transaction Types
+        val types = arrayOf("Expense", "Income", "Transfer") // string array of Transaction Types
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, types)
         binding.actvType.setAdapter(adapter)
 
         binding.actvType.setText(
             when(transaction?.type){
                 TransactionType.INCOME -> "Income"
-                else -> "Expense"
+                TransactionType.EXPENSE -> "Expense"
+                else -> "Transfer"
             },
             false
         )
@@ -249,7 +250,8 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
         val typeString = binding.actvType.text.toString()
         val type = when(typeString){
             "Income" -> TransactionType.INCOME
-            else -> TransactionType.EXPENSE
+            "Expense" -> TransactionType.EXPENSE
+            else -> TransactionType.TRANSFER
         }
 
         val description = binding.etDescription.text.toString().trim()
