@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import com.example.financialtrack.data.database.AppDatabase
 import androidx.fragment.app.viewModels
@@ -56,6 +57,7 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
         private const val ARG_DATE = "date"
         private const val ARG_IS_NEW = "isNew"
         private const val ARG_ACCOUNT_ID = "accountId"
+        private const val ARG_TRANSFER_TO_ID = "transferToId"
 
         //parameters contain the transaction to be edited
         fun newInstance(transaction: Transaction): AddEditTransactionDialogFragment {
@@ -72,6 +74,8 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
             args.putLong(ARG_DATE, transaction.date)
             args.putBoolean(ARG_IS_NEW, false)
             args.putInt(ARG_ACCOUNT_ID, transaction.accountId)
+            args.putInt(ARG_TRANSFER_TO_ID, transaction.transferToId)
+
 
             fragment.arguments = args
             //returns a fragment with all the data from the transaction being edited.
@@ -109,7 +113,8 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
                     description = "",
                     amount = 0.0,
                     date = System.currentTimeMillis(),
-                    accountId = 0
+                    accountId = 0,
+                    transferToId = 0
                 )
 
 
@@ -123,6 +128,7 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
                 val amount = args.getDouble(ARG_AMOUNT, 0.0)
                 val date = args.getLong(ARG_DATE, System.currentTimeMillis())
                 val accountId = args.getInt(ARG_ACCOUNT_ID, 0)
+                val transferToId = args.getInt(ARG_TRANSFER_TO_ID, 0)
 
                 //reforms the data from the bundle into a Transaction object
                 transaction = Transaction(
@@ -133,7 +139,8 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
                     description = description,
                     amount = amount,
                     date = date,
-                    accountId = accountId
+                    accountId = accountId,
+                    transferToId = transferToId
                 )
             }
             viewModel.getAllAccounts(userId = transaction!!.userId).observe(this){
@@ -163,6 +170,32 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
         setupClickListeners() //sets up the listeners for the buttons in the dialog, will do later
 
         changeDialogIfNew()
+        setupTypeChangeListener()
+    }
+
+    private fun setupTypeChangeListener() {
+        binding.actvType.addTextChangedListener { text ->
+            val selectedType = text.toString()
+
+            when (selectedType) {
+                "Transfer" -> {
+                    // Hide category, show transfer to
+                    binding.tilCategory.visibility = View.GONE
+                    binding.tilTransferTo.visibility = View.VISIBLE
+                }
+                else -> {
+                    // Show category, hide transfer to
+                    binding.tilCategory.visibility = View.VISIBLE
+                    binding.tilTransferTo.visibility = View.GONE
+                }
+            }
+        }
+
+        // Trigger initial state
+        if (transaction?.type == TransactionType.TRANSFER) {
+            binding.tilCategory.visibility = View.GONE
+            binding.tilTransferTo.visibility = View.VISIBLE
+        }
     }
 
     private fun setupDialog(){
@@ -205,6 +238,13 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
             val currAcc = accountList.find { it.id == transaction?.accountId }
             if (currAcc != null){
                 binding.actvAccount.setText(currAcc.name, false)
+            }
+        }
+        binding.actvTransferTo.setAdapter(adapter2)
+        if (accountList.isNotEmpty()){
+            val currAcc = accountList.find { it.id == transaction?.transferToId } // change to transferTo Id
+            if (currAcc != null){
+                binding.actvTransferTo.setText(currAcc.name, false)
             }
         }
     }
@@ -285,9 +325,10 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
         val description = binding.etDescription.text.toString().trim()
         val amountStr = binding.etAmount.text.toString().trim()
         val amount = amountStr.toDoubleOrNull()
-        val category = binding.etCategory.text.toString().trim()
+        var category: String
         val currAccName = binding.actvAccount.text.toString()
         val currAcc = accountList.find { it.name == currAccName }
+        var transferId: Int
 
         if (currAcc?.id == null || currAcc.id == 0){
             Toast.makeText(context, "Please enter valid account", Toast.LENGTH_SHORT).show()
@@ -309,9 +350,22 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
             return
         }
 
-        if (category.isEmpty()){
-            Toast.makeText(context, "Please enter category", Toast.LENGTH_SHORT).show()
-            return
+        if(type == TransactionType.TRANSFER){
+            val transferToAcc = accountList.find {it.name == binding.actvTransferTo.text.toString()}
+            category = "Transfer"
+            if(transferToAcc?.id == null || transferToAcc.id == 0){
+                Toast.makeText(context, "Please enter valid transfer account", Toast.LENGTH_SHORT).show()
+                return
+            }else{
+                transferId = transferToAcc.id
+            }
+        }else {
+            category = binding.etCategory.text.toString().trim()
+            if (category.isEmpty()){
+                Toast.makeText(context, "Please enter category", Toast.LENGTH_SHORT).show()
+                return
+            }
+            transferId = 0
         }
 
         transaction?.let { trans ->
@@ -323,7 +377,8 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
                     category = category,
                     amount = amount,
                     date = selectedDate,
-                    accountId = currAcc.id
+                    accountId = currAcc.id,
+                    transferToId = transferId
                 )
                 listener?.onTransactionCreated(newTrans)
                 Toast.makeText(context, "Transaction created", Toast.LENGTH_SHORT).show()
@@ -334,7 +389,8 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
                     category = category,
                     amount = amount,
                     date = selectedDate,
-                    accountId = currAcc.id
+                    accountId = currAcc.id,
+                    transferToId = transferId
                 )
 
                 listener?.onTransactionUpdate(updated)
