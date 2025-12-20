@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 class BudgetActivity: AppCompatActivity() {
 
     private lateinit var binding: ActivityBudgetBinding
+    private lateinit var adapter: BudgetAdapter
 
     override fun onCreate(savedInstance: Bundle?){
         super.onCreate(savedInstance)
