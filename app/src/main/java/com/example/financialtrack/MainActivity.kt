@@ -10,6 +10,7 @@ import com.example.financialtrack.ui.auth.LoginActivity
 import com.example.financialtrack.ui.debt.DebtActivity
 import com.example.financialtrack.ui.notifications.NotificationActivity
 import com.example.financialtrack.ui.transaction.TransactionActivity
+import com.example.financialtrack.ui.budget.BudgetActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.example.financialtrack.ui.profile.ProfileActivity
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         // Initialize notification service
         notificationService = NotificationService(this)
         debugNotificationHelper = DebugNotificationHelper(this)
-        
+
         // Initialize SharedPreferences for debug mode persistence
         sharedPreferences = getSharedPreferences("FinancialTrackDebug", MODE_PRIVATE)
         isDebugMode = sharedPreferences.getBoolean("debug_mode_enabled", false)
@@ -88,6 +89,12 @@ class MainActivity : AppCompatActivity() {
         binding.btnAccounts.setOnClickListener {
             startActivity(Intent(this, AccountsActivity::class.java))
         }
+
+        //Open Budgets Screen
+        binding.btnBudget.setOnClickListener {
+            startActivity(Intent(this, BudgetActivity::class.java))
+        }
+
 
         // Open Profile screen
         binding.btnProfile.setOnClickListener {
@@ -198,19 +205,19 @@ class MainActivity : AppCompatActivity() {
         binding.tvTestNotificationsLabel.setOnLongClickListener {
             isDebugMode = !isDebugMode
             sharedPreferences.edit().putBoolean("debug_mode_enabled", isDebugMode).apply()
-            
+
             val status = if (isDebugMode) "ENABLED ✓" else "DISABLED ✗"
             val message = "Debug Mode $status\n(System notifications show even when app is open)"
-            
+
             android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_LONG).show()
-            
+
             // Update button text to indicate debug mode
             if (isDebugMode) {
                 binding.tvTestNotificationsLabel.text = "Test Notifications 🧪 [DEBUG MODE ON]"
             } else {
                 binding.tvTestNotificationsLabel.text = "Test Notifications"
             }
-            
+
             true  // Consume the long click
         }
     }

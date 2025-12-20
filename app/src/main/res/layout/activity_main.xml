@@ -90,6 +90,13 @@
 
             <!-- Reports Button -->
             <Button
+                android:id="@+id/btn_budget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Budgets" />
+
+            <Button
                 android:id="@+id/btn_Reports"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
