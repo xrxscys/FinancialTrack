@@ -35,6 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?android:attr/colorForeground"
                     android:src="@drawable/ic_back"
                     android:padding="8dp" />
 
@@ -46,7 +47,6 @@
                     android:gravity="center"
                     android:text="Reports"
                     android:layout_centerVertical="true"
-                    android:textColor="@color/black"
                     android:textSize="27sp"
                     android:textStyle="bold" />
 
@@ -56,6 +56,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?android:attr/colorForeground"
                     android:src="@drawable/ic_drawer"
                     android:padding="8dp"
                     android:layout_alignParentEnd="true"
@@ -115,7 +116,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         android:src="@drawable/ic_circle"
-                                        android:tint="@color/material_dynamic_primary50" />
+                                        app:tint="@color/material_dynamic_primary50" />
                                     <ImageView
                                         android:rotation="180"
                                         android:layout_width="match_parent"
@@ -214,7 +215,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="23sp"
-                            android:textColor="@color/black"
                             android:textStyle="bold"
                             android:text="Statistics"
                             />
@@ -269,10 +269,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
-                        android:textColor="@color/black"
                         android:textStyle="bold"
                         android:text="Top Categories"
                         android:layout_marginBottom="8dp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="280dp"
+                        android:orientation="vertical"
+                        android:layout_gravity="center">
+                        <TextView
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Chart" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
