@@ -11,6 +11,7 @@ import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
 import com.example.financialtrack.databinding.ActivityReportsBinding
 import com.google.firebase.auth.FirebaseAuth
+import java.util.Currency
 import java.util.Locale
 
 class ReportsActivity : AppCompatActivity() {
@@ -61,12 +62,17 @@ class ReportsActivity : AppCompatActivity() {
     }
 
     private fun formatAmountParts(amount: Double): Pair<String, String> {
+        val currency: Currency = Currency.getInstance(Locale("en", "PH"))
         val formatted = String.format(Locale.getDefault(), "%,.2f", amount)
         val parts = formatted.split(".")
+        val amount = parts[0].toString()
+        val decimal = parts[1].toString()
+        val symbol = currency.symbol
+
         return if (parts.size == 2) {
-            Pair(parts[0], ".${parts[1]}")
+            Pair("$symbol$amount", ".${decimal}")
         } else {
-            Pair(parts[0], ".00")
+            Pair("$symbol$amount", ".00")
         }
     }
 }
