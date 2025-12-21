@@ -22,47 +22,48 @@
             android:orientation="vertical"
             android:paddingHorizontal="16dp">
 
-            <!-- header -->
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <!-- back -->
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginBottom="12dp">
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="?android:attr/colorForeground"
+                android:src="@drawable/ic_back"
+                android:padding="8dp" />
 
-                <!-- back -->
-                <ImageButton
-                    android:id="@+id/btn_back"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="?android:attr/colorForeground"
-                    android:src="@drawable/ic_back"
-                    android:padding="8dp" />
-
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
                 <!-- title -->
                 <TextView
                     android:textAlignment="gravity"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="Reports"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Insights"
+                    android:layout_gravity="center"
                     android:layout_centerVertical="true"
-                    android:textSize="27sp"
+                    android:textSize="30sp"
+                    android:layout_marginTop="8sp"
+                    android:layout_marginBottom="20sp"
                     android:textStyle="bold" />
 
-                <!-- drawer -->
-                <ImageButton
-                    android:id="@+id/btn_drawer"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_stats_range"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="4dp"
+                    app:cornerRadius="5dp"
+                    app:backgroundTint="?attr/cardBackgroundColor"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="?android:attr/colorForeground"
-                    android:src="@drawable/ic_drawer"
-                    android:padding="8dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"/>
-
-            </RelativeLayout>
+                    android:layout_height="wrap_content"
+                    android:drawableRight="@drawable/ic_chevron_down"
+                    android:drawablePadding="0dp"
+                    android:drawableTint="@color/gray"
+                    android:textColor="@color/gray"
+                    android:text="Monthly"/>
+            </LinearLayout>
 
             <!-- list -->
             <LinearLayout
@@ -256,21 +257,7 @@
                                 android:layout_weight="1"
                                 android:text="Nov 01 - Nov 31"
                                 android:textColor="@color/gray"/>
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_stats_range"
-                                android:minWidth="0dp"
-                                android:minHeight="0dp"
-                                android:paddingHorizontal="4dp"
-                                android:paddingVertical="4dp"
-                                app:cornerRadius="5dp"
-                                app:backgroundTint="?attr/cardBackgroundColor"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:drawableRight="@drawable/ic_chevron_down"
-                                android:drawablePadding="0dp"
-                                android:drawableTint="@color/gray"
-                                android:textColor="@color/gray"
-                                android:text="Monthly"/>
+
                         </LinearLayout>
                     </LinearLayout>
 
