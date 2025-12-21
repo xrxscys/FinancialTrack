@@ -73,19 +73,19 @@
                 android:showDividers="middle"
                 android:layout_marginBottom="12dp">
 
-                <!-- total income and expenses cards -->
+                <!-- total income card -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_gravity="center">
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:padding="12sp"
                         android:background="@drawable/card"
-                        android:backgroundTint="@color/material_dynamic_primary95"
+                        android:backgroundTint="?attr/cardBackgroundColor"
                         android:orientation="vertical"
                         android:layout_gravity="center">
                         <LinearLayout
@@ -97,8 +97,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:text="Total Income"
-                                android:textStyle="bold"
-                                android:textColor="@color/material_dynamic_secondary60"/>
+                                android:textStyle="bold" />
                             <TextView
                                 android:layout_height="4sp"
                                 android:layout_width="wrap_content"
@@ -111,12 +110,12 @@
                                 <FrameLayout
                                     android:layout_width="18dp"
                                     android:layout_height="18dp"
-                                    android:layout_gravity="center">
+                                    android:layout_gravity="center_vertical">
                                     <ImageView
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         android:src="@drawable/ic_circle"
-                                        app:tint="@color/material_dynamic_primary50" />
+                                        app:tint="@color/income_green" />
                                     <ImageView
                                         android:rotation="180"
                                         android:layout_width="match_parent"
@@ -126,14 +125,29 @@
                                 <TextView
                                     android:layout_width="4dp"
                                     android:layout_height="4dp" />
-                                <TextView
-                                    android:layout_width="match_parent"
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:gravity="center_horizontal"
-                                    android:textSize="20sp"
-                                    android:textColor="@color/black"
-                                    android:textStyle="bold"
-                                    android:text="PHP 1200"/>
+                                    android:gravity="center_horizontal">
+                                    <TextView
+                                        android:id="@+id/tv_ti"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_horizontal"
+                                        android:textSize="24sp"
+                                        android:textStyle="bold"
+                                        android:text="1,200"/>
+                                    <TextView
+                                        android:id="@+id/tv_ti_decimal"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_horizontal"
+                                        android:textSize="15sp"
+                                        android:textColor="@color/gray"
+                                        android:text=".00"/>
+                                </LinearLayout>
+
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -141,13 +155,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="4sp"/>
+                    <!-- total expenses card -->
                     <LinearLayout
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:padding="12sp"
                         android:background="@drawable/card"
-                        android:backgroundTint="@color/material_dynamic_tertiary95"
+                        android:backgroundTint="?attr/cardBackgroundColor"
                         android:orientation="vertical"
                         android:layout_gravity="center">
                         <LinearLayout
@@ -159,8 +174,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:text="Total Expenses"
-                                android:textStyle="bold"
-                                android:textColor="@color/material_dynamic_secondary60"/>
+                                android:textStyle="bold" />
                             <TextView
                                 android:layout_height="4sp"
                                 android:layout_width="wrap_content"
@@ -187,14 +201,27 @@
                                 <TextView
                                     android:layout_width="4dp"
                                     android:layout_height="4dp" />
-                                <TextView
-                                    android:layout_width="match_parent"
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:gravity="center_horizontal"
-                                    android:textSize="20sp"
-                                    android:textColor="@color/black"
-                                    android:textStyle="bold"
-                                    android:text="PHP 1200"/>
+                                    android:gravity="center_horizontal">
+                                    <TextView
+                                        android:id="@+id/tv_te"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="24sp"
+                                        android:textStyle="bold"
+                                        android:text="200"/>
+
+                                    <TextView
+                                        android:id="@+id/tv_te_decimal"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="15sp"
+                                        android:textColor="@color/gray"
+                                        android:text=".00"/>
+                                </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -223,24 +250,26 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
                             <TextView
+                                android:id="@+id/tv_stats_range"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="Nov 01 - Nov 31"
-                                android:textColor="@color/material_dynamic_neutral50"/>
+                                android:textColor="@color/gray"/>
                             <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_stats_range"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
                                 android:paddingHorizontal="4dp"
                                 android:paddingVertical="4dp"
                                 app:cornerRadius="5dp"
-                                app:backgroundTint="@color/material_dynamic_neutral_variant90"
+                                app:backgroundTint="?attr/cardBackgroundColor"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:drawableRight="@drawable/ic_chevron_down"
                                 android:drawablePadding="0dp"
-                                android:drawableTint="@color/material_dynamic_neutral_variant40"
-                                android:textColor="@color/material_dynamic_neutral_variant40"
+                                android:drawableTint="@color/gray"
+                                android:textColor="@color/gray"
                                 android:text="Monthly"/>
                         </LinearLayout>
                     </LinearLayout>
