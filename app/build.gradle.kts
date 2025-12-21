@@ -99,4 +99,5 @@ dependencies {
 
     //Charts
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.diogobernardino:williamchart:3.11.0")
 }
