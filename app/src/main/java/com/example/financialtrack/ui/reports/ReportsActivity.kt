@@ -13,10 +13,13 @@ import com.example.financialtrack.databinding.ActivityReportsBinding
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Currency
 import java.util.Locale
+import kotlin.math.abs
 
 class ReportsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReportsBinding
     private val viewModel: ReportsViewModel by viewModels()
+
+    private val symbol= Currency.getInstance(Locale("en", "PH")).symbol
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,27 +55,20 @@ class ReportsActivity : AppCompatActivity() {
             .filter { it.type == TransactionType.EXPENSE }
             .sumOf { it.amount }
 
-        val (incomeInt, incomeDec) = formatAmountParts(totalIncome)
-        binding.tvTi.text = incomeInt
-        binding.tvTiDecimal.text = incomeDec
+        binding.tvTi.text = "$symbol" + formatString(totalIncome)
+        binding.tvTe.text = "$symbol" + formatString(totalExpenses)
 
-        val (expenseInt, expenseDec) = formatAmountParts(totalExpenses)
-        binding.tvTe.text = expenseInt
-        binding.tvTeDecimal.text = expenseDec
+
+        if(totalExpenses > totalIncome){
+            binding.tvNetIncSymbol.text = "-$symbol"
+        } else {
+            binding.tvNetIncSymbol.text = "+$symbol"
+        }
+        val net = totalIncome - totalExpenses
+        binding.tvNetInc.text = formatString(abs(net))
     }
 
-    private fun formatAmountParts(amount: Double): Pair<String, String> {
-        val currency: Currency = Currency.getInstance(Locale("en", "PH"))
-        val formatted = String.format(Locale.getDefault(), "%,.2f", amount)
-        val parts = formatted.split(".")
-        val amount = parts[0].toString()
-        val decimal = parts[1].toString()
-        val symbol = currency.symbol
-
-        return if (parts.size == 2) {
-            Pair("$symbol$amount", ".${decimal}")
-        } else {
-            Pair("$symbol$amount", ".00")
-        }
+    private fun formatString(amount: Double): String {
+        return String.format(Locale("en", "PH"), "%.2f", amount)
     }
 }

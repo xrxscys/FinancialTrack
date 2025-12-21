@@ -169,41 +169,42 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="vertical">
-                            <TextView
-                                android:gravity="center_horizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:text="Total Income"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:layout_height="4sp"
+                            android:orientation="horizontal">
+                            <FrameLayout
                                 android:layout_width="wrap_content"
-                                android:layout_margin="0sp" />
+                                android:layout_marginRight="4sp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical">
+                                <ImageView
+                                    android:layout_width="34sp"
+                                    android:layout_height="34sp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:background="@drawable/card"
+                                    android:alpha="0.2"
+                                    android:backgroundTint="@color/income_green" />
+                                <ImageView
+                                    android:rotation="225"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:layout_width="40sp"
+                                    android:layout_height="40sp"
+                                    android:backgroundTint="@color/income_green"
+                                    android:background="@drawable/ic_arrow" />
+                            </FrameLayout>
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:gravity="center"
                                 android:layout_gravity="center"
-                                android:orientation="horizontal">
-                                <FrameLayout
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:layout_gravity="center_vertical">
-                                    <ImageView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:src="@drawable/ic_circle"
-                                        app:tint="@color/income_green" />
-                                    <ImageView
-                                        android:rotation="180"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:src="@drawable/ic_arrow" />
-                                </FrameLayout>
+                                android:orientation="vertical">
                                 <TextView
-                                    android:layout_width="4dp"
-                                    android:layout_height="4dp" />
-
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:textColor="@color/gray"
+                                    android:includeFontPadding="false"
+                                    android:text="Income"
+                                    android:textStyle="bold" />
                                 <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -213,33 +214,20 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:gravity="center_horizontal"
-                                        android:textSize="24sp"
+                                        android:includeFontPadding="false"
+                                        android:textSize="22sp"
                                         android:textStyle="bold"
-                                        android:text="1,200"/>
-                                    <TextView
-                                        android:id="@+id/tv_ti_decimal"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:gravity="center_horizontal"
-                                        android:textSize="15sp"
-                                        android:textColor="@color/gray"
-                                        android:text=".00"/>
+                                        android:text="P1,200.00"/>
                                 </LinearLayout>
 
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
-                    <TextView
-
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="4sp"/>
-
                     <!-- total expenses card -->
                     <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_width="0dp"
                         android:padding="12sp"
                         android:background="@drawable/card"
                         android:backgroundTint="?attr/cardBackgroundColor"
@@ -248,40 +236,42 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="vertical">
-                            <TextView
-                                android:gravity="center_horizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:text="Total Expenses"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:layout_height="4sp"
+                            android:orientation="horizontal">
+                            <FrameLayout
                                 android:layout_width="wrap_content"
-                                android:layout_margin="0sp" />
-                            <LinearLayout
+                                android:layout_marginRight="4sp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical">
+                                <ImageView
+                                    android:layout_width="34sp"
+                                    android:layout_height="34sp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:background="@drawable/card"
+                                    android:alpha="0.2"
+                                    android:backgroundTint="@color/expense_red" />
+                                <ImageView
+                                    android:rotation="315"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:layout_width="40sp"
+                                    android:layout_height="40sp"
+                                    android:backgroundTint="@color/expense_red"
+                                    android:background="@drawable/ic_arrow" />
+                            </FrameLayout>
+                           <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:gravity="center"
                                 android:layout_gravity="center"
-                                android:orientation="horizontal">
-                                <FrameLayout
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:layout_gravity="center">
-                                    <ImageView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:src="@drawable/ic_circle"
-                                        android:tint="@color/expense_red" />
-                                    <ImageView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:src="@drawable/ic_arrow" />
-                                </FrameLayout>
+                                android:orientation="vertical">
                                 <TextView
-                                    android:layout_width="4dp"
-                                    android:layout_height="4dp" />
-
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:textColor="@color/gray"
+                                    android:includeFontPadding="false"
+                                    android:text="Expenses"
+                                    android:textStyle="bold" />
                                 <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -290,17 +280,11 @@
                                         android:id="@+id/tv_te"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:textSize="24sp"
+                                        android:gravity="center_horizontal"
+                                        android:includeFontPadding="false"
+                                        android:textSize="22sp"
                                         android:textStyle="bold"
-                                        android:text="200"/>
-
-                                    <TextView
-                                        android:id="@+id/tv_te_decimal"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:textSize="15sp"
-                                        android:textColor="@color/gray"
-                                        android:text=".00"/>
+                                        android:text="P1,200.00"/>
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
