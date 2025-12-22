@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 enum class GoalStatus {
     ACTIVE,
     COMPLETED,
+    EXPIRED,
     ARCHIVED
 }
 
