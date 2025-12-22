@@ -21,11 +21,23 @@ class BudgetActivity: AppCompatActivity() {
 
 
         setupHeader()
+        setupCreateButton()
     }
 
     private fun setupHeader(){
         binding.btnBackBudget.setOnClickListener{
             finish()
         }
+    }
+
+    private fun setupCreateButton(){
+        binding.fabAddBudget.setOnClickListener {
+            showDialog()
+        }
+    }
+
+    private fun showDialog(){
+        val dialog = AddEditBudgetDialogFragment()
+        dialog.show(supportFragmentManager, "AddEditBudgetDialog")
     }
 }
