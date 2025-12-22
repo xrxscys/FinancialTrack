@@ -3,15 +3,19 @@ package com.example.financialtrack.ui.budget
 import android.app.DatePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.os.BaseBundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
+import com.example.financialtrack.data.model.Budget
 import com.example.financialtrack.databinding.DialogAddEditBudgetBinding
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.example.financialtrack.data.model.BudgetPeriod
+import com.google.firebase.auth.FirebaseUser
 
 class AddEditBudgetDialogFragment() : DialogFragment(){
 
@@ -20,9 +24,55 @@ class AddEditBudgetDialogFragment() : DialogFragment(){
     private var selectedDate: Long = System.currentTimeMillis()
     private val binding get() = _binding!!
 
+    private var budget: Budget? = null
+
+    private var listener : BudgetDialogListener ? = null
+    private var isNewBudget = false
+    interface BudgetDialogListener{
+        fun onBudgetUpdate(budget: Budget)
+        fun onBudgetDelete(budget: Budget)
+
+    }
+
+    companion object{
+        private const val ARG_ID = "id"
+        private const val ARG_USER_ID = "userId"
+        private const val ARG_CATEGORY = "category"
+        private const val ARG_AMOUNT_LIMIT ="amountLimit"
+        private const val ARG_DATE = "date"
+        private const val ARG_IS_NEW = "isNew"
+        fun newInstanceCreate(userId: String): AddEditBudgetDialogFragment {
+            val fragment = AddEditBudgetDialogFragment()
+            val args = Bundle()
+
+            args.putString(ARG_USER_ID, userId)
+            args.putBoolean(ARG_IS_NEW, true)
+            fragment.arguments = args
+            return fragment
+        }
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        arguments?.let { args ->
+            isNewBudget = args.getBoolean(ARG_IS_NEW, false)
+
+            if (isNewBudget) {
+                val userId = args.getString(ARG_USER_ID)?: ""
+
+                budget = Budget(
+                    id = 0,
+                    userId = userId,
+                    category = "",
+                    amount = 0.0,
+                    period = BudgetPeriod.DAILY,
+                    startDate = System.currentTimeMillis(),
+                    endDate = System.currentTimeMillis()
+                )
+            }
+
+        }
     }
 
     override fun onCreateView(
@@ -41,6 +91,7 @@ class AddEditBudgetDialogFragment() : DialogFragment(){
         setupPeriodDropdown()
         setupClickListeners()
         setupDatePicker()
+        setupClickListeners()
     }
 
     private fun setupDialog(){
@@ -63,7 +114,7 @@ class AddEditBudgetDialogFragment() : DialogFragment(){
         }
 
         binding.btnSave.setOnClickListener {
-            //TODO: Implement save logic; will do later
+            saveBudget()
         }
     }
 
@@ -101,6 +152,62 @@ class AddEditBudgetDialogFragment() : DialogFragment(){
 
         datePickerDialog.show()
 
+    }
+
+    private fun saveBudget(){
+        val periodString = binding.actvPeriod.text.toString()
+        val periodSet = when(periodString){
+            "Daily" -> BudgetPeriod.DAILY
+            "Weekly" -> BudgetPeriod.WEEKLY
+            "Monthly" -> BudgetPeriod.MONTHLY
+            else -> BudgetPeriod.YEARLY
+        }
+
+        val category = binding.etCategory.text.toString().trim()
+        val budgetLimit = binding.etBudgetLimit.text.toString().trim()
+        val startDate = binding.etStartDate.text.toString().trim()
+        val endDateCalc = Calendar.getInstance()
+        endDateCalc.timeInMillis = selectedDate
+
+        when (periodSet){
+            BudgetPeriod.DAILY -> {
+                endDateCalc.add(Calendar.DATE, 1)
+            }
+            BudgetPeriod.MONTHLY -> {
+                endDateCalc.add(Calendar.MONTH, 1)
+            }
+            BudgetPeriod.WEEKLY -> {
+                endDateCalc.add(Calendar.WEEK_OF_MONTH, 1)
+            }
+            else -> {
+                endDateCalc.add(Calendar.YEAR, 1)
+            }
+        }
+        val endDate = endDateCalc.timeInMillis - 1
+
+        budget?.let { bud ->
+            val newBud = bud.copy(
+                id = 0,
+                category = category,
+                amount = budgetLimit.toDouble(),
+                period = periodSet,
+                startDate = selectedDate,
+                endDate = endDate
+            )
+            listener?.onBudgetUpdate(newBud)
+
+        }
+        dismiss()
+
+
+    }
+    fun setListener(listener: BudgetDialogListener){
+        this.listener = listener
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
 

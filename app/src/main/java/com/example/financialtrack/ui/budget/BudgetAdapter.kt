@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Budget
 import com.example.financialtrack.data.model.BudgetPeriod
+import com.example.financialtrack.data.model.Transaction
 
 class BudgetAdapter (private var budgets: List<Budget>) : RecyclerView.Adapter<BudgetAdapter.BudgetViewHolder>() {
     // TODO: make dialog for creation. make it write to db, make delete, check if display correct
@@ -20,6 +21,11 @@ class BudgetAdapter (private var budgets: List<Budget>) : RecyclerView.Adapter<B
         budgetClickListener = listener
     }
 
+    fun updateBudgets(newBudgets: List<Budget>){
+        budgets = newBudgets
+        notifyDataSetChanged()
+    }
+
     class BudgetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemBudgetCategory: TextView = itemView.findViewById(R.id.tvBudgetCategory)
         val itemBudgetAmount: TextView = itemView.findViewById(R.id.tvBudgetAmount)
@@ -30,8 +36,8 @@ class BudgetAdapter (private var budgets: List<Budget>) : RecyclerView.Adapter<B
         fun bind(budget: Budget) {
             itemBudgetCategory.text = budget.category
             itemBudgetAmount.text = "₱${budget.amount}"
-//            itemBudgetPercentage.text = "${budget.percentageUsed}%" this is a percentage of total taken up by current
-//            itemBudgetDaysRemaining.text = "${budget.daysRemaining} days remaining" this is last day subtracted by current day
+//            itemBudgetPercentage.text = "${calculateDaysRemaining(budget)}%" //this is a percentage of total taken up by current
+            itemBudgetDaysRemaining.text = "${calculateDaysRemaining(budget)} days remaining" //this is last day subtracted by current day
             itemBudgetPeriod.text = when (budget.period) {
                 BudgetPeriod.DAILY -> "Daily"
                 BudgetPeriod.WEEKLY -> "Weekly"
@@ -39,7 +45,15 @@ class BudgetAdapter (private var budgets: List<Budget>) : RecyclerView.Adapter<B
                 BudgetPeriod.YEARLY -> "Yearly"
             }
         }
+
+        private fun calculateDaysRemaining(budget: Budget): Int {
+            val currentDate = System.currentTimeMillis()
+            val daysRemaining = (budget.endDate - currentDate) / (1000 * 60 * 60 * 24)
+            return daysRemaining.toInt()
+        }
     }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_budget, parent, false)
