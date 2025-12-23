@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
+import com.example.financialtrack.data.model.TransferTargetType
 
 @Dao
 interface TransactionDao {
@@ -28,4 +29,7 @@ interface TransactionDao {
     
     @Query("DELETE FROM transactions WHERE userId = :userId")
     suspend fun deleteAllUserTransactions(userId: String)
+
+    @Query("SELECT * FROM transactions WHERE transferToId = :targetId AND transferToType = :targetType ORDER BY date DESC")
+    fun getTransactionsByTransferTarget(targetId: Int, targetType: TransferTargetType): LiveData<List<Transaction>>
 }
