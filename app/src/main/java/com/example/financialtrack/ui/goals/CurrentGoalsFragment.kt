@@ -25,14 +25,18 @@ class CurrentGoalsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = GoalsAdapter()
+        adapter = GoalsAdapter(viewLifecycleOwner)
         binding.rvGoals.layoutManager = LinearLayoutManager(requireContext())
         binding.rvGoals.adapter = adapter
         // Observe all goals and update expired ones
         viewModel.goalRepository.getGoalsByUser(viewModel.userId).observe(viewLifecycleOwner) { allGoals ->
             viewModel.updateExpiredGoals(allGoals)
             val activeGoals = allGoals.filter { it.status == com.example.financialtrack.data.model.GoalStatus.ACTIVE }
-            adapter.submitList(activeGoals)
+            // Build list of GoalWithSavedAmount
+            val goalWithSavedList = activeGoals.map { goal ->
+                GoalWithSavedAmount(goal, viewModel.getSavedAmountForGoal(goal.id))
+            }
+            adapter.submitList(goalWithSavedList)
         }
     }
 

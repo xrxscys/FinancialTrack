@@ -13,6 +13,15 @@ import com.example.financialtrack.data.repository.FinancialGoalRepository
 import com.google.firebase.auth.FirebaseAuth
 
 class GoalsViewModel(application: Application) : AndroidViewModel(application) {
+    private val transactionDao = AppDatabase.getDatabase(application).transactionDao()
+    private val transactionViewModel = com.example.financialtrack.ui.transaction.TransactionViewModel(application)
+
+    // Returns a LiveData<Double> representing the sum of all transfer amounts to this goal
+    fun getSavedAmountForGoal(goalId: Int): LiveData<Double> {
+        return transactionViewModel.getTransactionsByTransferTarget(goalId, com.example.financialtrack.data.model.TransferTargetType.GOAL)
+            .map { txns -> txns.sumOf { it.amount ?: 0.0 } }
+    }
+    
     // Update expired goals from a provided list
     fun updateExpiredGoals(goals: List<FinancialGoal>) {
         viewModelScope.launch {

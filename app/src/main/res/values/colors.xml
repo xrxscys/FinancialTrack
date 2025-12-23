@@ -34,4 +34,7 @@
     <color name="progress_medium">#2196F3</color>
     <color name="progress_starting">#FF9800</color>
 
+    <!-- Inactive colors -->
+    <color name="text_secondary">#616161</color>
+
 </resources>

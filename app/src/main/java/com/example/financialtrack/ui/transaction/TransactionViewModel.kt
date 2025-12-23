@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import com.example.financialtrack.data.repository.AccountRepository
 import com.example.financialtrack.data.model.Account
 import com.example.financialtrack.data.model.AccountType
+import com.example.financialtrack.data.model.TransferTargetType
 
 class TransactionViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -24,6 +25,10 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
         val accountDao = AppDatabase.getDatabase(application).accountDao()
         repository2 = AccountRepository(accountDao)
+    }
+
+    fun getTransactionsByTransferTarget(targetId: Int, targetType: TransferTargetType): LiveData<List<Transaction>> {
+        return repository.getTransactionsByTransferTarget(targetId, targetType)
     }
 
     fun getAllTransactions(userId: String): LiveData<List<Transaction>> {
