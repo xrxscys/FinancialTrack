@@ -4,11 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Account
+import com.google.android.material.card.MaterialCardView
 
 class AccountAdapter : ListAdapter<Account, AccountAdapter.AccountViewHolder>(AccountDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AccountViewHolder {
@@ -24,11 +26,17 @@ class AccountAdapter : ListAdapter<Account, AccountAdapter.AccountViewHolder>(Ac
         private val nameText: TextView = itemView.findViewById(R.id.tv_account_name)
         private val typeText: TextView = itemView.findViewById(R.id.tv_account_type)
         private val balanceText: TextView = itemView.findViewById(R.id.tv_account_balance)
+        private val card: MaterialCardView = itemView.findViewById(R.id.card)
+
 
         fun bind(account: Account) {
             nameText.text = account.name
             typeText.text = account.type.name
             balanceText.text = "Balance: ${account.balance}" // Format as needed
+
+            if (account.balance <= 0) {
+                card.strokeColor = ContextCompat.getColor(itemView.context, R.color.expense_red)
+            }
         }
     }
 
