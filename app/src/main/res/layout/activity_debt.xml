@@ -36,7 +36,7 @@
                 android:id="@+id/tvDebtTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Loans &amp; Debts"
+                android:text="Debts &amp; Loans"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="#1A1A1A"
