@@ -28,7 +28,10 @@ class AccountsActivity : AppCompatActivity() {
         binding = ActivityAccountsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        accountAdapter = AccountAdapter()
+        accountAdapter = AccountAdapter { account ->
+            showEditAccountDialog(account)
+        }
+
         binding.rvAccounts.layoutManager = LinearLayoutManager(this)
         binding.rvAccounts.adapter = accountAdapter
 
@@ -69,4 +72,34 @@ class AccountsActivity : AppCompatActivity() {
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
             .show()
     }
+
+    private fun showEditAccountDialog(account: Account) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_account, null)
+        val etName = dialogView.findViewById<EditText>(R.id.et_account_name)
+        val spinnerType = dialogView.findViewById<Spinner>(R.id.spinner_account_type)
+        val etBalance = dialogView.findViewById<EditText>(R.id.et_initial_balance)
+
+        etName.setText(account.name)
+        etBalance.setText(account.balance.toString())
+
+        val types = AccountType.values().map { it.name }
+        spinnerType.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, types)
+        spinnerType.setSelection(types.indexOf(account.type.name))
+
+        AlertDialog.Builder(this)
+            .setTitle("Edit Account")
+            .setView(dialogView)
+            .setPositiveButton("Save") { dialog, _ ->
+                val updatedAccount = account.copy(
+                    name = etName.text.toString().trim(),
+                    type = AccountType.valueOf(spinnerType.selectedItem.toString()),
+                    balance = etBalance.text.toString().toDoubleOrNull() ?: 0.0
+                )
+                viewModel.updateAccount(updatedAccount)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+
 }

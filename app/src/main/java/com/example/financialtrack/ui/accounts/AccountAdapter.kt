@@ -13,17 +13,19 @@ import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Account
 import com.google.android.material.card.MaterialCardView
 
-class AccountAdapter : ListAdapter<Account, AccountAdapter.AccountViewHolder>(AccountDiffCallback()) {
+class AccountAdapter(
+    private val onItemClick: (Account) -> Unit
+) : ListAdapter<Account, AccountAdapter.AccountViewHolder>(AccountDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AccountViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_account, parent, false)
-        return AccountViewHolder(view)
+        return AccountViewHolder(view, onItemClick)
     }
 
     override fun onBindViewHolder(holder: AccountViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class AccountViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class AccountViewHolder(itemView: View, private val onItemClick: (Account) -> Unit ) : RecyclerView.ViewHolder(itemView) {
         private val nameText: TextView = itemView.findViewById(R.id.tv_account_name)
         private val typeText: TextView = itemView.findViewById(R.id.tv_account_type)
         private val balanceText: TextView = itemView.findViewById(R.id.tv_account_balance)
@@ -42,6 +44,16 @@ class AccountAdapter : ListAdapter<Account, AccountAdapter.AccountViewHolder>(Ac
                 balanceText.setTextColor(dangerColor)
                 ivBalanceWarning.visibility = View.VISIBLE
                 tvBalanceWarning.visibility = View.VISIBLE
+            } else {
+                card.strokeColor = com.google.android.material.R.color.design_default_color_primary
+                balanceText.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.black))
+                ivBalanceWarning.visibility = View.GONE
+                tvBalanceWarning.visibility = View.GONE
+            }
+
+            itemView.isClickable = true
+            itemView.setOnClickListener {
+                onItemClick(account)
             }
         }
     }
