@@ -8,7 +8,7 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
-    app:strokeColor="@color/design_default_color_primary"
+    app:strokeColor="?attr/colorPrimary"
     app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,10 +24,10 @@
             android:text="Account Name"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tv_account_balance"
-            app:layout_constraintHorizontal_weight="1"/>
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
@@ -35,11 +35,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Balance: 0.00"
+            android:textColor="?attr/colorPrimaryDark"
             android:textSize="16sp"
-            android:textColor="@color/design_default_color_primary"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
@@ -47,10 +47,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Type"
-            android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
+            android:textSize="14sp"
             app:layout_constraintStart_toStartOf="@+id/tv_account_name"
-            app:layout_constraintTop_toBottomOf="@+id/tv_account_name"/>
+            app:layout_constraintTop_toBottomOf="@+id/tv_account_name" />
 
         <LinearLayout
             android:layout_width="wrap_content"

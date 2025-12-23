@@ -4,8 +4,12 @@ import androidx.lifecycle.LiveData
 import com.example.financialtrack.data.database.TransactionDao
 import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
+import com.example.financialtrack.data.model.TransferTargetType
 
 class TransactionRepository(private val transactionDao: TransactionDao) {
+    fun getTransactionsByTransferTarget(targetId: Int, targetType: TransferTargetType): LiveData<List<Transaction>> {
+        return transactionDao.getTransactionsByTransferTarget(targetId, targetType)
+    }
     
     fun getAllTransactions(userId: String): LiveData<List<Transaction>> {
         return transactionDao.getAllTransactions(userId)

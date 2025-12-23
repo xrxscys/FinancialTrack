@@ -58,13 +58,28 @@
             android:max="100"
             tools:progress="60" />
 
-        <TextView
-            android:id="@+id/tv_goal_amounts"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textSize="14sp"
-            tools:text="$1,200 / $2,000" />
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+            <TextView
+                android:id="@+id/tv_goal_amounts"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="14sp"
+                tools:text="$1,200 / $2,000" />
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:textSize="14sp"
+                tools:text="EXPIRED"
+                tools:textStyle="bold" />
+        </LinearLayout>
 
     </LinearLayout>
 

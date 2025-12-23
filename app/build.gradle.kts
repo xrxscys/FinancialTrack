@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
-    id("com.google.devtools.ksp")
+    id("com.android.application") version "8.6.0"
+    id("org.jetbrains.kotlin.android") version "1.9.22"
+    id("com.google.gms.google-services") version "4.4.0"
+    id("com.google.devtools.ksp") version "1.9.22-1.0.17"
 }
 
 android {
@@ -53,6 +53,10 @@ android {
 }
 
 dependencies {
+    // Material Components for TabLayout
+    implementation("com.google.android.material:material:1.9.0")
+    // ViewPager2 for tabbed navigation
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
     // Core Android
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -85,6 +89,9 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // WorkManager for background tasks
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
 
     // MPAndroidChart for reports
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")

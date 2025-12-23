@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 enum class GoalStatus {
     ACTIVE,
     COMPLETED,
-    ARCHIVED
+    EXPIRED
 }
 
 @Entity(tableName = "financial_goals")
@@ -21,5 +21,6 @@ data class FinancialGoal(
     val savedAmount: Double = 0.0,
     val createdDate: Long = System.currentTimeMillis(),
     val deadline: Long,
-    val status: GoalStatus = GoalStatus.ACTIVE
+    val status: GoalStatus = GoalStatus.ACTIVE,
+    val isArchived: Boolean = false
 )
