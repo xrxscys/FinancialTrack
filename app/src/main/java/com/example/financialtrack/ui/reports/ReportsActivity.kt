@@ -28,8 +28,6 @@ class ReportsActivity : AppCompatActivity() {
     private val viewModel: ReportsViewModel by viewModels()
 
     private val symbol= Currency.getInstance(Locale("en", "PH")).symbol
-    private val weekDays = listOf("S", "M", "T", "W", "T", "F", "S")
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
