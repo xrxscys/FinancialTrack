@@ -13,6 +13,11 @@
     <color name="secondary_dark">#FFA000</color>
     <color name="secondary_light">#FFECB3</color>
 
+    <color name="urgency_critical">#F44336</color>
+    <color name="urgency_high">#FF9800</color>"
+    <color name="urgency_medium">#FFC107</color>
+    <color name="urgency_low">#4CAF50</color>
+
     <!-- Basic colors -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
