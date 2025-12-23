@@ -2,7 +2,6 @@ package com.example.financialtrack.ui.debt
 
 import android.app.DatePickerDialog
 import android.app.Dialog
-import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -23,7 +22,7 @@ class AddEditDebtDialogFragment(
 
     private var _binding: DialogAddEditDebtBinding? = null
     private val binding get() = _binding!!
-    private var selectedDateTimeMillis: Long = System.currentTimeMillis()
+    private var selectedDateMillis: Long = System.currentTimeMillis()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogAddEditDebtBinding.inflate(LayoutInflater.from(context))
@@ -34,19 +33,13 @@ class AddEditDebtDialogFragment(
             binding.etDescription.setText(debt.description)
             val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
             binding.etDueDate.setText(sdf.format(Date(debt.dueDate)))
-            selectedDateTimeMillis = debt.dueDate
-            val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-            binding.etDueTime.setText(timeSdf.format(Date(debt.dueDate)))
+            selectedDateMillis = debt.dueDate
         } else {
-            selectedDateTimeMillis = System.currentTimeMillis()
+            selectedDateMillis = System.currentTimeMillis()
         }
 
         binding.etDueDate.setOnClickListener {
             showDatePicker()
-        }
-
-        binding.etDueTime.setOnClickListener {
-            showTimePicker()
         }
 
         return AlertDialog.Builder(requireContext())
@@ -89,12 +82,20 @@ class AddEditDebtDialogFragment(
         val amount = binding.etAmount.text.toString().toDouble()
         val description = binding.etDescription.text.toString().trim()
 
+        // Set the time to 10:00 AM on the selected date
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = selectedDateMillis
+        calendar.set(Calendar.HOUR_OF_DAY, 10)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        val dueDateWithTime = calendar.timeInMillis
+
         val debtObj = if (debt != null) {
             debt.copy(
                 creditorName = creditor,
                 amount = amount,
                 description = description,
-                dueDate = selectedDateTimeMillis,
+                dueDate = dueDateWithTime,
                 isActive = true,
                 paidAt = null
             )
@@ -105,7 +106,7 @@ class AddEditDebtDialogFragment(
                 creditorName = creditor,
                 amount = amount,
                 description = description,
-                dueDate = selectedDateTimeMillis,
+                dueDate = dueDateWithTime,
                 type = DebtType.LOAN,
                 isActive = true,
                 createdAt = System.currentTimeMillis(),
@@ -119,40 +120,20 @@ class AddEditDebtDialogFragment(
 
     private fun showDatePicker() {
         val calendar = Calendar.getInstance()
-        calendar.timeInMillis = selectedDateTimeMillis
+        calendar.timeInMillis = selectedDateMillis
 
         DatePickerDialog(
             requireContext(),
             { _, year, month, day ->
                 calendar.set(year, month, day)
-                selectedDateTimeMillis = calendar.timeInMillis
+                selectedDateMillis = calendar.timeInMillis
 
                 val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-                binding.etDueDate.setText(sdf.format(Date(selectedDateTimeMillis)))
+                binding.etDueDate.setText(sdf.format(Date(selectedDateMillis)))
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
-    }
-
-    private fun showTimePicker() {
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = selectedDateTimeMillis
-
-        TimePickerDialog(
-            requireContext(),
-            { _, hourOfDay, minute ->
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                calendar.set(Calendar.MINUTE, minute)
-                selectedDateTimeMillis = calendar.timeInMillis
-
-                val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-                binding.etDueTime.setText(sdf.format(Date(selectedDateTimeMillis)))
-            },
-            calendar.get(Calendar.HOUR_OF_DAY),
-            calendar.get(Calendar.MINUTE),
-            true
         ).show()
     }
 

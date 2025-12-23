@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="status_completed">#388E3C</color> <!-- Green -->
     <color name="status_expired">#D32F2F</color>   <!-- Red -->
     <!-- Primary colors -->
@@ -36,5 +37,11 @@
 
     <!-- Inactive colors -->
     <color name="text_secondary">#616161</color>
+
+    <color name="urgency_critical">#D32F2F</color>
+    <color name="urgency_high">#F57C00</color>
+    <color name="urgency_medium">#FBC02D</color>
+    <color name="urgency_low">#388E3C</color>
+
 
 </resources>
