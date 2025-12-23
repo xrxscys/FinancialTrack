@@ -68,6 +68,19 @@
             </RelativeLayout>
 
 
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6sp"
+                android:textAlignment="textStart"
+                android:text="Account Name"
+                android:textColor="?android:attr/colorForeground"
+                app:icon="@drawable/ic_trash"
+                app:iconTint="@color/gray"
+                app:cornerRadius="12sp"
+                app:strokeWidth="0sp"
+                app:backgroundTint="?attr/cardBackgroundColor" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -105,7 +118,6 @@
                         android:textSize="30sp"
                         app:layout_constraintTop_toBottomOf="@+id/tv_date_range"
                         app:layout_constraintStart_toEndOf="@+id/tv_net_inc_symbol" />
-
 
                     <!-- Spent/Day -->
                     <TextView
@@ -293,71 +305,22 @@
                 android:showDividers="middle"
                 android:layout_marginBottom="12dp">
 
+                <!-- NET Income Bar Chart -->
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/barChart"
                     android:layout_width="match_parent"
                     android:layout_height="250dp"
                     android:layout_marginBottom="16dp" />
-                <LinearLayout
+
+                <!-- donut chart for categories -->
+                <!-- line chart for categories -->
+
+                <!-- Total Debt Stats -->
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:orientation="horizontal"
-                    android:showDividers="middle"
-                    android:divider="@drawable/divider"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_weight="3"
-                        android:layout_height="wrap_content">
-                        <View
-                            android:layout_width="match_parent"
-                            android:background="@drawable/card"
-                            android:backgroundTint="@color/expense_red"
-                            android:layout_height="30sp"/>
-                        <TextView
-                            android:gravity="center"
-                            android:layout_width="match_parent"
-                            android:text="Rent"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_weight="4"
-                        android:orientation="vertical"
-                        android:layout_height="wrap_content">
-                        <View
-                            android:layout_width="match_parent"
-                            android:background="@drawable/card"
-                            android:backgroundTint="@color/income_green"
-                            android:layout_height="30sp"/>
-                        <TextView
-                            android:gravity="center"
-                            android:layout_width="match_parent"
-                            android:text="Food"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_weight="5"
-                        android:orientation="vertical"
-                        android:layout_height="wrap_content">
-                        <View
-                            android:layout_width="match_parent"
-                            android:background="@drawable/card"
-                            android:backgroundTint="@color/primary"
-                            android:layout_height="30sp"/>
-                        <TextView
-                            android:gravity="center"
-                            android:layout_width="match_parent"
-                            android:text="School"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="horizontal"
                     android:layout_height="wrap_content">
                     <TextView
+                        android:id="@+id/tv_total_debt_title"
                         android:layout_width="wrap_content"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
@@ -366,31 +329,55 @@
                         android:text="Total Debt"/>
                     <TextView
                         android:layout_width="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:text="P 230,302"
+                        app:layout_constraintStart_toStartOf="@+id/tv_total_debt_title"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_total_debt_title"/>
+
+                    <TextView
+                        android:id="@+id/tv_paid_in_total_title"
+                        android:layout_width="wrap_content"
                         android:textSize="20sp"
                         android:layout_height="wrap_content"
-                        android:text="Paid in Total"/>
-                </LinearLayout>
-                <View
-                    android:layout_width="230sp"
-                    android:layout_height="34sp"
-                    android:backgroundTint="@color/secondary"
-                    android:background="@drawable/card"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:text="P 230,302"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:layout_height="wrap_content"
-                    android:text="P 53,424"/>
+                        android:text="Paid in Total"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                    <TextView
+                        android:id="@+id/tv_paid_in_total_value"
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:layout_height="wrap_content"
+                        android:text="P 53,424"
+                        app:layout_constraintEnd_toEndOf="@+id/tv_paid_in_total_title"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_paid_in_total_title"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Financial Goals Statistics -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Financial Goals"
+                        android:textSize="22sp"
+                        android:textStyle="bold"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Budget Statistics -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Budgets"
+                        android:textSize="22sp"
+                        android:textStyle="bold"/>
+                    <!-- progress bar for total budget -->
+                    <!-- cards for each budget and its progress -->
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
