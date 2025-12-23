@@ -20,24 +20,38 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="16dp">
-
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="12dp">
-
-                <!-- back  -->
-                <ImageButton
-                    android:id="@+id/btn_back"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
+                <LinearLayout
                     android:layout_centerVertical="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_back"
-                    app:tint="?android:attr/colorForeground" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                <!-- back  -->
+                    <ImageButton
+                        android:id="@+id/btn_back"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:layout_gravity="center_vertical"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_back"
+                        app:tint="?android:attr/colorForeground" />
+                    <!-- title -->
+                    <TextView
+                        android:id="@+id/tv_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="Reports"
+                        android:textColor="?android:attr/colorForeground"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+                </LinearLayout>
+
 
                 <!-- date selector -->
                 <com.google.android.material.button.MaterialButton
@@ -45,26 +59,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
                     android:paddingHorizontal="4dp"
-                    android:paddingVertical="4dp"
-                    app:cornerRadius="5dp"
-                    app:backgroundTint="?attr/cardBackgroundColor"
+                    android:paddingVertical="2dp"
+                    android:background="@android:color/transparent"
                     android:drawableEnd="@drawable/ic_chevron_down"
                     android:drawableTint="@color/gray"
-                    android:textColor="@color/gray"
+                    android:textColor="?android:attr/colorForeground"
                     android:text="Weekly" />
 
-                <!-- title -->
-                <TextView
-                    android:id="@+id/tv_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="Reports"
-                    android:textSize="30sp"
-                    android:textStyle="bold"
-                    android:gravity="center" />
+
             </RelativeLayout>
 
 
