@@ -53,7 +53,7 @@ class DebtActivity : AppCompatActivity() {
             markDebtAsPaid(debt)
         }
         
-        paidDebtAdapter = DebtAdapter(paidDebtList, true) { debt ->
+        paidDebtAdapter = DebtAdapter(paidDebtList, true) { _ ->
             // History loans are read-only, no action needed
         }
     }

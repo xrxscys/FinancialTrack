@@ -7,21 +7,15 @@ import com.example.financialtrack.data.repository.NotificationRepository
 import com.example.financialtrack.utils.NotificationService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 /**
  * Centralized loan notification manager.
  * 
- * Uses the existing NotificationService template for consistency with app-wide notification handling.
- * 
- * Range-based evaluation (no exact time matches):
- * - 5 days: > 3 days and <= 5 days
- * - 3 days: > 1 day and <= 3 days  
- * - 1 day: > 5 hours and <= 1 day
- * - 5 hours: > 3 hours and <= 5 hours
- * - 3 hours: > 1 hour and <= 3 hours
- * - 1 hour: > 0 and <= 1 hour
- * - Overdue: <= 0
+ * Sends notifications at 10:00 AM on the due date.
+ * One notification per loan, never duplicates.
+ * Persists across app restarts via WorkManager.
  */
 class LoanNotificationManager(
     private val context: Context,
@@ -33,10 +27,10 @@ class LoanNotificationManager(
 
     /**
      * CENTRALIZED CHECK - Called from:
+     * - DebtReminderWorker (every 15 minutes)
      * - DebtActivity.onCreate()
      * - DebtActivity.onResume()
      * - After loan creation/update
-     * - Periodically via WorkManager
      */
     suspend fun checkLoanNotifications(currentTime: Long = System.currentTimeMillis()) {
         return withContext(Dispatchers.IO) {
@@ -54,7 +48,8 @@ class LoanNotificationManager(
     }
 
     /**
-     * Evaluate a single loan and trigger notification if in range and not already notified.
+     * Evaluate a single loan and trigger notification if today is the due date at 10 AM
+     * and notification hasn't been sent yet.
      */
     private suspend fun evaluateAndNotify(debt: Debt, currentTime: Long) {
         return withContext(Dispatchers.IO) {
@@ -63,101 +58,57 @@ class LoanNotificationManager(
                 return@withContext
             }
 
-            val timeRemaining = debt.dueDate - currentTime
+            // Skip if notification already sent
+            if (debt.notified1Day) {
+                return@withContext
+            }
 
-            when {
-                // OVERDUE: <= 0 ms (past deadline)
-                timeRemaining <= 0 -> {
-                    if (!debt.notifiedOverdue) {
-                        sendNotification(
-                            debt,
-                            "Overdue: Your loan '${debt.creditorName}' is already due."
-                        )
-                        debtRepository?.updateNotificationFlag(debt.id, "notifiedOverdue", true)
-                    }
-                }
+            // Get current time and due date in calendar format
+            val currentCalendar = Calendar.getInstance()
+            currentCalendar.timeInMillis = currentTime
 
-                // 1 HOUR: 0 < time <= 1 hour
-                timeRemaining <= TimeUnit.HOURS.toMillis(1) -> {
-                    if (!debt.notified1Hour) {
-                        sendNotification(
-                            debt,
-                            "Reminder: Your loan '${debt.creditorName}' is due in 1 hour."
-                        )
-                        debtRepository?.updateNotificationFlag(debt.id, "notified1Hour", true)
-                    }
-                }
+            val dueCalendar = Calendar.getInstance()
+            dueCalendar.timeInMillis = debt.dueDate
 
-                // 3 HOURS: 1 hour < time <= 3 hours
-                timeRemaining <= TimeUnit.HOURS.toMillis(3) -> {
-                    if (!debt.notified3Hours) {
-                        sendNotification(
-                            debt,
-                            "Reminder: Your loan '${debt.creditorName}' is due in 3 hours."
-                        )
-                        debtRepository?.updateNotificationFlag(debt.id, "notified3Hours", true)
-                    }
-                }
+            // Check if today (by day/month/year) is the due date
+            val isToday = (
+                currentCalendar.get(Calendar.YEAR) == dueCalendar.get(Calendar.YEAR) &&
+                currentCalendar.get(Calendar.MONTH) == dueCalendar.get(Calendar.MONTH) &&
+                currentCalendar.get(Calendar.DAY_OF_MONTH) == dueCalendar.get(Calendar.DAY_OF_MONTH)
+            )
 
-                // 5 HOURS: 3 hours < time <= 5 hours
-                timeRemaining <= TimeUnit.HOURS.toMillis(5) -> {
-                    if (!debt.notified5Hours) {
-                        sendNotification(
-                            debt,
-                            "Reminder: Your loan '${debt.creditorName}' is due in 5 hours."
-                        )
-                        debtRepository?.updateNotificationFlag(debt.id, "notified5Hours", true)
-                    }
-                }
+            // Check if current time is at or past 10:00 AM
+            val isAtOrPast10AM = (
+                currentCalendar.get(Calendar.HOUR_OF_DAY) >= 10
+            )
 
-                // 1 DAY: 5 hours < time <= 1 day
-                timeRemaining <= TimeUnit.DAYS.toMillis(1) -> {
-                    if (!debt.notified1Day) {
-                        sendNotification(
-                            debt,
-                            "Reminder: Your loan '${debt.creditorName}' is due in 1 day."
-                        )
-                        debtRepository?.updateNotificationFlag(debt.id, "notified1Day", true)
-                    }
-                }
-
-                // 3 DAYS: 1 day < time <= 3 days
-                timeRemaining <= TimeUnit.DAYS.toMillis(3) -> {
-                    if (!debt.notified3Days) {
-                        sendNotification(
-                            debt,
-                            "Reminder: Your loan '${debt.creditorName}' is due in 3 days."
-                        )
-                        debtRepository?.updateNotificationFlag(debt.id, "notified3Days", true)
-                    }
-                }
-
-                // 5 DAYS: 3 days < time <= 5 days
-                timeRemaining <= TimeUnit.DAYS.toMillis(5) -> {
-                    if (!debt.notified5Days) {
-                        sendNotification(
-                            debt,
-                            "Reminder: Your loan '${debt.creditorName}' is due in 5 days."
-                        )
-                        debtRepository?.updateNotificationFlag(debt.id, "notified5Days", true)
-                    }
-                }
+            // Send notification only if today is due date and it's 10 AM or later
+            if (isToday && isAtOrPast10AM) {
+                sendNotification(debt)
+                debtRepository?.updateNotificationFlag(debt.id, "notified1Day", true)
             }
         }
     }
 
     /**
-     * Send notification using the existing NotificationService template.
-     * This ensures consistency with all other app notifications.
+     * Send notification using NotificationService and persist to database.
      */
-    private suspend fun sendNotification(debt: Debt, message: String) {
+    private suspend fun sendNotification(debt: Debt) {
         return withContext(Dispatchers.IO) {
             try {
-                notificationService.createBillReminderNotification(
+                val dateFormat = java.text.SimpleDateFormat("MMM d, yyyy", java.util.Locale.US)
+                val dueDate = dateFormat.format(java.util.Date(debt.dueDate))
+                
+                // Create and get the notification object
+                val notification = notificationService.createBillReminderNotification(
                     billName = debt.creditorName,
-                    dueDate = java.text.SimpleDateFormat("MMM d, yyyy", java.util.Locale.US)
-                        .format(java.util.Date(debt.dueDate))
+                    dueDate = dueDate
                 )
+                
+                // Save notification to database for persistence in notification page
+                if (notification != null) {
+                    notificationRepository.insert(notification)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
