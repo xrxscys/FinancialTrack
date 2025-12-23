@@ -25,11 +25,14 @@ class HistoryGoalsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = GoalsAdapter()
+        adapter = GoalsAdapter(viewLifecycleOwner)
         binding.rvGoals.layoutManager = LinearLayoutManager(requireContext())
         binding.rvGoals.adapter = adapter
         viewModel.getGoalsByStatus(GoalStatus.COMPLETED, GoalStatus.EXPIRED).observe(viewLifecycleOwner) { goals ->
-            adapter.submitList(goals)
+            val goalWithSavedList = goals.map { goal ->
+                GoalWithSavedAmount(goal, viewModel.getSavedAmountForGoal(goal.id))
+            }
+            adapter.submitList(goalWithSavedList)
         }
     }
 
