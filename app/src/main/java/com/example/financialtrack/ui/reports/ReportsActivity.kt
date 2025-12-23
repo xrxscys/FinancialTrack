@@ -1,6 +1,5 @@
 package com.example.financialtrack.ui.reports
 
-import android.graphics.Color
 import java.util.Calendar
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -13,6 +12,7 @@ import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
 import com.example.financialtrack.databinding.ActivityReportsBinding
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -92,18 +92,27 @@ class ReportsActivity : AppCompatActivity() {
             }
         }
 
+        val todayIndex = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1
+
         val entries = totalsByDay.mapIndexed { index, value ->
             BarEntry(index.toFloat(), value)
         }
 
+        binding.barChart.renderer = RoundedBarRenderer(
+            binding.barChart,
+            binding.barChart.animator,
+            binding.barChart.viewPortHandler,
+            radius = 12f
+        )
+
         val dataSet = BarDataSet(entries, "Weekly Spending").apply {
-            color = ContextCompat.getColor(this@ReportsActivity, R.color.expense_red)
-            valueTextColor = Color.BLACK
-            valueTextSize = 12f
+            color = ContextCompat.getColor(this@ReportsActivity, R.color.primary)
+            valueTextSize = 0f
+            barBorderWidth = 0f
         }
 
         val barData = BarData(dataSet).apply {
-            barWidth = 0.5f
+            barWidth = 0.85f
         }
 
         binding.barChart.apply {
@@ -111,12 +120,14 @@ class ReportsActivity : AppCompatActivity() {
             setFitBars(true)
             description.isEnabled = false
             animateY(600)
+            legend.isEnabled = false
 
             xAxis.apply {
                 valueFormatter = IndexAxisValueFormatter(daysOfWeek)
                 granularity = 1f
                 position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
+                setDrawAxisLine(false)
             }
 
             axisLeft.apply {
@@ -128,12 +139,23 @@ class ReportsActivity : AppCompatActivity() {
                     else -> 10f
                 }
                 granularity = interval
-                setDrawGridLines(true)
+                setDrawGridLines(false)
+                setDrawAxisLine(false)
+
+                val centerValue = (maxVal / 2f)
+                val centerLine = LimitLine(centerValue)
+                centerLine.lineWidth = 2f
+                centerLine.lineColor = ContextCompat.getColor(context, R.color.gray)
+                centerLine.enableDashedLine(10f, 10f, 0f)
+                centerLine.textSize = 12f
+
+                addLimitLine(centerLine)
             }
 
             axisRight.isEnabled = false
             invalidate()
         }
+
     }
 
     private fun formatString(amount: Double): String {
