@@ -75,12 +75,14 @@ class BudgetActivity: AppCompatActivity(), AddEditBudgetDialogFragment.BudgetDia
     }
 
     override fun onBudgetUpdate(budget: Budget){
-        viewModel.insertBudget(budget)
-        Log.d("BudgetActivity", "Budget updated: $budget")
+        viewModel.updateBudget(budget)
     }
 
     override fun onBudgetDelete(budget: Budget){
-        //TODO: Implement update logic; will do later
         viewModel.deleteBudget(budget)
+    }
+
+    override fun onBudgetCreate(budget: Budget){
+        viewModel.insertBudget(budget)
     }
 }
