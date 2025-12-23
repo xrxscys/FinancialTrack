@@ -35,7 +35,9 @@ class AccountAdapter : ListAdapter<Account, AccountAdapter.AccountViewHolder>(Ac
             balanceText.text = "Balance: ${account.balance}" // Format as needed
 
             if (account.balance <= 0) {
-                card.strokeColor = ContextCompat.getColor(itemView.context, R.color.expense_red)
+                val dangerColor = ContextCompat.getColor(itemView.context, R.color.expense_red)
+                card.strokeColor = dangerColor
+                balanceText.setTextColor(dangerColor)
             }
         }
     }
