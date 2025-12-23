@@ -51,6 +51,19 @@ class AddEditBudgetDialogFragment() : DialogFragment(){
             return fragment
         }
 
+        fun newInstanceEdit(budget: Budget): AddEditBudgetDialogFragment {
+            val fragment = AddEditBudgetDialogFragment()
+            val args = Bundle()
+
+            args.putLong(ARG_ID, budget.id)
+            args.putString(ARG_USER_ID, budget.userId)
+            args.putString(ARG_CATEGORY, budget.category)
+            args.putDouble(ARG_AMOUNT_LIMIT, budget.amount)
+
+            fragment.arguments = args
+            return fragment
+        }
+
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

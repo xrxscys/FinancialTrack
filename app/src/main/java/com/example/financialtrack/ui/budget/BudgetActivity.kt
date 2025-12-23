@@ -39,6 +39,7 @@ class BudgetActivity: AppCompatActivity(), AddEditBudgetDialogFragment.BudgetDia
         adapter = BudgetAdapter(emptyList())
         adapter.setOnClickListener { budget ->
             //TODO: Implement update logic; will do later
+            showDialogEdit(budget)
         }
         binding.rvBudgets.layoutManager = LinearLayoutManager(this)
         binding.rvBudgets.adapter = adapter
@@ -57,12 +58,18 @@ class BudgetActivity: AppCompatActivity(), AddEditBudgetDialogFragment.BudgetDia
 
     private fun setupCreateButton(){
         binding.fabAddBudget.setOnClickListener {
-            showDialog()
+            showDialogCreate()
         }
     }
 
-    private fun showDialog(){
+    private fun showDialogCreate(){
         val dialog = AddEditBudgetDialogFragment.newInstanceCreate(userId)
+        dialog.setListener(this)
+        dialog.show(supportFragmentManager, "AddEditBudgetDialog")
+    }
+
+    private fun showDialogEdit(budget: Budget){
+        val dialog = AddEditBudgetDialogFragment.newInstanceEdit(budget)
         dialog.setListener(this)
         dialog.show(supportFragmentManager, "AddEditBudgetDialog")
     }
