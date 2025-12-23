@@ -10,9 +10,19 @@
 
     <!-- Dashboard Module -->
     <string name="dashboard_title">Dashboard</string>
-    <string name="dashboard_total_balance">Total Balance</string>
-    <string name="dashboard_income">Income</string>
-    <string name="dashboard_expense">Expense</string>
+    <string name="dashboard_total_balance">Total Balance: ₱%1$.2f</string>
+    <string name="dashboard_income_amount">₱%1$.2f</string>
+    <string name="dashboard_expense_amount">₱%1$.2f</string>
+    <string name="tab_stats">Stats</string>
+    <string name="tab_budget">Budget</string>
+    <string name="dropdown_content_desc">Select period</string>
+    <string name="prev_month">Previous month</string>
+    <string name="next_month">Next month</string>
+    <string name="current_month">Dec 2025</string>
+    <string name="income_label">Income</string>
+    <string name="expense_label">Expenses</string>
+    <string name="category_amount_format">₱%1$.2f</string>
+    <string name="category_percent_format">%1$d%%</string>
 
     <!-- Transaction Module -->
     <string name="transaction_title">Transactions</string>
@@ -46,14 +56,29 @@
     <string name="notification_large_transaction">Large Transaction Alert</string>
 
     <!-- Debt & Loan Module -->
-    <string name="debt_title">Debt &amp; Loan Tracker</string>
-    <string name="debt_add">Add Debt/Loan</string>
+    <string name="debt_title">Loans &amp; Debts</string>
+    <string name="debt_add">+ Add Loan</string>
     <string name="debt_amount_owed">Amount Owed</string>
     <string name="debt_amount_paid">Amount Paid</string>
     <string name="debt_due_date">Due Date</string>
-    <string name="debt_creditor_name">Creditor Name</string>
+    <string name="debt_creditor_name">Loan Title</string>
     <string name="debt_interest_rate">Interest Rate (%)</string>
     <string name="debt_type">Debt Type</string>
+    <string name="debt_no_active_loans">Great! You don\'t have any loans 🎉</string>
+    <string name="debt_active_section">Active Loans</string>
+    <string name="debt_history_section">Loan History</string>
+    <string name="debt_mark_as_paid">Mark as Paid</string>
+    <string name="debt_description">Description</string>
+    <string name="debt_details">Details</string>
+    <string name="debt_sort_title">Sort Loans</string>
+    <string name="debt_sort_nearest_deadline">📅 Nearest deadline</string>
+    <string name="debt_sort_title_az">🔤 Title A–Z</string>
+    <string name="debt_sort_title_za">🔤 Title Z–A</string>
+    <string name="debt_sort_amount_low">💰 Amount (lowest → highest)</string>
+    <string name="debt_sort_amount_high">💰 Amount (highest → lowest)</string>
+    <string name="debt_sort_newest">📌 Newest first</string>
+    <string name="debt_notification_title">Loan Reminder</string>
+    <string name="debt_notification_message" formatted="false">Reminder: Your loan %s is due in %s.</string>
 
     <!-- Debt Type Array for Spinner -->
     <string-array name="debt_types">

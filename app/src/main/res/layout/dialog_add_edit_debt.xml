@@ -7,47 +7,87 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
+
+        <!-- Loan Title (Required) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/debt_creditor_name"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
 
         <EditText
             android:id="@+id/etCreditorName"
             android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="e.g., Car Loan, Student Loan"
+            android:inputType="text"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_background"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Amount (Required) -->
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/debt_creditor_name"
-            android:inputType="text" />
+            android:text="Amount (₱)"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
 
         <EditText
             android:id="@+id/etAmount"
             android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="0.00"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_background"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Description (Optional) -->
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/debt_amount_owed"
-            android:inputType="numberDecimal" />
+            android:text="Description (Optional)"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
 
         <EditText
-            android:id="@+id/etAmountPaid"
+            android:id="@+id/etDescription"
             android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:hint="Add details about this loan..."
+            android:inputType="textMultiLine"
+            android:padding="12dp"
+            android:gravity="top"
+            android:background="@drawable/edit_text_background"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Due Date (Required) -->
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/debt_amount_paid"
-            android:inputType="numberDecimal" />
+            android:text="Due Date"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
 
         <EditText
             android:id="@+id/etDueDate"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/debt_due_date"
+            android:layout_height="48dp"
+            android:hint="Select date"
             android:focusable="false"
-            android:clickable="true" />
+            android:clickable="true"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_background"
+            android:layout_marginBottom="16dp"
+            android:drawableEnd="@drawable/ic_calendar"
+            android:drawablePadding="8dp" />
 
-        <EditText
-            android:id="@+id/etInterestRate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/debt_interest_rate"
-            android:inputType="numberDecimal" />
-
-        <Spinner
-            android:id="@+id/spDebtType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
     </LinearLayout>
 </ScrollView>

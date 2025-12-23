@@ -54,6 +54,8 @@ class TransactionAdapter(
                 }
                 TransactionType.INCOME -> {
                     transactionLayout.setBackgroundColor("#BCF0CE".toColorInt())
+                }TransactionType.TRANSFER -> {
+                    transactionLayout.setBackgroundColor("#a1a4ff".toColorInt())
                 }
             }
         }

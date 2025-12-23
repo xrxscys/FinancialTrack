@@ -10,6 +10,12 @@ interface DebtDao {
     @Query("SELECT * FROM debts WHERE userId = :userId ORDER BY dueDate ASC")
     fun getAllDebts(userId: String): LiveData<List<Debt>>
     
+    @Query("SELECT * FROM debts WHERE userId = :userId AND isActive = 1 ORDER BY createdAt DESC")
+    suspend fun getActiveDebts(userId: String): List<Debt>
+    
+    @Query("SELECT * FROM debts WHERE userId = :userId AND isActive = 0 ORDER BY paidAt DESC")
+    suspend fun getPaidDebts(userId: String): List<Debt>
+    
     @Query("SELECT * FROM debts WHERE id = :id")
     suspend fun getDebtById(id: Long): Debt?
     
