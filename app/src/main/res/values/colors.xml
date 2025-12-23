@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="status_completed">#388E3C</color> <!-- Green -->
+    <color name="status_expired">#D32F2F</color>   <!-- Red -->
+    <!-- Primary colors -->
+    <color name="primary">#1976D2</color>
+    <color name="primary_dark">#0D47A1</color>
+    <color name="primary_light">#BBDEFB</color>
+
+    <!-- Secondary colors -->
+    <color name="secondary">#FFC107</color>
+    <color name="secondary_dark">#FFA000</color>
+    <color name="secondary_light">#FFECB3</color>
+
+    <color name="urgency_critical">#F44336</color>
+    <color name="urgency_high">#FF9800</color>"
+    <color name="urgency_medium">#FFC107</color>
+    <color name="urgency_low">#4CAF50</color>
+
+    <!-- Basic colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="dark_gray">#19161d </color>
+    <color name="gray">#9E9E9E</color>
+    <color name="light_gray">#F5F5F5</color>
+
+    <!-- Status colors -->
+    <color name="success">#4CAF50</color>
+    <color name="error">#F44336</color>
+    <color name="warning">#FF9800</color>
+    <color name="info">#2196F3</color>
+
+    <!-- Transaction colors -->
+    <color name="income_green">#4CAF50</color>
+    <color name="expense_red">#F44336</color>
+
+    <!-- Financial colors -->
+    <color name="progress_complete">#4CAF50</color>
+    <color name="progress_medium">#2196F3</color>
+    <color name="progress_starting">#FF9800</color>
+
+    <!-- Inactive colors -->
+    <color name="text_secondary">#616161</color>
+
+    <color name="urgency_critical">#D32F2F</color>
+    <color name="urgency_high">#F57C00</color>
+    <color name="urgency_medium">#FBC02D</color>
+    <color name="urgency_low">#388E3C</color>
+
+
+</resources>
