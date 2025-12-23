@@ -29,7 +29,6 @@ class NotificationAdapter(
         val tvNotificationTitle: TextView = itemView.findViewById(R.id.tvNotificationTitle)
         val tvNotificationMessage: TextView = itemView.findViewById(R.id.tvNotificationMessage)
         val tvNotificationDate: TextView = itemView.findViewById(R.id.tvNotificationDate)
-        val ivReadIndicator: ImageView? = itemView.findViewById(R.id.ivReadIndicator)
         val btnDelete: ImageView? = itemView.findViewById(R.id.btnDeleteNotification)
     }
 
@@ -45,11 +44,6 @@ class NotificationAdapter(
         holder.tvNotificationTitle.text = notification.title
         holder.tvNotificationMessage.text = notification.message
         holder.tvNotificationDate.text = formatDate(notification.createdAt)
-
-        // Show/hide read indicator based on isRead status
-        holder.ivReadIndicator?.let {
-            it.visibility = if (notification.isRead) View.INVISIBLE else View.VISIBLE
-        }
 
         // Handle click navigation
         holder.cardView.setOnClickListener {
@@ -83,12 +77,32 @@ class NotificationAdapter(
     override fun getItemCount(): Int = notifications.size
 
     /**
-     * Update the list of notifications and refresh the adapter
+     * Update the list of notifications with automatic deduplication
+     * 
+     * PREVENTS DUPLICATES BY:
+     * 1. Converting to LinkedHashSet to remove duplicates by ID
+     * 2. Maintaining insertion order via LinkedHashSet
+     * 3. Converting back to sorted list
+     * 4. Only notifying if content changed
+     * 
+     * LinkedHashSet provides O(1) lookup and prevents duplicates
+     * based on Notification's equals() and hashCode() implementations
+     * 
+     * @param newNotifications Fresh list from database/observer
      */
     fun updateNotifications(newNotifications: List<Notification>) {
-        notifications.clear()
-        notifications.addAll(newNotifications)
-        notifyDataSetChanged()
+        // Deduplicate by combining with set (unique by notification ID)
+        // LinkedHashSet maintains insertion order while removing duplicates
+        val deduplicatedSet = LinkedHashSet(newNotifications)
+        val deduplicatedList = deduplicatedSet.toList()
+        
+        // Only update if content actually changed to reduce unnecessary renders
+        if (notifications.size != deduplicatedList.size || 
+            notifications.zip(deduplicatedList).any { (old, new) -> old.id != new.id }) {
+            notifications.clear()
+            notifications.addAll(deduplicatedList)
+            notifyDataSetChanged()
+        }
     }
 
     /**

@@ -25,7 +25,8 @@ class NotificationService(private val context: Context) {
         message: String,
         type: NotificationType = NotificationType.GENERAL,
         navigationType: FinancialTrackNotificationManager.NavigationType = FinancialTrackNotificationManager.NavigationType.NONE,
-        showSystemNotification: Boolean = true
+        showSystemNotification: Boolean = true,
+        debtId: Long? = null  // Optional debt ID for deduplication
     ): Notification? {
         val userId = currentUserId ?: return null
 
@@ -35,7 +36,8 @@ class NotificationService(private val context: Context) {
             message = message,
             type = type,
             isRead = false,
-            navigationType = navigationType.destination
+            navigationType = navigationType.destination,
+            debtId = debtId  // Store debt ID for deduplication
         ).also {
             if (showSystemNotification) {
                 notificationManager.showNotification(title, message, navigationType)
@@ -46,16 +48,22 @@ class NotificationService(private val context: Context) {
 
     /**
      * Template notification type: Bill Reminder
+     * 
+     * @param billName Name of the bill/debt
+     * @param dueDate Formatted due date string
+     * @param debtId Unique debt ID for deduplication in database
      */
     fun createBillReminderNotification(
         billName: String,
-        dueDate: String
+        dueDate: String,
+        debtId: Long? = null
     ): Notification? {
         return createNotification(
             title = "Bill Reminder",
             message = "Your $billName is due on $dueDate",
             type = NotificationType.DEBT_REMINDER,
-            navigationType = FinancialTrackNotificationManager.NavigationType.DEBTS
+            navigationType = FinancialTrackNotificationManager.NavigationType.DEBTS,
+            debtId = debtId  // Pass debt ID for deduplication
         )
     }
 

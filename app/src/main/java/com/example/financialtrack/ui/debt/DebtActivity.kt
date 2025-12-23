@@ -27,7 +27,7 @@ class DebtActivity : AppCompatActivity() {
     private val userId = "user123" // Should get from current user
     private var currentSortOption = SortOption.NEWEST_FIRST
     private var isHistoryTabActive = false
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDebtBinding.inflate(layoutInflater)
@@ -41,7 +41,7 @@ class DebtActivity : AppCompatActivity() {
         observeDebts()
         checkLoanNotifications()
     }
-    
+
     override fun onResume() {
         super.onResume()
         // Check notifications every time user returns to this screen
@@ -52,7 +52,7 @@ class DebtActivity : AppCompatActivity() {
         activeDebtAdapter = DebtAdapter(activeDebtList, false) { debt ->
             markDebtAsPaid(debt)
         }
-        
+
         paidDebtAdapter = DebtAdapter(paidDebtList, true) { _ ->
             // History loans are read-only, no action needed
         }
@@ -82,40 +82,38 @@ class DebtActivity : AppCompatActivity() {
         binding.btnFilterSort.setOnClickListener {
             showSortDialog()
         }
-        
-        binding.btnActiveLoanTab.setOnClickListener {
-            switchToActiveLoanTab()
-        }
-        
-        binding.btnHistoryTab.setOnClickListener {
-            switchToHistoryTab()
-        }
-        
-        binding.btnClearHistory.setOnClickListener {
+
+        binding.fabClearHistory.setOnClickListener {
             clearAllHistoryLoans()
         }
+
+        binding.toggleButtonsContainer.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> switchToActiveLoanTab()
+                    1 -> switchToHistoryTab()
+                }
+            }
+
+            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
+
+            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
+        })
+
     }
-    
+
     private fun switchToActiveLoanTab() {
         isHistoryTabActive = false
         binding.activeLoansContainer.visibility = View.VISIBLE
         binding.historyScrollContainer.visibility = View.GONE
-        binding.btnClearHistory.visibility = View.GONE
-        
-        // Update button styles
-        binding.btnActiveLoanTab.setTextColor(android.graphics.Color.WHITE)
-        binding.btnHistoryTab.setTextColor(resources.getColor(android.R.color.darker_gray, null))
+        binding.fabClearHistory.visibility = View.GONE
     }
-    
+
     private fun switchToHistoryTab() {
         isHistoryTabActive = true
         binding.activeLoansContainer.visibility = View.GONE
         binding.historyScrollContainer.visibility = View.VISIBLE
-        binding.btnClearHistory.visibility = if (paidDebtList.isEmpty()) View.GONE else View.VISIBLE
-        
-        // Update button styles
-        binding.btnHistoryTab.setTextColor(android.graphics.Color.WHITE)
-        binding.btnActiveLoanTab.setTextColor(resources.getColor(android.R.color.darker_gray, null))
+        binding.fabClearHistory.visibility = if (paidDebtList.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun observeDebts() {
@@ -133,10 +131,6 @@ class DebtActivity : AppCompatActivity() {
             paidDebtList.addAll(debts)
             paidDebtAdapter.notifyDataSetChanged()
             updateHistoryEmptyState()
-            // Update Clear History button visibility
-            if (isHistoryTabActive) {
-                binding.btnClearHistory.visibility = if (debts.isEmpty()) View.GONE else View.VISIBLE
-            }
         }
     }
 
@@ -194,7 +188,7 @@ class DebtActivity : AppCompatActivity() {
             .setNegativeButton("Cancel", null)
             .show()
     }
-    
+
     private fun clearAllHistoryLoans() {
         AlertDialog.Builder(this)
             .setTitle("Clear History?")
@@ -214,7 +208,7 @@ class DebtActivity : AppCompatActivity() {
             .setNegativeButton("Cancel", null)
             .show()
     }
-    
+
     private fun refreshDebtLists() {
         debtViewModel.getActiveDebts(userId)
         debtViewModel.getPaidDebts(userId)
@@ -244,10 +238,14 @@ class DebtActivity : AppCompatActivity() {
         binding.emptyStateActiveLoan.visibility = if (isEmpty) View.VISIBLE else View.GONE
         binding.activeLoansContent.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
-    
+
     private fun updateHistoryEmptyState() {
         val isEmpty = paidDebtList.isEmpty()
         binding.emptyStateHistory.visibility = if (isEmpty) View.VISIBLE else View.GONE
         binding.historyContent.visibility = if (isEmpty) View.GONE else View.VISIBLE
+        // Hide clear button if no history
+        if (isHistoryTabActive) {
+            binding.fabClearHistory.visibility = if (isEmpty) View.GONE else View.VISIBLE
+        }
     }
 }
