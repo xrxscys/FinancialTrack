@@ -53,6 +53,10 @@ android {
 }
 
 dependencies {
+    // Material Components for TabLayout
+    implementation("com.google.android.material:material:1.9.0")
+    // ViewPager2 for tabbed navigation
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
     // Core Android
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -102,4 +106,5 @@ dependencies {
 
     //Charts
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.diogobernardino:williamchart:3.11.0")
 }

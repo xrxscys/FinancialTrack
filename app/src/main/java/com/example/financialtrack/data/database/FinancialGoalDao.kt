@@ -7,6 +7,8 @@ import com.example.financialtrack.data.model.GoalStatus
 
 @Dao
 interface FinancialGoalDao {
+    @Query("SELECT * FROM financial_goals WHERE userId = :userId ORDER BY deadline ASC")
+    fun getGoalsByUser(userId: String): LiveData<List<FinancialGoal>>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(goal: FinancialGoal)
 

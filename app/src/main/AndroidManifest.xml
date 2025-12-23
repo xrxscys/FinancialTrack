@@ -53,6 +53,9 @@
         <activity
             android:name=".ui.transaction.TransactionActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.accounts.AccountsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

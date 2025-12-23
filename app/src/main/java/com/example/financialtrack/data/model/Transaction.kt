@@ -8,12 +8,19 @@ data class Transaction(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val userId: String,
     val amount: Double,
+    val accountId: Int,
+    val transferToId: Int,
     val type: TransactionType,
+    val transferToType: TransferTargetType?,
     val category: String,
     val description: String,
     val date: Long = System.currentTimeMillis()
 )
 
 enum class TransactionType {
-    INCOME, EXPENSE
+    INCOME, EXPENSE, TRANSFER
+}
+
+enum class TransferTargetType {
+    ACCOUNT, GOAL
 }

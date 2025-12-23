@@ -37,7 +37,7 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
         binding.btnAddTrans.setOnClickListener {
             showCreateDialog()
         }
-1    }
+    }
 
     private fun setupRecyclerView(){
         adapter = TransactionAdapter(emptyList())//passes an empty list, too lazy to change adapter cuh
@@ -78,15 +78,15 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
     }
 
     override fun onTransactionUpdate(transaction: Transaction){
-        viewModel.updateTransaction(transaction)
+        viewModel.performTransactionEdit(transaction)
     }
 
     override fun onTransactionDelete(transaction: Transaction) {
-        viewModel.deleteTransaction(transaction)
+        viewModel.deleteTransactionAndBalanceChange(transaction)
     }
 
     override fun onTransactionCreated(transaction: Transaction) {
-        viewModel.insertTransaction(transaction)
+        viewModel.insertTransactionAndBalanceChange(transaction)
         binding.rvTransactions.smoothScrollToPosition(0)
     }
 }
