@@ -16,7 +16,18 @@ interface NotificationDao {
     @Query("SELECT * FROM notifications WHERE id = :id")
     suspend fun getNotificationById(id: Long): Notification?
     
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    /**
+     * Check if a debt notification already exists for this debt to prevent duplicates
+     * Returns existing notification if found, null otherwise
+     */
+    @Query("SELECT * FROM notifications WHERE userId = :userId AND debtId = :debtId LIMIT 1")
+    suspend fun findExistingDebtNotification(userId: String, debtId: Long): Notification?
+    
+    /**
+     * Insert with IGNORE strategy to prevent duplicate key violations
+     * Combined with deduplication logic in repository
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(notification: Notification): Long
     
     @Update

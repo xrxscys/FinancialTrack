@@ -25,7 +25,7 @@ import com.example.financialtrack.data.database.AccountDao
         Notification::class,
         FinancialGoal::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 

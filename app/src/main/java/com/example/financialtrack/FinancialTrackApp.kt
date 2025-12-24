@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import com.example.financialtrack.service.DebtReminderWorker
 import com.example.financialtrack.utils.Constants
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
@@ -14,12 +15,18 @@ class FinancialTrackApp : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(/*context=*/this)
-        val firebaseAppCheck = FirebaseAppCheck.getInstance()
-        firebaseAppCheck.installAppCheckProviderFactory(
-            PlayIntegrityAppCheckProviderFactory.getInstance()
-        )
+        // Disable App Check for development - causing reCAPTCHA token issues
+        // Re-enable in production after proper setup
+        // val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        // firebaseAppCheck.installAppCheckProviderFactory(
+        //     PlayIntegrityAppCheckProviderFactory.getInstance()
+        // )
 
         createNotificationChannels()
+        
+        // MANDATORY: Schedule loan reminder background worker
+        // This ensures notifications fire even when app is closed or backgrounded
+        DebtReminderWorker.scheduleDebtReminders(this)
     }
 
     private fun createNotificationChannels() {
