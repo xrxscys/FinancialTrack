@@ -6,8 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import com.example.financialtrack.data.model.*
 import com.example.financialtrack.data.database.*
+import com.example.financialtrack.data.database.migrations.MIGRATION_9_10
 import com.example.financialtrack.utils.Converters
 import com.example.financialtrack.data.model.AccountTypeConverter
 import com.example.financialtrack.data.database.dao.FinancialGoalDao
@@ -25,7 +27,7 @@ import com.example.financialtrack.data.database.AccountDao
         Notification::class,
         FinancialGoal::class
     ],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 
@@ -50,6 +52,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "financial_track_database"
                 )
+                    .addMigrations(MIGRATION_9_10)
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

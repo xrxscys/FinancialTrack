@@ -19,7 +19,8 @@ import java.util.Locale
 class DebtAdapter(
     private val debts: MutableList<Debt>,
     private val isHistory: Boolean = false,
-    private val onMarkAsPaid: (Debt) -> Unit = {}
+    private val onMarkAsPaid: (Debt) -> Unit = {},
+    private val onDelete: ((Debt) -> Unit)? = null
 ) : RecyclerView.Adapter<DebtAdapter.DebtViewHolder>() {
 
     private val expandedItems = mutableSetOf<Long>()
@@ -88,24 +89,22 @@ class DebtAdapter(
 
             fullDetailsText.text = buildString {
                 append("Amount: ₱${formatAmount(debt.amount)}\n")
-                append("Due: ${sdf.format(Date(debt.dueDate))}\n")
+                append("Remaining: ₱${formatAmount(debt.remainingBalance)}\n")
+                append("Due: ${dateOnlySdf.format(Date(debt.dueDate))}\n")
                 append("Created: ${dateOnlySdf.format(Date(debt.createdAt))}\n")
                 if (debt.paidAt != null) {
-                    append("Paid: ${dateOnlySdf.format(Date(debt.paidAt!!))}\n")
+                    append("Paid: ${dateOnlySdf.format(Date(debt.paidAt))}\n")
                 }
             }
 
-            // Mark as paid checkbox
-            markAsPaidCheckbox.isChecked = debt.paidAt != null
-            markAsPaidCheckbox.visibility = if (isHistory) View.GONE else View.VISIBLE
-            markAsPaidCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    onMarkAsPaid(debt)
-                }
-            }
+            // Mark as Paid checkbox - REMOVED (loans are marked paid only when amountPaid == amount)
+            markAsPaidCheckbox.visibility = View.GONE
 
-            // Delete button (only for history)
-            deleteButton.visibility = if (isHistory) View.VISIBLE else View.GONE
+            // Delete button - visible for all loans
+            deleteButton.visibility = View.VISIBLE
+            deleteButton.setOnClickListener {
+                onDelete?.invoke(debt)
+            }
 
             // Collapse/expand on click
             collapsedView.setOnClickListener {
@@ -123,7 +122,6 @@ class DebtAdapter(
         }
 
         private fun getDaysUntilDeadline(dueDate: Long): Long {
-            val now = Calendar.getInstance()
             val deadline = Calendar.getInstance()
             deadline.timeInMillis = dueDate
             

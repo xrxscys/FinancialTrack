@@ -49,13 +49,19 @@ class DebtActivity : AppCompatActivity() {
     }
 
     private fun setupAdapters() {
-        activeDebtAdapter = DebtAdapter(activeDebtList, false) { debt ->
-            markDebtAsPaid(debt)
-        }
+        activeDebtAdapter = DebtAdapter(
+            activeDebtList,
+            false,
+            { _ -> },
+            { debt -> showDeleteConfirmation(debt) }
+        )
 
-        paidDebtAdapter = DebtAdapter(paidDebtList, true) { _ ->
-            // History loans are read-only, no action needed
-        }
+        paidDebtAdapter = DebtAdapter(
+            paidDebtList,
+            true,
+            { _ -> },
+            { debt -> showDeleteConfirmation(debt) }
+        )
     }
 
     private fun setupRecyclerViews() {
@@ -137,7 +143,6 @@ class DebtActivity : AppCompatActivity() {
     private fun showAddDebtDialog() {
         AddEditDebtDialogFragment(null) { newDebt ->
             debtViewModel.insertDebt(newDebt)
-            // Notifications will be checked on next resume or manual trigger
         }.show(supportFragmentManager, "AddDebtDialog")
     }
 
@@ -167,28 +172,6 @@ class DebtActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun markDebtAsPaid(debt: Debt) {
-        AlertDialog.Builder(this)
-            .setTitle("Mark as Paid?")
-            .setMessage("Move '${debt.creditorName}' to loan history?")
-            .setPositiveButton("Yes") { _, _ ->
-                debtViewModel.markDebtAsPaid(debt)
-                // Clear all notification flags when marking as paid
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val database = AppDatabase.getDatabase(this@DebtActivity)
-                        val debtRepository = DebtRepository(database.debtDao())
-                        debtRepository.clearAllNotificationFlags(debt.id)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-                refreshDebtLists()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
     private fun clearAllHistoryLoans() {
         AlertDialog.Builder(this)
             .setTitle("Clear History?")
@@ -212,6 +195,66 @@ class DebtActivity : AppCompatActivity() {
     private fun refreshDebtLists() {
         debtViewModel.getActiveDebts(userId)
         debtViewModel.getPaidDebts(userId)
+    }
+
+    private fun showDeleteConfirmation(debt: Debt) {
+        AlertDialog.Builder(this)
+            .setTitle("Delete Loan")
+            .setMessage("Delete \"${debt.creditorName}\" (₱${String.format("%.2f", debt.amount)})?\n\nThis action cannot be undone.")
+            .setPositiveButton("Delete") { _, _ ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        debtViewModel.deleteDebt(debt)
+                        // Refresh immediately after deletion completes
+                        runOnUiThread {
+                            refreshDebtLists()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        runOnUiThread {
+                            android.widget.Toast.makeText(
+                                this@DebtActivity,
+                                "Error deleting loan",
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private suspend fun sendLoanDeletedNotification(debt: Debt) {
+        try {
+            val database = AppDatabase.getDatabase(this)
+            val notificationRepository = NotificationRepository(database.notificationDao())
+            val debtRepository = DebtRepository(database.debtDao())
+            val notificationManager = LoanNotificationManager(
+                this,
+                notificationRepository,
+                debtRepository
+            )
+            notificationManager.sendLoanDeletedNotification(debt)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private suspend fun sendLoanAddedNotification(debt: Debt) {
+        try {
+            val database = AppDatabase.getDatabase(this)
+            val notificationRepository = NotificationRepository(database.notificationDao())
+            val debtRepository = DebtRepository(database.debtDao())
+            val notificationManager = LoanNotificationManager(
+                this,
+                notificationRepository,
+                debtRepository
+            )
+            notificationManager.sendLoanAddedNotification(debt)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun checkLoanNotifications() {

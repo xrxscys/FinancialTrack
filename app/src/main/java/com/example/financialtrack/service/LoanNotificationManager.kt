@@ -146,4 +146,67 @@ class LoanNotificationManager(
             }
         }
     }
+
+    /**
+     * Send notification when a new loan is added.
+     * Prevents duplicates using database deduplication.
+     */
+    suspend fun sendLoanAddedNotification(debt: Debt) {
+        return withContext(Dispatchers.IO) {
+            try {
+                val dateFormat = java.text.SimpleDateFormat("MMM d, yyyy", java.util.Locale.US)
+                val dueDate = dateFormat.format(java.util.Date(debt.dueDate))
+                
+                // Create notification object with debtId for deduplication
+                val notification = notificationService.createLoanAddedNotification(
+                    loanName = debt.creditorName,
+                    amount = debt.amount,
+                    dueDate = dueDate,
+                    debtId = debt.id
+                )
+                
+                // Save notification to database - repository handles deduplication
+                if (notification != null) {
+                    val result = notificationRepository.insert(notification)
+                    if (result != -1L) {
+                        android.util.Log.d(
+                            "LoanNotificationManager",
+                            "✓ Loan added notification for ${debt.creditorName}"
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
+     * Send notification when a loan is deleted.
+     * Prevents duplicates using database deduplication.
+     */
+    suspend fun sendLoanDeletedNotification(debt: Debt) {
+        return withContext(Dispatchers.IO) {
+            try {
+                val notification = notificationService.createLoanDeletedNotification(
+                    loanName = debt.creditorName,
+                    amount = debt.amount,
+                    debtId = debt.id
+                )
+                
+                // Save notification to database - repository handles deduplication
+                if (notification != null) {
+                    val result = notificationRepository.insert(notification)
+                    if (result != -1L) {
+                        android.util.Log.d(
+                            "LoanNotificationManager",
+                            "✓ Loan deleted notification for ${debt.creditorName}"
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 }

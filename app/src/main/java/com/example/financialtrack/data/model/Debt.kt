@@ -10,6 +10,7 @@ data class Debt(
     val creditorName: String,
     val amount: Double,
     val amountPaid: Double = 0.0,
+    val remainingBalance: Double = amount,
     val dueDate: Long,
     val interestRate: Double = 0.0,
     val type: DebtType,

@@ -197,11 +197,11 @@
             <!-- Delete Button (for history only) -->
             <ImageView
                 android:id="@+id/deleteButton"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_delete"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_trash"
                 android:contentDescription="Delete"
-                android:tint="#999999"
+                android:tint="#FF4444"
                 android:visibility="gone"
                 android:layout_marginTop="14dp"
                 app:layout_constraintEnd_toEndOf="parent"
