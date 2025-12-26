@@ -92,8 +92,6 @@ class ReportsActivity : AppCompatActivity() {
             }
         }
 
-        val todayIndex = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1
-
         val entries = totalsByDay.mapIndexed { index, value ->
             BarEntry(index.toFloat(), value)
         }
@@ -112,7 +110,7 @@ class ReportsActivity : AppCompatActivity() {
         }
 
         val barData = BarData(dataSet).apply {
-            barWidth = 0.85f
+            barWidth = 0.5f
         }
 
         binding.barChart.apply {
