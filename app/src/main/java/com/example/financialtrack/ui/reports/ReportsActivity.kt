@@ -54,9 +54,9 @@ class ReportsActivity : AppCompatActivity() {
                 showBarChart(transactions)
             }
 
-           debtViewModel.getAllDebts(firebaseUser.uid).observe(this) { debts ->
-               Log.d("Debts", firebaseUser.uid)
-               Log.d("meme", debts.size.toString())
+            debtViewModel.getActiveDebts(firebaseUser.uid)
+
+           debtViewModel.activeDebts.observe(this) { debts ->
                updateDebts(debts)
            }
         }
@@ -91,7 +91,7 @@ class ReportsActivity : AppCompatActivity() {
     }
     private fun updateDebts(debts: List<Debt>) {
         if (debts.isEmpty()) {
-            binding.tvTotalDebtValue.text = "${symbol}0.00"
+            binding.tvBalanceValue.text = "${symbol}0.00"
             binding.tvPaidInTotalValue.text = "${symbol}0.00"
             return
         }
@@ -99,8 +99,12 @@ class ReportsActivity : AppCompatActivity() {
         val totalDebt = debts.sumOf { it.amount }
         val totalPaid = debts.sumOf { it.amountPaid }
 
-        binding.tvTotalDebtValue.text = "$symbol${formatString(totalDebt)}"
+        val progress = (totalPaid / totalDebt * 100).toInt()
+
+        binding.tvBalanceValue.text = "$symbol${formatString(abs(totalDebt - totalPaid))}"
         binding.tvPaidInTotalValue.text = "$symbol${formatString(totalPaid)}"
+        binding.progressDebtsLoans.progress = progress
+        binding.tvDebtPercent.text = String.format("%d%%", progress)
     }
 
     private fun showBarChart(transactions: List<Transaction>) {

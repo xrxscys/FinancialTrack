@@ -319,43 +319,104 @@
                 <!-- TODO: tab to switch-->
                     <!-- TODO: donut chart for categories -->
                     <!-- TODO: line chart for categories -->
-
-                <!-- TODO: Total Debt Stats -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
-                        android:id="@+id/tv_total_debt_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Categorical"
+                        android:textSize="22sp"
+                        android:textStyle="bold"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tv_debts_and_loans_title"
                         android:layout_width="wrap_content"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
                         android:textSize="22sp"
-                        android:text="Total Debt"/>
+                        android:text="Debts and Loans"/>
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent">
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/progress_debts_loans"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:indicatorSize="130sp"
+                            app:trackThickness="16sp"
+                            app:trackCornerRadius="12sp"
+                            app:trackColor="?attr/trackColor"
+                            app:indicatorColor="@color/primary"
+                            android:max="100" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_gravity="center">
+                            <TextView
+                                android:id="@+id/tv_debt_percent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:includeFontPadding="false"
+                                android:text="100%"
+                                android:textStyle="bold"
+                                android:textSize="22sp"
+                                android:layout_gravity="center" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:includeFontPadding="false"
+                                android:text="Paid"
+                                android:textSize="14sp"
+                                android:layout_gravity="center" />
+                        </LinearLayout>
+                    </FrameLayout>
+
                     <TextView
-                        android:id="@+id/tv_total_debt_value"
+                        android:id="@+id/tv_balance_title"
                         android:layout_width="wrap_content"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:text="P 230,302"
-                        app:layout_constraintStart_toStartOf="@+id/tv_total_debt_title"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_total_debt_title"/>
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:text="Balance"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_debts_and_loans_title"/>
+                    <TextView
+                        android:id="@+id/tv_balance_value"
+                        android:layout_width="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="Value"
+                        app:layout_constraintStart_toStartOf="@+id/tv_balance_title"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_balance_title"/>
 
                     <TextView
                         android:id="@+id/tv_paid_in_total_title"
                         android:layout_width="wrap_content"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:layout_height="wrap_content"
-                        android:text="Paid in Total"
-                        app:layout_constraintEnd_toEndOf="parent"/>
+                        android:textStyle="bold"
+                        android:text="Paid In Total"
+                        app:layout_constraintStart_toStartOf="@+id/tv_balance_value"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_balance_value"/>
+
                     <TextView
                         android:id="@+id/tv_paid_in_total_value"
                         android:layout_width="wrap_content"
-                        android:textSize="16sp"
+                        android:textSize="17sp"
                         android:layout_height="wrap_content"
-                        android:text="P 53,424"
-                        app:layout_constraintEnd_toEndOf="@+id/tv_paid_in_total_title"
+                        android:text="Value"
+                        app:layout_constraintStart_toStartOf="@+id/tv_paid_in_total_title"
                         app:layout_constraintTop_toBottomOf="@+id/tv_paid_in_total_title"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
