@@ -20,6 +20,7 @@
     <color name="gray">#9E9E9E</color>
     <color name="light_gray">#F5F5F5</color>
     <color name="neutral">#D4D4D4</color>
+    <color name="light_blue">#e8eafa</color>
 
     <!-- Status colors -->
     <color name="success">#4CAF50</color>
