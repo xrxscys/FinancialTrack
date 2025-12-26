@@ -27,7 +27,7 @@ class DebtActivity : AppCompatActivity() {
     private val userId = "user123" // Should get from current user
     private var currentSortOption = SortOption.NEWEST_FIRST
     private var isHistoryTabActive = false
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDebtBinding.inflate(layoutInflater)
@@ -41,7 +41,7 @@ class DebtActivity : AppCompatActivity() {
         observeDebts()
         checkLoanNotifications()
     }
-    
+
     override fun onResume() {
         super.onResume()
         // Check notifications every time user returns to this screen
@@ -49,13 +49,19 @@ class DebtActivity : AppCompatActivity() {
     }
 
     private fun setupAdapters() {
-        activeDebtAdapter = DebtAdapter(activeDebtList, false) { debt ->
-            markDebtAsPaid(debt)
-        }
-        
-        paidDebtAdapter = DebtAdapter(paidDebtList, true) { _ ->
-            // History loans are read-only, no action needed
-        }
+        activeDebtAdapter = DebtAdapter(
+            activeDebtList,
+            false,
+            { _ -> },
+            { debt -> showDeleteConfirmation(debt) }
+        )
+
+        paidDebtAdapter = DebtAdapter(
+            paidDebtList,
+            true,
+            { _ -> },
+            { debt -> showDeleteConfirmation(debt) }
+        )
     }
 
     private fun setupRecyclerViews() {
@@ -82,40 +88,38 @@ class DebtActivity : AppCompatActivity() {
         binding.btnFilterSort.setOnClickListener {
             showSortDialog()
         }
-        
-        binding.btnActiveLoanTab.setOnClickListener {
-            switchToActiveLoanTab()
-        }
-        
-        binding.btnHistoryTab.setOnClickListener {
-            switchToHistoryTab()
-        }
-        
-        binding.btnClearHistory.setOnClickListener {
+
+        binding.fabClearHistory.setOnClickListener {
             clearAllHistoryLoans()
         }
+
+        binding.toggleButtonsContainer.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> switchToActiveLoanTab()
+                    1 -> switchToHistoryTab()
+                }
+            }
+
+            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
+
+            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
+        })
+
     }
-    
+
     private fun switchToActiveLoanTab() {
         isHistoryTabActive = false
         binding.activeLoansContainer.visibility = View.VISIBLE
         binding.historyScrollContainer.visibility = View.GONE
-        binding.btnClearHistory.visibility = View.GONE
-        
-        // Update button styles
-        binding.btnActiveLoanTab.setTextColor(android.graphics.Color.WHITE)
-        binding.btnHistoryTab.setTextColor(resources.getColor(android.R.color.darker_gray, null))
+        binding.fabClearHistory.visibility = View.GONE
     }
-    
+
     private fun switchToHistoryTab() {
         isHistoryTabActive = true
         binding.activeLoansContainer.visibility = View.GONE
         binding.historyScrollContainer.visibility = View.VISIBLE
-        binding.btnClearHistory.visibility = if (paidDebtList.isEmpty()) View.GONE else View.VISIBLE
-        
-        // Update button styles
-        binding.btnHistoryTab.setTextColor(android.graphics.Color.WHITE)
-        binding.btnActiveLoanTab.setTextColor(resources.getColor(android.R.color.darker_gray, null))
+        binding.fabClearHistory.visibility = if (paidDebtList.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun observeDebts() {
@@ -133,17 +137,12 @@ class DebtActivity : AppCompatActivity() {
             paidDebtList.addAll(debts)
             paidDebtAdapter.notifyDataSetChanged()
             updateHistoryEmptyState()
-            // Update Clear History button visibility
-            if (isHistoryTabActive) {
-                binding.btnClearHistory.visibility = if (debts.isEmpty()) View.GONE else View.VISIBLE
-            }
         }
     }
 
     private fun showAddDebtDialog() {
         AddEditDebtDialogFragment(null) { newDebt ->
             debtViewModel.insertDebt(newDebt)
-            // Notifications will be checked on next resume or manual trigger
         }.show(supportFragmentManager, "AddDebtDialog")
     }
 
@@ -173,28 +172,6 @@ class DebtActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun markDebtAsPaid(debt: Debt) {
-        AlertDialog.Builder(this)
-            .setTitle("Mark as Paid?")
-            .setMessage("Move '${debt.creditorName}' to loan history?")
-            .setPositiveButton("Yes") { _, _ ->
-                debtViewModel.markDebtAsPaid(debt)
-                // Clear all notification flags when marking as paid
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val database = AppDatabase.getDatabase(this@DebtActivity)
-                        val debtRepository = DebtRepository(database.debtDao())
-                        debtRepository.clearAllNotificationFlags(debt.id)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-                refreshDebtLists()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-    
     private fun clearAllHistoryLoans() {
         AlertDialog.Builder(this)
             .setTitle("Clear History?")
@@ -214,10 +191,70 @@ class DebtActivity : AppCompatActivity() {
             .setNegativeButton("Cancel", null)
             .show()
     }
-    
+
     private fun refreshDebtLists() {
         debtViewModel.getActiveDebts(userId)
         debtViewModel.getPaidDebts(userId)
+    }
+
+    private fun showDeleteConfirmation(debt: Debt) {
+        AlertDialog.Builder(this)
+            .setTitle("Delete Loan")
+            .setMessage("Delete \"${debt.creditorName}\" (₱${String.format("%.2f", debt.amount)})?\n\nThis action cannot be undone.")
+            .setPositiveButton("Delete") { _, _ ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        debtViewModel.deleteDebt(debt)
+                        // Refresh immediately after deletion completes
+                        runOnUiThread {
+                            refreshDebtLists()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        runOnUiThread {
+                            android.widget.Toast.makeText(
+                                this@DebtActivity,
+                                "Error deleting loan",
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private suspend fun sendLoanDeletedNotification(debt: Debt) {
+        try {
+            val database = AppDatabase.getDatabase(this)
+            val notificationRepository = NotificationRepository(database.notificationDao())
+            val debtRepository = DebtRepository(database.debtDao())
+            val notificationManager = LoanNotificationManager(
+                this,
+                notificationRepository,
+                debtRepository
+            )
+            notificationManager.sendLoanDeletedNotification(debt)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private suspend fun sendLoanAddedNotification(debt: Debt) {
+        try {
+            val database = AppDatabase.getDatabase(this)
+            val notificationRepository = NotificationRepository(database.notificationDao())
+            val debtRepository = DebtRepository(database.debtDao())
+            val notificationManager = LoanNotificationManager(
+                this,
+                notificationRepository,
+                debtRepository
+            )
+            notificationManager.sendLoanAddedNotification(debt)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun checkLoanNotifications() {
@@ -244,10 +281,14 @@ class DebtActivity : AppCompatActivity() {
         binding.emptyStateActiveLoan.visibility = if (isEmpty) View.VISIBLE else View.GONE
         binding.activeLoansContent.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
-    
+
     private fun updateHistoryEmptyState() {
         val isEmpty = paidDebtList.isEmpty()
         binding.emptyStateHistory.visibility = if (isEmpty) View.VISIBLE else View.GONE
         binding.historyContent.visibility = if (isEmpty) View.GONE else View.VISIBLE
+        // Hide clear button if no history
+        if (isHistoryTabActive) {
+            binding.fabClearHistory.visibility = if (isEmpty) View.GONE else View.VISIBLE
+        }
     }
 }

@@ -73,15 +73,7 @@ class DebtViewModel(application: Application) : AndroidViewModel(application) {
         repository.delete(debt)
     }
     
-    fun markDebtAsPaid(debt: Debt) = viewModelScope.launch {
-        val paidDebt = debt.copy(
-            isActive = false,
-            paidAt = System.currentTimeMillis()
-        )
-        repository.update(paidDebt)
-    }
-    
-    private fun List<Debt>.sortByCreatedDate() = this.sortedByDescending { it.createdAt }
+    private fun List<Debt>.sortByCreatedDate() = this.sortedBy { it.createdAt }
 }
 
 enum class SortOption {

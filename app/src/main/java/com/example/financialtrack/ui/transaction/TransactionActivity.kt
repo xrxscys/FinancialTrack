@@ -85,8 +85,8 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
         viewModel.deleteTransactionAndBalanceChange(transaction)
     }
 
-    override fun onTransactionCreated(transaction: Transaction) {
-        viewModel.insertTransactionAndBalanceChange(transaction)
+    override fun onTransactionCreated(transaction: Transaction, selectedLoanId: Long?) {
+        viewModel.insertTransactionAndBalanceChange(transaction, selectedLoanId)
         binding.rvTransactions.smoothScrollToPosition(0)
     }
 }

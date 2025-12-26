@@ -97,7 +97,9 @@ class AddEditDebtDialogFragment(
                 description = description,
                 dueDate = dueDateWithTime,
                 isActive = true,
-                paidAt = null
+                paidAt = null,
+                amountPaid = 0.0,
+                remainingBalance = amount
             )
         } else {
             Debt(
@@ -105,6 +107,8 @@ class AddEditDebtDialogFragment(
                 userId = "user123",
                 creditorName = creditor,
                 amount = amount,
+                amountPaid = 0.0,
+                remainingBalance = amount,
                 description = description,
                 dueDate = dueDateWithTime,
                 type = DebtType.LOAN,

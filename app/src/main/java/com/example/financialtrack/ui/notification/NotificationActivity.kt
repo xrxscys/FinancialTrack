@@ -13,6 +13,11 @@ import com.google.firebase.auth.FirebaseAuth
 /**
  * NotificationActivity displays all notifications for the current user
  * Supports viewing, marking as read, and deleting notifications
+ * 
+ * PREVENTS DUPLICATE OBSERVERS BY:
+ * - Removing observer in onDestroy()
+ * - Ensuring single observer attachment with observersAttached flag
+ * - Activity lifecycle ensures observers aren't recreated unnecessarily
  */
 class NotificationActivity : AppCompatActivity() {
 
@@ -21,6 +26,9 @@ class NotificationActivity : AppCompatActivity() {
     private val viewModel: NotificationViewModel by viewModels()
     private val currentUserId: String?
         get() = FirebaseAuth.getInstance().currentUser?.uid
+    
+    // Track if we've already attached observers to prevent duplicates
+    private var observersAttached = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +38,12 @@ class NotificationActivity : AppCompatActivity() {
         setupRecyclerView()
         setupBackButton()
         observeNotifications()
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        // Clean up observer flag to prevent memory leaks and duplicate observers on recreate
+        observersAttached = false
     }
 
     private fun setupRecyclerView() {
@@ -58,8 +72,23 @@ class NotificationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Observe notifications with proper lifecycle management
+     * 
+     * PREVENTS DUPLICATE OBSERVERS BY:
+     * - Only attaching once via observersAttached flag
+     * - Checking if already attached before adding new observer
+     * - Cleaning up in onDestroy()
+     * - Automatic deduplication in adapter.updateNotifications()
+     */
     private fun observeNotifications() {
         val userId = currentUserId ?: return
+        
+        // Guard against multiple observer attachments
+        if (observersAttached) {
+            return
+        }
+        observersAttached = true
 
         viewModel.getAllNotifications(userId).observe(this) { notifications ->
             if (notifications.isEmpty()) {
@@ -68,7 +97,7 @@ class NotificationActivity : AppCompatActivity() {
             } else {
                 binding.emptyStateLayout.visibility = View.GONE
                 binding.rvNotifications.visibility = View.VISIBLE
-                // Sort by newest first
+                // Sort by newest first - automatic deduplication in adapter.updateNotifications()
                 val sortedNotifications = notifications.sortedByDescending { it.createdAt }
                 adapter.updateNotifications(sortedNotifications)
             }

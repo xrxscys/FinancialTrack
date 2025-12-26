@@ -13,6 +13,7 @@ import com.example.financialtrack.data.repository.AccountRepository
 import com.example.financialtrack.data.model.Account
 import com.example.financialtrack.data.model.AccountType
 import com.example.financialtrack.data.model.TransferTargetType
+import com.example.financialtrack.service.LoanPaymentProcessor
 
 class TransactionViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -39,8 +40,12 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
         return repository.getTransactionsByType(userId, type)
     }
 
-    fun insertTransaction(transaction: Transaction) = viewModelScope.launch {
+    fun insertTransaction(transaction: Transaction, selectedLoanId: Long? = null) = viewModelScope.launch {
         repository.insert(transaction)
+        // Process transaction for loan payments if a loan is selected
+        if (selectedLoanId != null) {
+            LoanPaymentProcessor(AppDatabase.getDatabase(getApplication())).processTransactionForLoanPayments(transaction, selectedLoanId)
+        }
     }
 
     fun updateTransaction(transaction: Transaction) = viewModelScope.launch {
@@ -77,9 +82,9 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
         deleteTransaction(transaction)
     }
 
-    fun insertTransactionAndBalanceChange(transaction: Transaction) = viewModelScope.launch{
+    fun insertTransactionAndBalanceChange(transaction: Transaction, selectedLoanId: Long? = null) = viewModelScope.launch{
         updateAccountBalance(transaction.accountId, transaction, "Add")
-        insertTransaction(transaction)
+        insertTransaction(transaction, selectedLoanId)
     }
     suspend fun updateAccountBalance(accountId: Int, transaction: Transaction, tag: String) {
         //if the tag is del, reverse multiplier for balance change

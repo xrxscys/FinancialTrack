@@ -17,7 +17,11 @@ import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
 import com.example.financialtrack.data.model.Account
 import com.example.financialtrack.data.model.TransferTargetType
+import com.example.financialtrack.data.model.Debt
 import com.example.financialtrack.databinding.DialogAddEditTransactionBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 class AddEditTransactionDialogFragment() : DialogFragment(){
@@ -43,11 +47,13 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
     private var isNewTrans = false
 
     private var selectedDate: Long = System.currentTimeMillis()
+    private var activeLoans: List<Debt> = emptyList()
+    private var selectedLoanId: Long? = null
     //interface so that activity can override, and can get accessed from here
     interface TransactionDialogListener{
         fun onTransactionUpdate(transaction: Transaction)
         fun onTransactionDelete(transaction: Transaction)
-        fun onTransactionCreated(transaction: Transaction)
+        fun onTransactionCreated(transaction: Transaction, selectedLoanId: Long? = null)
     }
 
     companion object{
@@ -178,6 +184,7 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
         setupDatePicker()
         populateFields() //puts the data from the transaction reformed from the bundle into the fields
         setupClickListeners() //sets up the listeners for the buttons in the dialog, will do later
+        populateLoans() //loads active loans for the dropdown
 
         changeDialogIfNew()
         setupTypeChangeListener()
@@ -276,6 +283,44 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
         }
     }
 
+    private fun populateLoans() {
+        val database = AppDatabase.getDatabase(requireContext())
+        
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val activeLoans = database.debtDao().getActiveDebts("user123")
+                
+                if (activeLoans.isEmpty()) {
+                    Log.d("LoanDropdown", "No active loans found")
+                }
+                
+                this@AddEditTransactionDialogFragment.activeLoans = activeLoans
+                
+                val loanOptions = mutableListOf("None")
+                loanOptions.addAll(activeLoans.map { it.creditorName })
+                
+                runOnUiThread {
+                    val adapter = ArrayAdapter(
+                        requireContext(), 
+                        android.R.layout.simple_dropdown_item_1line, 
+                        loanOptions
+                    )
+                    binding.actvLoanPayment.setAdapter(adapter)
+                    binding.actvLoanPayment.setText("None", false)
+                    
+                    binding.actvLoanPayment.setOnItemClickListener { _, _, position, _ ->
+                        selectedLoanId = if (position == 0) null else activeLoans.getOrNull(position - 1)?.id
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("LoanDropdown", "Error loading loans: ${e.message}", e)
+            }
+        }
+    }
+    
+    private fun runOnUiThread(action: () -> Unit) {
+        binding.root.post(action)
+    }
 
     private fun setupDatePicker(){
 
@@ -421,7 +466,7 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
                     transferToId = transferId,
                     transferToType = transferType
                 )
-                listener?.onTransactionCreated(newTrans)
+                listener?.onTransactionCreated(newTrans, selectedLoanId)
                 Toast.makeText(context, "Transaction created", Toast.LENGTH_SHORT).show()
             }else{
                 val updated = trans.copy(

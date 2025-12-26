@@ -62,4 +62,34 @@ class DebtRepository(private val debtDao: DebtDao) {
         )
         update(clearedDebt)
     }
+
+    suspend fun deductLoanPayment(debtId: Long, paymentAmount: Double) {
+        val debt = getDebtById(debtId) ?: return
+        val newAmountPaid = debt.amountPaid + paymentAmount
+        val newRemainingBalance = (debt.amount - newAmountPaid).coerceAtLeast(0.0)
+        
+        val updatedDebt = debt.copy(
+            amountPaid = newAmountPaid,
+            remainingBalance = newRemainingBalance
+        )
+        
+        update(updatedDebt)
+        
+        // Auto-complete if balance reaches zero
+        if (newRemainingBalance == 0.0) {
+            completeLoanAutomatically(debtId)
+        }
+    }
+
+    private suspend fun completeLoanAutomatically(debtId: Long) {
+        val debt = getDebtById(debtId) ?: return
+        
+        if (debt.isActive && debt.remainingBalance == 0.0) {
+            val completedDebt = debt.copy(
+                isActive = false,
+                paidAt = System.currentTimeMillis()
+            )
+            update(completedDebt)
+        }
+    }
 }

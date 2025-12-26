@@ -1,43 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="6dp"
-    card_view:cardCornerRadius="8dp"
-    card_view:cardElevation="1dp"
-    card_view:cardBackgroundColor="@color/white">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:strokeColor="?attr/colorPrimary"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Collapsed View - Minimalist -->
+        <!-- Title Row with Expand Icon -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/collapsedView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
 
-            <!-- Loan Title -->
             <TextView
                 android:id="@+id/loanTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Loan Title"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textColor="#1A1A1A"
-                card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintTop_toTopOf="parent"
-                card_view:layout_constraintEnd_toStartOf="@id/expandIcon"
-                card_view:layout_constraintHorizontal_bias="0" />
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/expandIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="Car Loan" />
 
-            <!-- Expand Icon -->
             <ImageView
                 android:id="@+id/expandIcon"
                 android:layout_width="20dp"
@@ -45,92 +49,88 @@
                 android:src="@drawable/ic_expand_more"
                 android:contentDescription="Expand"
                 android:tint="#999999"
-                card_view:layout_constraintEnd_toEndOf="parent"
-                card_view:layout_constraintTop_toTopOf="@id/loanTitle"
-                card_view:layout_constraintBottom_toBottomOf="@id/loanTitle" />
-
-            <!-- Amount and Date Row -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp"
-                android:gravity="center_vertical"
-                card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintEnd_toEndOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@id/loanTitle">
-
-                <!-- Amount -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Amount"
-                        android:textSize="11sp"
-                        android:textColor="#999999" />
-
-                    <TextView
-                        android:id="@+id/loanAmount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="₱0.00"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="#1A1A1A"
-                        android:layout_marginTop="2dp" />
-
-                </LinearLayout>
-
-                <!-- Deadline -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Due Date"
-                        android:textSize="11sp"
-                        android:textColor="#999999" />
-
-                    <TextView
-                        android:id="@+id/loanDeadline"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MMM dd, yyyy"
-                        android:textSize="14sp"
-                        android:textColor="#1A1A1A"
-                        android:layout_marginTop="2dp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Expanded View - Minimalist -->
+        <!-- Amount and Date Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Amount"
+                    android:textSize="12sp"
+                    android:textColor="#999999" />
+
+                <TextView
+                    android:id="@+id/loanAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₱0.00"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#1A1A1A"
+                    android:layout_marginTop="2dp"
+                    tools:text="₱50,000" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Due Date"
+                    android:textSize="12sp"
+                    android:textColor="#999999" />
+
+                <TextView
+                    android:id="@+id/loanDeadline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MMM dd, yyyy"
+                    android:textSize="14sp"
+                    android:textColor="#1A1A1A"
+                    android:layout_marginTop="2dp"
+                    tools:text="Dec 2025" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Expanded View -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/expandedView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
             android:visibility="gone"
-            android:background="@color/white">
+            android:layout_marginTop="12dp">
 
-            <!-- Subtle Divider -->
+            <!-- Divider -->
             <View
                 android:id="@+id/divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#F0F0F0"
-                card_view:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <!-- Description Section -->
             <TextView
@@ -142,8 +142,8 @@
                 android:textSize="13sp"
                 android:textColor="#1A1A1A"
                 android:layout_marginTop="12dp"
-                card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@id/divider" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider" />
 
             <TextView
                 android:id="@+id/descriptionText"
@@ -153,9 +153,9 @@
                 android:textSize="13sp"
                 android:textColor="#666666"
                 android:layout_marginTop="4dp"
-                card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintEnd_toEndOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@id/descriptionLabel" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/descriptionLabel" />
 
             <!-- Full Details Section -->
             <TextView
@@ -167,8 +167,8 @@
                 android:textSize="13sp"
                 android:textColor="#1A1A1A"
                 android:layout_marginTop="12dp"
-                card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@id/descriptionText" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/descriptionText" />
 
             <TextView
                 android:id="@+id/fullDetailsText"
@@ -178,9 +178,9 @@
                 android:textSize="12sp"
                 android:layout_marginTop="4dp"
                 android:textColor="#666666"
-                card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintEnd_toEndOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@id/detailsLabel" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/detailsLabel" />
 
             <!-- Mark as Paid Checkbox -->
             <CheckBox
@@ -191,24 +191,24 @@
                 android:textSize="13sp"
                 android:textColor="#1A1A1A"
                 android:layout_marginTop="14dp"
-                card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@id/fullDetailsText" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fullDetailsText" />
 
             <!-- Delete Button (for history only) -->
             <ImageView
                 android:id="@+id/deleteButton"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_delete"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_trash"
                 android:contentDescription="Delete"
-                android:tint="#999999"
+                android:tint="#FF4444"
                 android:visibility="gone"
                 android:layout_marginTop="14dp"
-                card_view:layout_constraintEnd_toEndOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@id/fullDetailsText" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fullDetailsText" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
