@@ -284,30 +284,31 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
     }
 
     private fun populateLoans() {
+        val userId = transaction?.userId ?: "user123"
         val database = AppDatabase.getDatabase(requireContext())
-        
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val activeLoans = database.debtDao().getActiveDebts("user123")
-                
+                val activeLoans = database.debtDao().getActiveDebts(userId)
+
                 if (activeLoans.isEmpty()) {
                     Log.d("LoanDropdown", "No active loans found")
                 }
-                
+
                 this@AddEditTransactionDialogFragment.activeLoans = activeLoans
-                
+
                 val loanOptions = mutableListOf("None")
                 loanOptions.addAll(activeLoans.map { it.creditorName })
-                
+
                 runOnUiThread {
                     val adapter = ArrayAdapter(
-                        requireContext(), 
-                        android.R.layout.simple_dropdown_item_1line, 
+                        requireContext(),
+                        android.R.layout.simple_dropdown_item_1line,
                         loanOptions
                     )
                     binding.actvLoanPayment.setAdapter(adapter)
                     binding.actvLoanPayment.setText("None", false)
-                    
+
                     binding.actvLoanPayment.setOnItemClickListener { _, _, position, _ ->
                         selectedLoanId = if (position == 0) null else activeLoans.getOrNull(position - 1)?.id
                     }
@@ -317,7 +318,7 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
             }
         }
     }
-    
+
     private fun runOnUiThread(action: () -> Unit) {
         binding.root.post(action)
     }
