@@ -1,6 +1,7 @@
 package com.example.financialtrack.ui.debt
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,7 @@ import com.example.financialtrack.service.LoanNotificationManager
 import com.example.financialtrack.data.database.AppDatabase
 import com.example.financialtrack.data.repository.DebtRepository
 import com.example.financialtrack.data.repository.NotificationRepository
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +26,7 @@ class DebtActivity : AppCompatActivity() {
     private lateinit var paidDebtAdapter: DebtAdapter
     private val activeDebtList = mutableListOf<Debt>()
     private val paidDebtList = mutableListOf<Debt>()
-    private val userId = "user123" // Should get from current user
+    private lateinit var userId: String
     private var currentSortOption = SortOption.NEWEST_FIRST
     private var isHistoryTabActive = false
 
@@ -34,6 +36,10 @@ class DebtActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         debtViewModel = ViewModelProvider(this).get(DebtViewModel::class.java)
+
+        val user = FirebaseAuth.getInstance().currentUser
+
+        user?.let {userId = it.uid}
 
         setupAdapters()
         setupRecyclerViews()
@@ -141,7 +147,7 @@ class DebtActivity : AppCompatActivity() {
     }
 
     private fun showAddDebtDialog() {
-        AddEditDebtDialogFragment(null) { newDebt ->
+        AddEditDebtDialogFragment(userId,null) { newDebt ->
             debtViewModel.insertDebt(newDebt)
         }.show(supportFragmentManager, "AddDebtDialog")
     }
