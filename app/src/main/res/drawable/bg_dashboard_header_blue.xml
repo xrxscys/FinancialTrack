@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-</selector>
+    <!-- Base gradient -->
+    <item android:drawable="@drawable/bg_dashboard_header_base" />
+
+    <!-- Wave overlay (place it near bottom) -->
+    <item
+        android:drawable="@drawable/bg_dashboard_wave"
+        android:gravity="bottom" />
+
+</layer-list>

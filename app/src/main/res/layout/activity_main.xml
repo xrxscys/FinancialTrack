@@ -96,6 +96,15 @@
                 android:layout_marginTop="16dp"
                 android:text="Reports" />
 
+            <!-- Dashboard Button -->
+            <Button
+                android:id="@+id/btn_dashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Dashboard" />
+
+
         </LinearLayout>
 
     </ScrollView>
