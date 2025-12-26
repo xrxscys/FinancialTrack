@@ -401,23 +401,23 @@
                         app:layout_constraintTop_toBottomOf="@+id/tv_balance_title"/>
 
                     <TextView
-                        android:id="@+id/tv_paid_in_total_title"
+                        android:id="@+id/tv_next_payment_title"
                         android:layout_width="wrap_content"
                         android:textSize="18sp"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
-                        android:text="Paid In Total"
+                        android:text="Next Due"
                         app:layout_constraintStart_toStartOf="@+id/tv_balance_value"
                         app:layout_constraintTop_toBottomOf="@+id/tv_balance_value"/>
 
                     <TextView
-                        android:id="@+id/tv_paid_in_total_value"
+                        android:id="@+id/tv_next_payment_value"
                         android:layout_width="wrap_content"
                         android:textSize="17sp"
                         android:layout_height="wrap_content"
                         android:text="Value"
-                        app:layout_constraintStart_toStartOf="@+id/tv_paid_in_total_title"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_paid_in_total_title"/>
+                        app:layout_constraintStart_toStartOf="@+id/tv_next_payment_title"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_next_payment_title"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <!-- TODO: Financial Goals Statistics -->
