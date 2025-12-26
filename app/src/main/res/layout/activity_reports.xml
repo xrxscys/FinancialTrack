@@ -413,7 +413,7 @@
                     <TextView
                         android:id="@+id/tv_next_payment_value"
                         android:layout_width="wrap_content"
-                        android:textSize="17sp"
+                        android:textSize="18sp"
                         android:layout_height="wrap_content"
                         android:text="Value"
                         app:layout_constraintStart_toStartOf="@+id/tv_next_payment_title"
@@ -425,11 +425,59 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        android:id="@+id/tv_goals_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Financial Goals"
                         android:textSize="22sp"
                         android:textStyle="bold"/>
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/progress_goals"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12sp"
+                            app:indicatorSize="130sp"
+                            app:trackThickness="16sp"
+                            app:trackCornerRadius="12sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tv_goals_title"/>
+                    </FrameLayout>
+                    <TextView
+                        android:id="@+id/tv_total_saved_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:text="Total Saved"
+                        app:layout_constraintTop_toBottomOf="@+id/progress_goals"/>
+                    <TextView
+                        android:id="@+id/tv_total_saved_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="Value"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_total_saved_title"/>
+                    <TextView
+                        android:id="@+id/tv_remaining_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:text="Remaining"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/progress_goals"/>
+                    <TextView
+                        android:id="@+id/tv_remaining_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="Value"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_remaining_title"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
         </LinearLayout>

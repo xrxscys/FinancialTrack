@@ -15,28 +15,28 @@ import kotlinx.coroutines.launch
  * Provides LiveData for UI observation
  */
 class NotificationViewModel(application: Application) : AndroidViewModel(application) {
-    
+
     private val repository: NotificationRepository
-    
+
     init {
         val notificationDao = AppDatabase.getDatabase(application).notificationDao()
         repository = NotificationRepository(notificationDao)
     }
-    
+
     /**
      * Get all notifications for a user, ordered by newest first
      */
     fun getAllNotifications(userId: String): LiveData<List<Notification>> {
         return repository.getAllNotifications(userId)
     }
-    
+
     /**
      * Get only unread notifications for a user
      */
     fun getUnreadNotifications(userId: String): LiveData<List<Notification>> {
         return repository.getUnreadNotifications(userId)
     }
-    
+
     /**
      * Insert a new notification into the database
      * Runs on background thread via viewModelScope
@@ -44,7 +44,7 @@ class NotificationViewModel(application: Application) : AndroidViewModel(applica
     fun insertNotification(notification: Notification) = viewModelScope.launch {
         repository.insert(notification)
     }
-    
+
     /**
      * Mark a notification as read
      * Updates the isRead flag to prevent duplicate reads
@@ -52,7 +52,7 @@ class NotificationViewModel(application: Application) : AndroidViewModel(applica
     fun markAsRead(id: Long) = viewModelScope.launch {
         repository.markAsRead(id)
     }
-    
+
     /**
      * Delete a notification
      * Removes the notification from the database permanently
@@ -60,7 +60,7 @@ class NotificationViewModel(application: Application) : AndroidViewModel(applica
     fun deleteNotification(notification: Notification) = viewModelScope.launch {
         repository.delete(notification)
     }
-    
+
     /**
      * Delete all notifications for a user
      * Use with caution - this is permanent

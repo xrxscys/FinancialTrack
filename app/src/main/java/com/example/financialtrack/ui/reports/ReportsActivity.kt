@@ -2,7 +2,6 @@ package com.example.financialtrack.ui.reports
 
 import java.util.Calendar
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +10,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Debt
-import com.example.financialtrack.data.model.DebtType
 import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
 import com.example.financialtrack.databinding.ActivityReportsBinding
@@ -57,9 +55,9 @@ class ReportsActivity : AppCompatActivity() {
 
             debtViewModel.getActiveDebts(firebaseUser.uid)
 
-           debtViewModel.activeDebts.observe(this) { debts ->
+            debtViewModel.activeDebts.observe(this) { debts ->
                updateDebts(debts)
-           }
+            }
         }
 
         binding.btnBack.setOnClickListener {
