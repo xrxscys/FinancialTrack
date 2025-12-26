@@ -17,7 +17,7 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
 
     private lateinit var adapter: TransactionAdapter
     private val viewModel: TransactionViewModel by viewModels()
-    private var userId: String = "" //placeholder
+    private lateinit var userId: String
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -26,6 +26,8 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
 
         val auth = FirebaseAuth.getInstance()
         val user = auth.currentUser
+
+        user?.let {userId = it.uid}
 
         setupRecyclerView()
         setupBackButton()
