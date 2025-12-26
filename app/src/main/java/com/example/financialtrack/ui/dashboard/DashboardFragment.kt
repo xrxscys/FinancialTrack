@@ -1,27 +1,37 @@
 package com.example.financialtrack.ui.dashboard
 
+import androidx.lifecycle.ViewModelProvider
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.financialtrack.data.database.AppDatabase
-import com.example.financialtrack.R
-import com.example.financialtrack.data.repository.TransactionRepository
 import com.example.financialtrack.databinding.FragmentDashboardBinding
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
-
+import com.example.financialtrack.ui.accounts.AccountsActivity
+import com.example.financialtrack.ui.debt.DebtActivity
+import com.example.financialtrack.ui.notifications.NotificationActivity
+import com.example.financialtrack.ui.profile.ProfileActivity
+import com.example.financialtrack.ui.reports.ReportsActivity
+import com.example.financialtrack.ui.transaction.TransactionActivity
+import com.example.financialtrack.ui.transaction.TransactionAdapter
+import com.google.firebase.auth.FirebaseAuth
+import java.text.NumberFormat
+import java.util.Locale
 
 class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: DashboardViewModel
+    private val viewModel: DashboardViewModel by viewModels {
+        ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
+    }
+
+    private lateinit var txAdapter: TransactionAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,84 +44,108 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize Repository & Factory
-        val transactionDao = AppDatabase.getDatabase(requireContext()).transactionDao()
-        val repo = TransactionRepository(transactionDao)
-        val userId = "currentUserId" // replace with your auth user ID
+        bindGreeting()
 
-        val factory = DashboardViewModelFactory(repo, userId)
-        viewModel = ViewModelProvider(this, factory).get(DashboardViewModel::class.java)
-
-        setupObservers()
-        setupRecyclerView()
-        setupClickListeners()
+        setupRecycler()
+        setupClicks()
+        observeUi()
     }
 
-    private fun setupObservers() {
-        viewModel.income.observe(viewLifecycleOwner) { income ->
-            binding.tvIncomeAmount.text =
-                String.format(getString(R.string.dashboard_income_amount), income)
+    private fun bindGreeting() {
+        val user = FirebaseAuth.getInstance().currentUser
+
+        val name = user?.displayName
+            ?.takeIf { it.isNotBlank() }
+            ?: user?.email?.substringBefore("@")
+            ?: "there"
+
+        binding.tvGreeting.text = "Hello, $name!"
+    }
+
+
+    private fun setupRecycler() {
+        txAdapter = TransactionAdapter(emptyList())
+        txAdapter.setOnClickListener {
+            // simplest: open the full Transactions screen
+            startActivity(Intent(requireContext(), TransactionActivity::class.java))
         }
 
-        viewModel.expense.observe(viewLifecycleOwner) { expense ->
-            binding.tvExpenseAmount.text =
-                String.format(getString(R.string.dashboard_expense_amount), expense)
+        binding.rvTransactions.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvTransactions.adapter = txAdapter
+    }
+
+    private fun setupClicks() {
+        binding.btnSeeAllTransactions.setOnClickListener {
+            startActivity(Intent(requireContext(), TransactionActivity::class.java))
         }
 
-        viewModel.categories.observe(viewLifecycleOwner) { map ->
-            setupPieChart(map)
+        binding.toolbarDashboard.setNavigationOnClickListener {
+            showQuickMenu()
         }
     }
 
-    private fun setupPieChart(data: Map<String, Double>) {
-        val entries = ArrayList<PieEntry>()
-        data.forEach { (category, amount) ->
-            entries.add(PieEntry(amount.toFloat(), category))
+    private fun observeUi() {
+        viewModel.totalBalance.observe(viewLifecycleOwner) { total ->
+            binding.tvTotalBalanceAmount.text = formatPhp(total)
         }
+        viewModel.monthIncome.observe(viewLifecycleOwner) { inc ->
+            binding.tvIncomeAmount.text = formatPhp(inc)
+        }
+        viewModel.monthExpense.observe(viewLifecycleOwner) { exp ->
+            binding.tvExpenseAmount.text = formatPhp(exp)
+        }
+        viewModel.recentTransactions.observe(viewLifecycleOwner) { list ->
+            txAdapter.updateTransactions(list)
+        }
+        viewModel.budgetUsedPercent.observe(viewLifecycleOwner) { percent ->
+            // LinearProgressIndicator uses 0..100
+            binding.progressBudget.progress = percent
+        }
+        viewModel.budgetPercentLabel.observe(viewLifecycleOwner) { label ->
+            binding.tvBudgetHealthPercentage.text = label
+        }
+    }
 
-        val dataSet = PieDataSet(entries, "Category Breakdown")
-
-        // Standard chart colors (Google Charts / GForms style)
-        val chartColors = listOf(
-            0xFF3366CC.toInt(),
-            0xFFDC3912.toInt(),
-            0xFFFF9900.toInt(),
-            0xFF109618.toInt(),
-            0xFF990099.toInt(),
-            0xFF0099C6.toInt(),
-            0xFFFFF200.toInt(),
-            0xFFB82E2E.toInt(),
-            0xFF316395.toInt(),
-            0xFF994499.toInt()
+    private fun showQuickMenu() {
+        val items = arrayOf(
+            "Accounts",
+            "Transactions",
+            "Budgets",
+            "Reports",
+            "Profile",
+            "Notifications",
+            "Debts & Loans"
         )
 
-        // Dynamically assign colors to each entry
-        val colors = mutableListOf<Int>()
-        for (i in entries.indices) {
-            colors.add(chartColors[i % chartColors.size])
-        }
-        dataSet.colors = colors
-
-        val pieData = PieData(dataSet)
-        binding.pieChart.data = pieData
-        binding.pieChart.invalidate()
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Go to")
+            .setItems(items) { _, which ->
+                when (which) {
+                    0 -> startActivity(Intent(requireContext(), AccountsActivity::class.java))
+                    1 -> startActivity(Intent(requireContext(), TransactionActivity::class.java))
+                    2 -> Toast.makeText(requireContext(), "Budget screen not linked yet", Toast.LENGTH_SHORT).show()
+                    3 -> startActivity(Intent(requireContext(), ReportsActivity::class.java))
+                    4 -> {
+                        val user = FirebaseAuth.getInstance().currentUser
+                        if (user != null) {
+                            val intent = Intent(requireContext(), ProfileActivity::class.java)
+                            intent.putExtra("USER_ID", user.uid)
+                            startActivity(intent)
+                        }
+                    }
+                    5 -> startActivity(Intent(requireContext(), NotificationActivity::class.java))
+                    6 -> startActivity(Intent(requireContext(), DebtActivity::class.java))
+                }
+            }
+            .show()
     }
 
-    private fun setupRecyclerView() {
-        binding.rvCategoryBreakdown.layoutManager = LinearLayoutManager(requireContext())
-        // Adapter will be added after you decide on category item layout
-    }
-
-    private fun setupClickListeners() {
-        binding.btnPrev.setOnClickListener {
-            // Handle previous month
+    private fun formatPhp(amount: Double): String {
+        val nf = NumberFormat.getNumberInstance(Locale.US).apply {
+            minimumFractionDigits = 2
+            maximumFractionDigits = 2
         }
-        binding.btnNext.setOnClickListener {
-            // Handle next month
-        }
-        binding.dropdownPeriod.setOnClickListener {
-            // Handle dropdown menu
-        }
+        return "₱${nf.format(amount)}"
     }
 
     override fun onDestroyView() {
