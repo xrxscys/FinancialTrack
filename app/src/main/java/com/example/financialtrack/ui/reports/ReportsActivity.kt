@@ -23,6 +23,7 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.firebase.auth.FirebaseAuth
+import java.text.SimpleDateFormat
 import java.util.Currency
 import java.util.Locale
 import kotlin.math.abs
@@ -92,18 +93,41 @@ class ReportsActivity : AppCompatActivity() {
     private fun updateDebts(debts: List<Debt>) {
         if (debts.isEmpty()) {
             binding.tvBalanceValue.text = "${symbol}0.00"
-            binding.tvPaidInTotalValue.text = "${symbol}0.00"
+            binding.tvNextPaymentValue.text = "No payment due"
             return
         }
 
         val totalDebt = debts.sumOf { it.amount }
         val totalPaid = debts.sumOf { it.amountPaid }
 
-        val progress = (totalPaid / totalDebt * 100).toInt()
+        val progress = if(debts.isNotEmpty()) (totalPaid / totalDebt * 100).toInt() else 0
+
+        val nextDebt = debts.filter { it.amountPaid < it.amount }
+            .minByOrNull { it.dueDate }
+
+        nextDebt?.let { debt ->
+            val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+            val dueDateFormatted = dateFormatter.format(debt.dueDate)
+
+            val diffMillis = debt.dueDate - System.currentTimeMillis()
+            val daysRemaining = (diffMillis / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(0)
+            val daysRemainingFormatted = when (daysRemaining) {
+                0 -> {
+                    "Today"
+                }
+                1 -> {
+                    "Tomorrow"
+                }
+                else -> {
+                    "In $daysRemaining"
+                }
+            }
+
+            binding.tvNextPaymentValue.text = "$dueDateFormatted, $daysRemainingFormatted"
+        }
 
         binding.tvBalanceValue.text = "$symbol${formatString(abs(totalDebt - totalPaid))}"
-        binding.tvPaidInTotalValue.text = "$symbol${formatString(totalPaid)}"
-        binding.progressDebtsLoans.progress = progress
+        binding.progressDebtsLoans.setProgressCompat(progress, true)
         binding.tvDebtPercent.text = String.format("%d%%", progress)
     }
 
