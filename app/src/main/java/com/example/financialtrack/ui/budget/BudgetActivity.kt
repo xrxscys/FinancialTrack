@@ -46,8 +46,11 @@ class BudgetActivity: AppCompatActivity(), AddEditBudgetDialogFragment.BudgetDia
 
     }
     private fun loadBudgetList(user: FirebaseUser?){
-        viewModel.getAllBudgets(userId).observe(this){
-            budgets -> adapter.updateBudgets(budgets)
+        if (user != null)
+        {
+            viewModel.getAmountSpentInRange(userId).observe(this) { budgets ->
+                adapter.updateBudgets(budgets)
+            }
         }
     }
     private fun setupHeader(){
