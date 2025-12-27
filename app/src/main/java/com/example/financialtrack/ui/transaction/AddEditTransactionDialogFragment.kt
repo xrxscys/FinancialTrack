@@ -256,9 +256,10 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
         }
         // Observe active goals and combine with accounts for transfer-to
         val userId = transaction?.userId ?: ""
-        goalsViewModel.getGoalsByStatus(com.example.financialtrack.data.model.GoalStatus.ACTIVE).observe(this) { goals ->
-            activeGoals = goals
-            val goalNames = goals.map { "Goal: ${it.goalName}" }
+        goalsViewModel.goalRepository.getGoalsByUser(userId).observe(this) { allGoals ->
+            val unarchivedGoals = allGoals.filter { !it.isArchived }
+            activeGoals = unarchivedGoals
+            val goalNames = unarchivedGoals.map { "Goal: ${it.goalName}" }
             val combined = accounts + goalNames
             val transferAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, combined)
             binding.actvTransferTo.setAdapter(transferAdapter)
@@ -272,7 +273,7 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
                         }
                     }
                     TransferTargetType.GOAL -> {
-                        val goal = goals.find { it.id == transaction?.transferToId }
+                        val goal = unarchivedGoals.find { it.id == transaction?.transferToId }
                         if (goal != null) {
                             binding.actvTransferTo.setText("Goal: ${goal.goalName}", false)
                         }

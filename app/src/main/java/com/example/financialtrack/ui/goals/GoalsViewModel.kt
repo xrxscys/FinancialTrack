@@ -13,8 +13,33 @@ import com.example.financialtrack.data.repository.FinancialGoalRepository
 import com.google.firebase.auth.FirebaseAuth
 
 class GoalsViewModel(application: Application) : AndroidViewModel(application) {
+        
+    
     private val transactionDao = AppDatabase.getDatabase(application).transactionDao()
     private val transactionViewModel = com.example.financialtrack.ui.transaction.TransactionViewModel(application)
+
+    // Automatically update goal status to COMPLETED or revert to ACTIVE based on savedAmount, and sync savedAmount in DB
+    fun updateCompletedGoals(goals: List<FinancialGoal>) {
+        viewModelScope.launch {
+            goals.forEach { goal ->
+                val savedAmount = transactionDao.getSumForGoal(goal.id) ?: 0.0
+                if (goal.status != GoalStatus.COMPLETED && savedAmount >= goal.targetAmount) {
+                    goalRepository.update(goal.copy(status = GoalStatus.COMPLETED, savedAmount = savedAmount))
+                } else if (goal.status == GoalStatus.COMPLETED && savedAmount < goal.targetAmount) {
+                    goalRepository.update(goal.copy(status = GoalStatus.ACTIVE, savedAmount = savedAmount))
+                } else if (goal.savedAmount != savedAmount) {
+                    goalRepository.update(goal.copy(savedAmount = savedAmount))
+                }
+            }
+        }
+    }
+
+    // Archive or unarchive a goal (updates isArchived)
+    fun archiveGoal(goal: FinancialGoal) {
+        viewModelScope.launch {
+            goalRepository.update(goal)
+        }
+    }
 
     // Returns a LiveData<Double> representing the sum of all transfer amounts to this goal
     fun getSavedAmountForGoal(goalId: Int): LiveData<Double> {
@@ -23,14 +48,15 @@ class GoalsViewModel(application: Application) : AndroidViewModel(application) {
     }
     
     // Update expired goals from a provided list
-    fun updateExpiredGoals(goals: List<FinancialGoal>) {
-        viewModelScope.launch {
-            val now = System.currentTimeMillis()
-            goals.filter { it.status == GoalStatus.ACTIVE && it.deadline < now }.forEach { expiredGoal ->
-                goalRepository.update(expiredGoal.copy(status = GoalStatus.EXPIRED))
-            }
-        }
-    }
+    // fun updateExpiredGoals(goals: List<FinancialGoal>) {
+    //     viewModelScope.launch {
+    //         val now = System.currentTimeMillis()
+    //         goals.filter { it.status == GoalStatus.ACTIVE && it.deadline < now }.forEach { expiredGoal ->
+    //             goalRepository.update(expiredGoal.copy(status = GoalStatus.EXPIRED))
+    //         }
+    //     }
+    // }
+    
     // Add a new goal
     fun addGoal(goal: FinancialGoal) {
         viewModelScope.launch {
