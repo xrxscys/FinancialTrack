@@ -11,39 +11,39 @@ import com.example.financialtrack.data.repository.DebtRepository
 import kotlinx.coroutines.launch
 
 class DebtViewModel(application: Application) : AndroidViewModel(application) {
-    
+
     private val repository: DebtRepository
     private val _allDebts = MutableLiveData<List<Debt>>()
     val allDebts: LiveData<List<Debt>> = _allDebts
-    
+
     private val _activeDebts = MutableLiveData<List<Debt>>()
     val activeDebts: LiveData<List<Debt>> = _activeDebts
-    
+
     private val _paidDebts = MutableLiveData<List<Debt>>()
     val paidDebts: LiveData<List<Debt>> = _paidDebts
-    
+
     private val _sortOption = MutableLiveData<SortOption>(SortOption.NEWEST_FIRST)
     val sortOption: LiveData<SortOption> = _sortOption
-    
+
     init {
         val debtDao = AppDatabase.getDatabase(application).debtDao()
         repository = DebtRepository(debtDao)
     }
-    
+
     fun getAllDebts(userId: String): LiveData<List<Debt>> {
         return repository.getAllDebts(userId)
     }
-    
+
     fun getActiveDebts(userId: String) = viewModelScope.launch {
         val debts = repository.getActiveDebts(userId)
         _activeDebts.postValue(debts.sortByCreatedDate())
     }
-    
+
     fun getPaidDebts(userId: String) = viewModelScope.launch {
         val debts = repository.getPaidDebts(userId)
         _paidDebts.postValue(debts.sortByCreatedDate())
     }
-    
+
     fun sortDebts(option: SortOption) = viewModelScope.launch {
         _sortOption.postValue(option)
         val current = _activeDebts.value ?: return@launch
@@ -57,31 +57,23 @@ class DebtViewModel(application: Application) : AndroidViewModel(application) {
         }
         _activeDebts.postValue(sorted)
     }
-    
+
     fun insertDebt(debt: Debt) = viewModelScope.launch {
         repository.insert(debt)
         // Force a refresh of active debts to show new loan immediately
         val debts = repository.getActiveDebts(debt.userId)
         _activeDebts.postValue(debts.sortByCreatedDate())
     }
-    
+
     fun updateDebt(debt: Debt) = viewModelScope.launch {
         repository.update(debt)
     }
-    
+
     fun deleteDebt(debt: Debt) = viewModelScope.launch {
         repository.delete(debt)
     }
-    
-    fun markDebtAsPaid(debt: Debt) = viewModelScope.launch {
-        val paidDebt = debt.copy(
-            isActive = false,
-            paidAt = System.currentTimeMillis()
-        )
-        repository.update(paidDebt)
-    }
-    
-    private fun List<Debt>.sortByCreatedDate() = this.sortedByDescending { it.createdAt }
+
+    private fun List<Debt>.sortByCreatedDate() = this.sortedBy { it.createdAt }
 }
 
 enum class SortOption {

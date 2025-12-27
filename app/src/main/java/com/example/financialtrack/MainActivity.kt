@@ -17,6 +17,8 @@ import com.example.financialtrack.ui.profile.ProfileActivity
 import com.example.financialtrack.ui.reports.ReportsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.example.financialtrack.ui.accounts.AccountsActivity
+import com.example.financialtrack.ui.dashboard.DashboardActivity
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -90,7 +92,14 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+
+        // Open Dashboard
+        binding.btnDashboard.setOnClickListener {
+            startActivity(Intent(this, DashboardActivity::class.java))
+        }
+
     }
+
     fun signOut() {
             // Sign out from Firebase
             authViewModel.signOut()

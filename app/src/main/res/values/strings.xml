@@ -18,11 +18,17 @@
     <string name="dropdown_content_desc">Select period</string>
     <string name="prev_month">Previous month</string>
     <string name="next_month">Next month</string>
-    <string name="current_month">Dec 2025</string>
+    <string name="current_month">December</string>
     <string name="income_label">Income</string>
     <string name="expense_label">Expenses</string>
     <string name="category_amount_format">₱%1$.2f</string>
     <string name="category_percent_format">%1$d%%</string>
+    <string name="dashboard_total_balance_label">Total Balance</string>
+    <string name="dashboard_budget_health">Budget Health</string>
+    <string name="dashboard_recent_transactions">Recent Transactions</string>
+    <string name="hello_name">Hello, User!</string>
+
+
 
     <!-- Transaction Module -->
     <string name="transaction_title">Transactions</string>

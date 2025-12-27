@@ -3,6 +3,7 @@ package com.example.financialtrack.ui.debt
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -16,6 +17,7 @@ import java.util.Date
 import java.util.Locale
 
 class AddEditDebtDialogFragment(
+    private val userId: String,
     private val debt: Debt?,
     private val onSave: (Debt) -> Unit
 ) : DialogFragment() {
@@ -97,14 +99,18 @@ class AddEditDebtDialogFragment(
                 description = description,
                 dueDate = dueDateWithTime,
                 isActive = true,
-                paidAt = null
+                paidAt = null,
+                amountPaid = 0.0,
+                remainingBalance = amount
             )
         } else {
             Debt(
                 id = 0,
-                userId = "user123",
+                userId = userId,
                 creditorName = creditor,
                 amount = amount,
+                amountPaid = 0.0,
+                remainingBalance = amount,
                 description = description,
                 dueDate = dueDateWithTime,
                 type = DebtType.LOAN,

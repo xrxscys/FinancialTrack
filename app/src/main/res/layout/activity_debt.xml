@@ -220,7 +220,7 @@
         android:layout_margin="20dp"
         android:contentDescription="Clear History"
         android:visibility="gone"
-        app:srcCompat="@drawable/ic_delete"
+        app:srcCompat="@drawable/ic_trash"
         app:backgroundTint="@color/error"
         app:elevation="4dp"
         app:fabSize="normal"

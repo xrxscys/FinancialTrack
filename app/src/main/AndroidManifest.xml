@@ -57,6 +57,9 @@
             android:name=".ui.accounts.AccountsActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.dashboard.DashboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.budget.BudgetActivity"
             android:exported="false" />
     </application>

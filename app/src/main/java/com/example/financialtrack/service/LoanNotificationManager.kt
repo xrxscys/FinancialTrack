@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Centralized loan notification manager.
- * 
+ *
  * Sends notifications at 10:00 AM on the due date.
  * One notification per loan, never duplicates.
  * Persists across app restarts via WorkManager.
@@ -92,7 +92,7 @@ class LoanNotificationManager(
 
     /**
      * Send notification using NotificationService and persist to database.
-     * 
+     *
      * PREVENTS DUPLICATES BY:
      * 1. Using notified1Day flag to prevent multiple checks
      * 2. Passing debtId to notification for database-level deduplication
@@ -105,14 +105,14 @@ class LoanNotificationManager(
             try {
                 val dateFormat = java.text.SimpleDateFormat("MMM d, yyyy", java.util.Locale.US)
                 val dueDate = dateFormat.format(java.util.Date(debt.dueDate))
-                
+
                 // Create notification object with debtId for deduplication
                 val notification = notificationService.createBillReminderNotification(
                     billName = debt.creditorName,
                     dueDate = dueDate,
                     debtId = debt.id  // Pass debtId for duplicate prevention
                 )
-                
+
                 // Save notification to database for persistence in notification page
                 // Repository handles deduplication - returns -1 if duplicate prevented
                 if (notification != null) {
@@ -143,6 +143,69 @@ class LoanNotificationManager(
         return withContext(Dispatchers.IO) {
             if (debtRepository != null) {
                 debtRepository.clearAllNotificationFlags(debt.id)
+            }
+        }
+    }
+
+    /**
+     * Send notification when a new loan is added.
+     * Prevents duplicates using database deduplication.
+     */
+    suspend fun sendLoanAddedNotification(debt: Debt) {
+        return withContext(Dispatchers.IO) {
+            try {
+                val dateFormat = java.text.SimpleDateFormat("MMM d, yyyy", java.util.Locale.US)
+                val dueDate = dateFormat.format(java.util.Date(debt.dueDate))
+
+                // Create notification object with debtId for deduplication
+                val notification = notificationService.createLoanAddedNotification(
+                    loanName = debt.creditorName,
+                    amount = debt.amount,
+                    dueDate = dueDate,
+                    debtId = debt.id
+                )
+
+                // Save notification to database - repository handles deduplication
+                if (notification != null) {
+                    val result = notificationRepository.insert(notification)
+                    if (result != -1L) {
+                        android.util.Log.d(
+                            "LoanNotificationManager",
+                            "✓ Loan added notification for ${debt.creditorName}"
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
+     * Send notification when a loan is deleted.
+     * Prevents duplicates using database deduplication.
+     */
+    suspend fun sendLoanDeletedNotification(debt: Debt) {
+        return withContext(Dispatchers.IO) {
+            try {
+                val notification = notificationService.createLoanDeletedNotification(
+                    loanName = debt.creditorName,
+                    amount = debt.amount,
+                    debtId = debt.id
+                )
+
+                // Save notification to database - repository handles deduplication
+                if (notification != null) {
+                    val result = notificationRepository.insert(notification)
+                    if (result != -1L) {
+                        android.util.Log.d(
+                            "LoanNotificationManager",
+                            "✓ Loan deleted notification for ${debt.creditorName}"
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

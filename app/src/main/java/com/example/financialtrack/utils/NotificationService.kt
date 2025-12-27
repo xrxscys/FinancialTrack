@@ -127,4 +127,39 @@ class NotificationService(private val context: Context) {
             navigationType = FinancialTrackNotificationManager.NavigationType.NONE
         )
     }
+
+    /**
+     * Notification when a new loan is added
+     */
+    fun createLoanAddedNotification(
+        loanName: String,
+        amount: Double,
+        dueDate: String,
+        debtId: Long? = null
+    ): Notification? {
+        return createNotification(
+            title = "Loan Added",
+            message = "New loan '$loanName' for ₱${String.format("%.2f", amount)} due on $dueDate",
+            type = NotificationType.DEBT_REMINDER,
+            navigationType = FinancialTrackNotificationManager.NavigationType.DEBTS,
+            debtId = debtId
+        )
+    }
+
+    /**
+     * Notification when a loan is deleted
+     */
+    fun createLoanDeletedNotification(
+        loanName: String,
+        amount: Double,
+        debtId: Long? = null
+    ): Notification? {
+        return createNotification(
+            title = "Loan Deleted",
+            message = "Loan '$loanName' for ₱${String.format("%.2f", amount)} has been removed",
+            type = NotificationType.DEBT_REMINDER,
+            navigationType = FinancialTrackNotificationManager.NavigationType.DEBTS,
+            debtId = debtId
+        )
+    }
 }

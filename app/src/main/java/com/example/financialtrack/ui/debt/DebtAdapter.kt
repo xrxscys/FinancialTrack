@@ -19,7 +19,8 @@ import java.util.Locale
 class DebtAdapter(
     private val debts: MutableList<Debt>,
     private val isHistory: Boolean = false,
-    private val onMarkAsPaid: (Debt) -> Unit = {}
+    private val onMarkAsPaid: (Debt) -> Unit = {},
+    private val onDelete: ((Debt) -> Unit)? = null
 ) : RecyclerView.Adapter<DebtAdapter.DebtViewHolder>() {
 
     private val expandedItems = mutableSetOf<Long>()
@@ -49,12 +50,12 @@ class DebtAdapter(
         private val collapsedView: ConstraintLayout = itemView.findViewById(R.id.collapsedView)
         private val expandedView: ConstraintLayout = itemView.findViewById(R.id.expandedView)
         private val expandIcon: ImageView = itemView.findViewById(R.id.expandIcon)
-        
+
         // Collapsed view elements
         private val loanTitle: TextView = itemView.findViewById(R.id.loanTitle)
         private val loanAmount: TextView = itemView.findViewById(R.id.loanAmount)
         private val loanDeadline: TextView = itemView.findViewById(R.id.loanDeadline)
-        
+
         // Expanded view elements
         private val descriptionText: TextView = itemView.findViewById(R.id.descriptionText)
         private val fullDetailsText: TextView = itemView.findViewById(R.id.fullDetailsText)
@@ -83,29 +84,27 @@ class DebtAdapter(
             expandedView.visibility = if (isExpandedNow) View.VISIBLE else View.GONE
             expandIcon.rotation = if (isExpandedNow) 180f else 0f
 
-            descriptionText.text = if (debt.description.isEmpty()) 
+            descriptionText.text = if (debt.description.isEmpty())
                 "No description provided" else debt.description
 
             fullDetailsText.text = buildString {
                 append("Amount: ₱${formatAmount(debt.amount)}\n")
-                append("Due: ${sdf.format(Date(debt.dueDate))}\n")
+                append("Remaining: ₱${formatAmount(debt.remainingBalance)}\n")
+                append("Due: ${dateOnlySdf.format(Date(debt.dueDate))}\n")
                 append("Created: ${dateOnlySdf.format(Date(debt.createdAt))}\n")
                 if (debt.paidAt != null) {
-                    append("Paid: ${dateOnlySdf.format(Date(debt.paidAt!!))}\n")
+                    append("Paid: ${dateOnlySdf.format(Date(debt.paidAt))}\n")
                 }
             }
 
-            // Mark as paid checkbox
-            markAsPaidCheckbox.isChecked = debt.paidAt != null
-            markAsPaidCheckbox.visibility = if (isHistory) View.GONE else View.VISIBLE
-            markAsPaidCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    onMarkAsPaid(debt)
-                }
-            }
+            // Mark as Paid checkbox - REMOVED (loans are marked paid only when amountPaid == amount)
+            markAsPaidCheckbox.visibility = View.GONE
 
-            // Delete button (only for history)
-            deleteButton.visibility = if (isHistory) View.VISIBLE else View.GONE
+            // Delete button - visible for all loans
+            deleteButton.visibility = View.VISIBLE
+            deleteButton.setOnClickListener {
+                onDelete?.invoke(debt)
+            }
 
             // Collapse/expand on click
             collapsedView.setOnClickListener {
@@ -123,10 +122,9 @@ class DebtAdapter(
         }
 
         private fun getDaysUntilDeadline(dueDate: Long): Long {
-            val now = Calendar.getInstance()
             val deadline = Calendar.getInstance()
             deadline.timeInMillis = dueDate
-            
+
             val diffTime = dueDate - System.currentTimeMillis()
             return diffTime / (1000 * 60 * 60 * 24)
         }
