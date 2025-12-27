@@ -28,8 +28,14 @@ class HistoryGoalsFragment : Fragment() {
         adapter = GoalsAdapter(viewLifecycleOwner)
         binding.rvGoals.layoutManager = LinearLayoutManager(requireContext())
         binding.rvGoals.adapter = adapter
-        viewModel.getGoalsByStatus(GoalStatus.COMPLETED, GoalStatus.EXPIRED).observe(viewLifecycleOwner) { goals ->
-            val goalWithSavedList = goals.map { goal ->
+        adapter.onGoalClickListener = { goalWithSaved ->
+            val goal = goalWithSaved.goal
+            val bottomSheet = GoalTransactionsBottomSheet.newInstance(goal.id, goal.goalName)
+            bottomSheet.show(parentFragmentManager, "GoalTransactionsBottomSheet")
+        }
+        viewModel.goalRepository.getGoalsByUser(viewModel.userId).observe(viewLifecycleOwner) { allGoals ->
+            val historyGoals = allGoals.filter { it.isArchived }
+            val goalWithSavedList = historyGoals.map { goal ->
                 GoalWithSavedAmount(goal, viewModel.getSavedAmountForGoal(goal.id))
             }
             adapter.submitList(goalWithSavedList)

@@ -32,4 +32,7 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE transferToId = :targetId AND transferToType = :targetType ORDER BY date DESC")
     fun getTransactionsByTransferTarget(targetId: Int, targetType: TransferTargetType): LiveData<List<Transaction>>
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE transferToId = :goalId AND transferToType = 'GOAL'")
+    suspend fun getSumForGoal(goalId: Int): Double?
 }
