@@ -125,7 +125,7 @@
                 android:alpha="0.85"
                 android:text="Total Balance"
                 android:textColor="@android:color/white"
-                android:textSize="13sp" android:fontWeight="600"
+                android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"/>
 
         </LinearLayout>
