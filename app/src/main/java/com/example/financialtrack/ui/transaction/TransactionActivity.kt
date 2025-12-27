@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.databinding.ActivityTransactionBinding
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -26,13 +27,24 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
 
         val auth = FirebaseAuth.getInstance()
         val user = auth.currentUser
+        val pageAdapter = TransactionPagerAdapter(this)
+        binding.viewPager.adapter = pageAdapter
+
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "Expenses"
+                1 -> "Income"
+                else -> "Transfers"
+            }
+        }.attach()
 
         user?.let {userId = it.uid}
 
-        setupRecyclerView()
+//        setupRecyclerView()
+
         setupBackButton()
         setupCreateButton()
-        loadTransactions(user)
+//        loadTransactions(user)
     }
 
     private fun setupCreateButton(){
@@ -67,7 +79,7 @@ class TransactionActivity : AppCompatActivity(), AddEditTransactionDialogFragmen
     }
 
 
-    private fun showEditDialog(transaction: Transaction){
+    fun showEditDialog(transaction: Transaction){
         val dialog = AddEditTransactionDialogFragment.newInstance(transaction)
         dialog.setListener(this)
         dialog.show(supportFragmentManager, "EditTransactionDialog")
