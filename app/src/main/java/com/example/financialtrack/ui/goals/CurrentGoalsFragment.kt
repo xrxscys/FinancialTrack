@@ -28,12 +28,17 @@ class CurrentGoalsFragment : Fragment() {
         adapter = GoalsAdapter(viewLifecycleOwner)
         binding.rvGoals.layoutManager = LinearLayoutManager(requireContext())
         binding.rvGoals.adapter = adapter
+        adapter.onGoalClickListener = { goalWithSaved ->
+            val goal = goalWithSaved.goal
+            val bottomSheet = GoalTransactionsBottomSheet.newInstance(goal.id, goal.goalName)
+            bottomSheet.show(parentFragmentManager, "GoalTransactionsBottomSheet")
+        }
         // Observe all goals and update expired ones
         viewModel.goalRepository.getGoalsByUser(viewModel.userId).observe(viewLifecycleOwner) { allGoals ->
-            viewModel.updateExpiredGoals(allGoals)
-            val activeGoals = allGoals.filter { it.status == com.example.financialtrack.data.model.GoalStatus.ACTIVE }
+            viewModel.updateCompletedGoals(allGoals)
+            val currentGoals = allGoals.filter { !it.isArchived }
             // Build list of GoalWithSavedAmount
-            val goalWithSavedList = activeGoals.map { goal ->
+            val goalWithSavedList = currentGoals.map { goal ->
                 GoalWithSavedAmount(goal, viewModel.getSavedAmountForGoal(goal.id))
             }
             adapter.submitList(goalWithSavedList)
@@ -56,17 +61,22 @@ class CurrentGoalsFragment : Fragment() {
         var selectedDeadline: Long? = null
 
         btnSelectDeadline.setOnClickListener {
-            val datePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select Deadline")
-                .setSelection(com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds())
-                .build()
-
-            datePicker.addOnPositiveButtonClickListener { selectedDate ->
-                selectedDeadline = selectedDate
-                val sdf = java.text.SimpleDateFormat("MM/dd/yyyy", java.util.Locale.getDefault())
-                btnSelectDeadline.text = sdf.format(java.util.Date(selectedDate))
-            }
-            datePicker.show(parentFragmentManager, "DATE_PICKER")
+            val calendar = java.util.Calendar.getInstance()
+            val minDate = calendar.apply { add(java.util.Calendar.DAY_OF_YEAR, 1) }.timeInMillis
+            val datePicker = android.app.DatePickerDialog(
+                requireContext(),
+                { _, year, month, dayOfMonth ->
+                    calendar.set(year, month, dayOfMonth)
+                    selectedDeadline = calendar.timeInMillis
+                    val sdf = java.text.SimpleDateFormat("MM/dd/yyyy", java.util.Locale.getDefault())
+                    btnSelectDeadline.text = sdf.format(java.util.Date(selectedDeadline!!))
+                },
+                calendar.get(java.util.Calendar.YEAR),
+                calendar.get(java.util.Calendar.MONTH),
+                calendar.get(java.util.Calendar.DAY_OF_MONTH)
+            )
+            datePicker.datePicker.minDate = minDate
+            datePicker.show()
         }
 
         builder.setView(dialogView)
@@ -74,8 +84,8 @@ class CurrentGoalsFragment : Fragment() {
             .setPositiveButton("Add") { dialog, _ ->
                 val goalName = etGoalName.text.toString().trim()
                 val targetAmount = etTargetAmount.text.toString().toDoubleOrNull()
-
-                if (goalName.isNotEmpty() && targetAmount != null && targetAmount > 0 && selectedDeadline != null) {
+                val now = System.currentTimeMillis()
+                if (goalName.isNotEmpty() && targetAmount != null && targetAmount > 0 && selectedDeadline != null && selectedDeadline!! > now) {
                     val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
                     if (userId != null) {
                         val newGoal = com.example.financialtrack.data.model.FinancialGoal(
@@ -89,7 +99,7 @@ class CurrentGoalsFragment : Fragment() {
                         android.widget.Toast.makeText(requireContext(), "User not logged in!", android.widget.Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    android.widget.Toast.makeText(requireContext(), "Please fill all fields correctly!", android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast.makeText(requireContext(), "Please fill all fields correctly and select a deadline after today!", android.widget.Toast.LENGTH_SHORT).show()
                 }
                 dialog.dismiss()
             }

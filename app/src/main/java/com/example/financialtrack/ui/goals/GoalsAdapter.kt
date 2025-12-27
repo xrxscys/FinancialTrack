@@ -17,7 +17,7 @@ import androidx.lifecycle.Observer
 data class GoalWithSavedAmount(val goal: FinancialGoal, val savedAmountLiveData: LiveData<Double>)
 
 class GoalsAdapter(private val lifecycleOwner: LifecycleOwner) : ListAdapter<GoalWithSavedAmount, GoalsAdapter.GoalViewHolder>(GoalWithSavedAmountDiffCallback()) {
-    var onGoalClickListener: ((FinancialGoal) -> Unit)? = null
+    var onGoalClickListener: ((GoalWithSavedAmount) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GoalViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_financial_goal, parent, false)
@@ -69,7 +69,7 @@ class GoalsAdapter(private val lifecycleOwner: LifecycleOwner) : ListAdapter<Goa
                 }
                 progressBar.progressTintList = android.content.res.ColorStateList.valueOf(progressColor)
 
-                // Show status only for COMPLETED and EXPIRED
+                val now = System.currentTimeMillis()
                 if (goal.status == com.example.financialtrack.data.model.GoalStatus.COMPLETED) {
                     statusText.visibility = View.VISIBLE
                     statusText.text = "COMPLETED"
@@ -80,13 +80,18 @@ class GoalsAdapter(private val lifecycleOwner: LifecycleOwner) : ListAdapter<Goa
                     statusText.text = "EXPIRED"
                     statusText.setTextColor(androidx.core.content.ContextCompat.getColor(context, com.example.financialtrack.R.color.status_expired))
                     statusText.setTypeface(null, android.graphics.Typeface.BOLD)
+                } else if (goal.deadline < now) {
+                    statusText.visibility = View.VISIBLE
+                    statusText.text = "DUE"
+                    statusText.setTextColor(androidx.core.content.ContextCompat.getColor(context, com.example.financialtrack.R.color.status_expired))
+                    statusText.setTypeface(null, android.graphics.Typeface.BOLD)
                 } else {
                     statusText.visibility = View.GONE
                 }
             }
             goalWithSaved.savedAmountLiveData.observe(lifecycleOwner, savedAmountObserver!!)
 
-            itemView.setOnClickListener { onGoalClickListener?.invoke(goal) }
+            itemView.setOnClickListener { onGoalClickListener?.invoke(goalWithSaved) }
         }
     }
 
