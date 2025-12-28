@@ -1,25 +1,18 @@
 package com.example.financialtrack.ui.reports
 
-import java.util.Calendar
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.financialtrack.R
-import com.example.financialtrack.data.model.Debt
-import com.example.financialtrack.data.model.FinancialGoal
-import com.example.financialtrack.data.model.GoalStatus
-import com.example.financialtrack.data.model.Transaction
-import com.example.financialtrack.data.model.TransactionType
+import com.example.financialtrack.data.model.*
 import com.example.financialtrack.databinding.ActivityReportsBinding
 import com.example.financialtrack.ui.accounts.AccountsViewModel
 import com.example.financialtrack.ui.debt.DebtViewModel
 import com.example.financialtrack.ui.goals.GoalsViewModel
-import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -29,18 +22,11 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.firebase.auth.FirebaseAuth
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.SimpleDateFormat
-import java.util.Currency
-import java.util.Locale
+import java.util.*
 import kotlin.math.abs
-
-
-data class TimeRemaining(
-    val dueDate: String,
-    val daysRemaining: Int,
-    val daysRemainingFormatted: String,
-    val weeksRemaining: Double
-)
 
 class ReportsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReportsBinding
@@ -53,6 +39,18 @@ class ReportsActivity : AppCompatActivity() {
     private var selectedAccountId: Int? = null
     private var allTransactions: List<Transaction> = emptyList()
 
+    private enum class StatsRange { WEEKLY, MONTHLY, RANGE }
+
+    private var selectedRange: StatsRange = StatsRange.MONTHLY
+    private var rangeStart: Long = 0
+    private var rangeEnd: Long = 0
+
+    private data class TimeRemaining(
+        val dueDate: String,
+        val daysRemaining: Int,
+        val daysRemainingFormatted: String,
+        val weeksRemaining: Double
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,98 +64,223 @@ class ReportsActivity : AppCompatActivity() {
             insets
         }
 
-        val user = FirebaseAuth.getInstance().currentUser
+        setInitialMonth()
+        setupAccountFilter()
+        observeTransactions()
+        observeDebts()
+        observeGoals()
 
-        user?.let { firebaseUser ->
-            accountsViewModel.accounts.observe(this) { accounts ->
-                val accountNames = mutableListOf("All Accounts") + accounts.map { it.name }
+        binding.btnBack.setOnClickListener { finish() }
+        binding.btnStatsRange.setOnClickListener { showStatsRangeDialog() }
+    }
 
-                binding.btnAccountFilter.text = "All Accounts"
+    private fun setInitialMonth() {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.DAY_OF_MONTH, 1)
+        rangeStart = cal.timeInMillis
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
+        rangeEnd = cal.timeInMillis
+        selectedRange = StatsRange.MONTHLY
 
-                binding.btnAccountFilter.setOnClickListener {
-                    AlertDialog.Builder(this)
-                        .setTitle("Select Account")
-                        .setItems(accountNames.toTypedArray()) { _, index ->
-                            selectedAccountId = if (index == 0) null else accounts[index - 1].id
-                            binding.btnAccountFilter.text = accountNames[index]
+        val now = Calendar.getInstance()
+        binding.btnStatsRange.text = if (
+            cal.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
+            cal.get(Calendar.YEAR) == now.get(Calendar.YEAR)
+        ) "This Month" else SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(
+            Date(
+                rangeStart
+            )
+        )
 
-                            updateAll()
-                        }
-                        .show()
-                }
-            }
+        updateDateRangeLabel()
+    }
 
-            viewModel.getAllTransactions(firebaseUser.uid).observe(this) { transactions ->
-                allTransactions = transactions
-                updateAll()
-            }
+    private fun setupAccountFilter() {
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        accountsViewModel.accounts.observe(this) { accounts ->
+            val accountNames = mutableListOf("All Accounts") + accounts.map { it.name }
+            binding.btnAccountFilter.text = "All Accounts"
 
-            debtViewModel.getActiveDebts(firebaseUser.uid)
-
-            debtViewModel.activeDebts.observe(this) { debts ->
-                updateDebts(debts)
-            }
-
-            goalViewModel.getGoalsByStatus(GoalStatus.ACTIVE).observe(this) { goals ->
-                if (goals.isEmpty()) {
-                    updateGoals(emptyList())
-                    return@observe
-                }
-
-                val populatedGoals = mutableListOf<FinancialGoal>()
-                var loadedCount = 0
-
-                goals.forEach { goal ->
-                    goalViewModel.getSavedAmountForGoal(goal.id).observe(this) { saved ->
-                        val updatedGoal = goal.copy(savedAmount = saved ?: 0.0)
-                        populatedGoals.add(updatedGoal)
-                        loadedCount++
-
-                        if (loadedCount == goals.size) {
-                            updateGoals(populatedGoals)
-                        }
+            binding.btnAccountFilter.setOnClickListener {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle("Select Account")
+                    .setItems(accountNames.toTypedArray()) { _, index ->
+                        selectedAccountId = if (index == 0) null else accounts[index - 1].id
+                        binding.btnAccountFilter.text = accountNames[index]
+                        updateAll()
                     }
-                }
+                    .show()
             }
-        }
-
-        binding.btnBack.setOnClickListener {
-            finish()
         }
     }
 
+    private fun observeTransactions() {
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        viewModel.getAllTransactions(user.uid).observe(this) {
+            allTransactions = it
+            updateAll()
+        }
+    }
+
+    private fun observeDebts() {
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        debtViewModel.getActiveDebts(user.uid)
+        debtViewModel.activeDebts.observe(this) { updateDebts(it) }
+    }
+
+    private fun observeGoals() {
+        goalViewModel.getGoalsByStatus(GoalStatus.ACTIVE).observe(this) { goals ->
+            if (goals.isEmpty()) updateGoals(emptyList()) else populateGoals(goals)
+        }
+    }
+
+    private fun populateGoals(goals: List<FinancialGoal>) {
+        val populatedGoals = mutableListOf<FinancialGoal>()
+        var loadedCount = 0
+        goals.forEach { goal ->
+            goalViewModel.getSavedAmountForGoal(goal.id).observe(this) { saved ->
+                populatedGoals.add(goal.copy(savedAmount = saved ?: 0.0))
+                loadedCount++
+                if (loadedCount == goals.size) updateGoals(populatedGoals)
+            }
+        }
+    }
+
+    private fun showStatsRangeDialog() {
+        val options = arrayOf("Weekly", "Monthly", "Custom Range")
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Select Stats Range")
+            .setItems(options) { _, index ->
+                when (index) {
+                    0 -> showWeeklyDialog()
+                    1 -> showMonthlyDialog()
+                    2 -> showCustomRangeDialog()
+                }
+            }
+            .show()
+    }
+
+    private fun showWeeklyDialog() {
+        val cal = Calendar.getInstance()
+        val month = cal.get(Calendar.MONTH)
+        val year = cal.get(Calendar.YEAR)
+        val maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+        val weeks = mutableListOf<Pair<Long, Long>>()
+        val labels = mutableListOf<String>()
+        var day = 1
+
+        while (day <= maxDay) {
+            val start = Calendar.getInstance().apply { set(year, month, day, 0, 0, 0) }
+            val endDay = (day + 6).coerceAtMost(maxDay)
+            val end = Calendar.getInstance().apply { set(year, month, endDay, 23, 59, 59) }
+            weeks.add(start.timeInMillis to end.timeInMillis)
+            labels.add("${formatDate(start.timeInMillis)} - ${formatDate(end.timeInMillis)}")
+            day += 7
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Select Week")
+            .setItems(labels.toTypedArray()) { _, index ->
+                rangeStart = weeks[index].first
+                rangeEnd = weeks[index].second
+                selectedRange = StatsRange.WEEKLY
+                binding.btnStatsRange.text = "Week ${index + 1}"
+                updateDateRangeLabel()
+                updateAll()
+            }
+            .show()
+    }
+
+    private fun showMonthlyDialog() {
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        val years = (currentYear - 5..currentYear + 5).map { it.toString() }.toTypedArray()
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Select Year")
+            .setItems(years) { _, yearIndex ->
+                val selectedYear = currentYear - 5 + yearIndex
+                val months = arrayOf(
+                    "January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                )
+                MaterialAlertDialogBuilder(this)
+                    .setTitle("Select Month")
+                    .setItems(months) { _, monthIndex ->
+                        val cal = Calendar.getInstance().apply {
+                            set(selectedYear, monthIndex, 1, 0, 0, 0)
+                            rangeStart = timeInMillis
+                            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
+                            set(Calendar.HOUR_OF_DAY, 23)
+                            set(Calendar.MINUTE, 59)
+                            set(Calendar.SECOND, 59)
+                            rangeEnd = timeInMillis
+                        }
+                        selectedRange = StatsRange.MONTHLY
+                        binding.btnStatsRange.text =
+                            if (monthIndex == Calendar.getInstance().get(Calendar.MONTH) &&
+                                selectedYear == Calendar.getInstance().get(Calendar.YEAR)
+                            ) "This Month"
+                            else SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(
+                                Date(
+                                    rangeStart
+                                )
+                            )
+                        updateDateRangeLabel()
+                        updateAll()
+                    }
+                    .show()
+            }
+            .show()
+    }
+
+    private fun showCustomRangeDialog() {
+        val selection = androidx.core.util.Pair(rangeStart, rangeEnd)
+        MaterialDatePicker.Builder.dateRangePicker()
+            .setTitleText("Select Date Range")
+            .setSelection(selection)
+            .build()
+            .apply {
+                addOnPositiveButtonClickListener { range ->
+                    rangeStart = range.first
+                    rangeEnd = range.second
+                    selectedRange = StatsRange.RANGE
+                    binding.btnStatsRange.text =
+                        "${formatDate(rangeStart)} - ${formatDate(rangeEnd)}"
+                    updateDateRangeLabel()
+                    updateAll()
+                }
+            }
+            .show(supportFragmentManager, "DATE_RANGE_PICKER")
+    }
+
+    private fun updateDateRangeLabel() {
+        binding.tvDateRange.text = "${formatDate(rangeStart)} - ${formatDate(rangeEnd)}"
+    }
+
     private fun updateAll() {
-        val filteredTransactions = selectedAccountId?.let { accountId ->
+        val filtered = selectedAccountId?.let { accountId ->
             allTransactions.filter { it.accountId == accountId || it.transferToId == accountId }
         } ?: allTransactions
-
-        updateOverview(filteredTransactions)
-        showBarChart(filteredTransactions)
-        showPieChart(filteredTransactions)
+        val dateFiltered = filtered.filter { it.date in rangeStart..rangeEnd }
+        updateOverview(dateFiltered)
+        showBarChart(dateFiltered)
+        showPieChart(dateFiltered)
     }
 
     private fun updateOverview(transactions: List<Transaction>) {
         var totalIncome = 0.0
         var totalExpenses = 0.0
-
-        for (t in transactions) {
+        transactions.forEach { t ->
             when (t.type) {
                 TransactionType.INCOME -> totalIncome += t.amount
                 TransactionType.EXPENSE -> totalExpenses += t.amount
                 else -> {}
             }
         }
-
-        binding.tvTi.text = "$symbol${formatString(totalIncome)}"
-        binding.tvTe.text = "$symbol${formatString(totalExpenses)}"
-
-        if (totalExpenses > totalIncome) {
-            binding.tvNetIncSymbol.text = "-$symbol"
-        } else {
-            binding.tvNetIncSymbol.text = "+$symbol"
-        }
-        val net = totalIncome - totalExpenses
-        binding.tvNetInc.text = formatString(abs(net))
+        binding.tvTi.text = "$symbol${formatAmount(totalIncome)}"
+        binding.tvTe.text = "$symbol${formatAmount(totalExpenses)}"
+        binding.tvNetIncSymbol.text = if (totalExpenses > totalIncome) "-$symbol" else "+$symbol"
+        binding.tvNetInc.text = formatAmount(abs(totalIncome - totalExpenses))
     }
 
     private fun updateDebts(debts: List<Debt>) {
@@ -166,33 +289,23 @@ class ReportsActivity : AppCompatActivity() {
             binding.tvNextPaymentValue.text = "No payment due"
             return
         }
-
         val totalDebt = debts.sumOf { it.amount }
         val totalPaid = debts.sumOf { it.amountPaid }
-
-
-        val nextDebt = debts.filter { it.amountPaid < it.amount }
-            .minByOrNull { it.dueDate }
-
-        nextDebt?.let { debt ->
-            val dates = getDaysWeeksRemaining(debt.dueDate)
-            val dueDateFormatted = dates.dueDate
-            val daysRemainingFormatted = dates.daysRemainingFormatted
-
-            binding.tvNextPaymentValue.text = "$dueDateFormatted, $daysRemainingFormatted"
+        val nextDebt = debts.filter { it.amountPaid < it.amount }.minByOrNull { it.dueDate }
+        nextDebt?.let {
+            val rem = getDaysWeeksRemaining(it.dueDate)
+            binding.tvNextPaymentValue.text = "${rem.dueDate}, ${rem.daysRemainingFormatted}"
         }
-
-        val progress = calculatePercentage(totalDebt, totalPaid)
-
-        binding.tvBalanceValue.text = "$symbol${formatString(abs(totalDebt - totalPaid))}"
+        val progress = ((totalPaid / totalDebt) * 100).toInt().coerceAtMost(100)
+        binding.tvBalanceValue.text = "$symbol${formatAmount(totalDebt - totalPaid)}"
         binding.progressDebtsLoans.setProgressCompat(progress, true)
-        binding.tvDebtPercent.text = String.format("%d%%", progress)
+        binding.tvDebtPercent.text = "$progress%"
     }
 
     private fun updateGoals(goals: List<FinancialGoal>) {
         if (goals.isEmpty()) {
             binding.tvTotalSavedValue.text = "${symbol}0.00"
-            binding.tvRemainingValue.text = "${symbol}0.00"
+            binding.tvRemainingValue.text = "${symbol}.00"
             binding.tvAvgPerTimepDailyValue.text = "Daily: ${symbol}0.00"
             binding.tvAvgPerTimepWeeklyValue.text = "Weekly: ${symbol}0.00"
             binding.tvNearestGoalValue.text = "${symbol}0.00"
@@ -206,175 +319,101 @@ class ReportsActivity : AppCompatActivity() {
         val remaining = goals.sumOf { it.targetAmount - it.savedAmount }
         val targetAmount = goals.sumOf { it.targetAmount }
 
-        val nearestGoal = goals.filter { it.status == GoalStatus.ACTIVE }
-            .minByOrNull { it.deadline }
-
-        nearestGoal?.let { goal ->
-            val dates = getDaysWeeksRemaining(goal.deadline)
-            val daysRemaining = dates.daysRemaining
-            val daysRemainingFormatted = dates.daysRemainingFormatted
-            val dueDateFormatted = dates.dueDate
-            val weeksRemaining = dates.weeksRemaining
-
+        val nearestGoal =
+            goals.filter { it.status == GoalStatus.ACTIVE }.minByOrNull { it.deadline }
+        nearestGoal?.let {
+            val rem = getDaysWeeksRemaining(it.deadline)
             binding.tvAvgPerTimepDailyValue.text =
-                "Daily: $symbol${formatString(goal.targetAmount / daysRemaining)}"
+                "Daily: $symbol${formatAmount(it.targetAmount / rem.daysRemaining)}"
             binding.tvAvgPerTimepWeeklyValue.text =
-                "Weekly: $symbol${formatString(goal.targetAmount / weeksRemaining)}"
-
-            binding.tvNearestGoalValue.text = "$symbol${formatString(goal.targetAmount)}"
-            binding.tvNearestGoalDeadlineValue.text = "$daysRemainingFormatted ($dueDateFormatted)"
+                "Weekly: $symbol${formatAmount(it.targetAmount / rem.weeksRemaining)}"
+            binding.tvNearestGoalValue.text = "$symbol${formatAmount(it.targetAmount)}"
+            binding.tvNearestGoalDeadlineValue.text =
+                "${rem.daysRemainingFormatted} (${rem.dueDate})"
         }
 
-        val progress = calculatePercentage(targetAmount, totalSaved)
-
-        binding.tvTotalSavedValue.text = "$symbol$totalSaved"
-        binding.tvRemainingValue.text = "$symbol$remaining"
-
+        val progress = ((totalSaved / targetAmount) * 100).toInt().coerceAtMost(100)
+        binding.tvTotalSavedValue.text = "$symbol${formatAmount(totalSaved)}"
+        binding.tvRemainingValue.text = "$symbol${formatAmount(remaining)}"
         binding.progressGoals.setProgressCompat(progress, true)
-        binding.tvProgressGoalsPercent.text = String.format("%d%%", progress)
+        binding.tvProgressGoalsPercent.text = "$progress%"
     }
 
     private fun showPieChart(transactions: List<Transaction>) {
-        val expenseByCategory: Map<String, Double> =
-            transactions
-                .filter { it.type == TransactionType.EXPENSE }
-                .groupBy { it.category }
-                .mapValues { entry ->
-                    entry.value.sumOf { it.amount }
-                }
+        val expenseByCategory = transactions.filter { it.type == TransactionType.EXPENSE }
+            .groupBy { it.category }.mapValues { it.value.sumOf { t -> t.amount } }
 
-        val entries = expenseByCategory.map { (category, total) ->
-            PieEntry(total.toFloat(), category)
-        }
-
-        val dataSet = PieDataSet(entries, "").apply {
-            sliceSpace = 10f
-            setDrawValues(true)
-            colors = listOf(
-                ContextCompat.getColor(this@ReportsActivity, R.color.primary),
-                ContextCompat.getColor(this@ReportsActivity, R.color.income_green),
-                ContextCompat.getColor(this@ReportsActivity, R.color.expense_red),
-                ContextCompat.getColor(this@ReportsActivity, R.color.secondary),
-                ContextCompat.getColor(this@ReportsActivity, R.color.primary_dark)
-            )
-
-            valueTextSize = 12f
-        }
-
-        val data = PieData(dataSet)
+        val entries = expenseByCategory.map { PieEntry(it.value.toFloat(), it.key) }
+        val colors = listOf(
+            R.color.primary,
+            R.color.income_green,
+            R.color.expense_red,
+            R.color.secondary,
+            R.color.primary_dark
+        ).map { ContextCompat.getColor(this, it) }
 
         binding.pieChart.apply {
-            this.data = data
+            data = PieData(PieDataSet(entries, "").apply {
+                sliceSpace = 10f; setDrawValues(true); this.colors = colors; valueTextSize = 12f
+            })
             setUsePercentValues(true)
-
             description.isEnabled = false
             legend.isEnabled = true
-
             setEntryLabelColor(ContextCompat.getColor(context, R.color.transparent))
-
             invalidate()
         }
     }
 
     private fun showBarChart(transactions: List<Transaction>) {
-        val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
-
-        val totalsByDay = FloatArray(7) { 0f }
         val cal = Calendar.getInstance()
-        transactions.forEach { tx ->
-            cal.timeInMillis = tx.date
-            val dayIndex = cal.get(Calendar.DAY_OF_WEEK) - 1
-            if (dayIndex in 0..6) {
-                totalsByDay[dayIndex] += tx.amount.toFloat()
-            }
+        val days = mutableMapOf<String, Float>()
+        val sdf = SimpleDateFormat("EEE", Locale.getDefault())
+        var current = Calendar.getInstance().apply { timeInMillis = rangeStart }
+        while (current.timeInMillis <= rangeEnd) {
+            days[sdf.format(current.time)] = 0f
+            current.add(Calendar.DAY_OF_MONTH, 1)
         }
 
-        val entries = totalsByDay.mapIndexed { index, value ->
-            BarEntry(index.toFloat(), value)
+        transactions.forEach {
+            val day = sdf.format(Date(it.date))
+            days[day] = days.getOrDefault(day, 0f) + it.amount.toFloat()
         }
 
-        val dataSet = BarDataSet(entries, "Weekly Spending").apply {
-            color = ContextCompat.getColor(this@ReportsActivity, R.color.primary)
-            valueTextSize = 0f
-            barBorderWidth = 0f
+        val entries = days.entries.mapIndexed { idx, e -> BarEntry(idx.toFloat(), e.value) }
+        val dataSet = BarDataSet(entries, "Spending").apply {
+            color = ContextCompat.getColor(this@ReportsActivity, R.color.primary); valueTextSize =
+            0f
         }
-
-        val barData = BarData(dataSet).apply {
-            barWidth = 0.5f
-        }
-
         binding.barChart.apply {
-            data = barData
+            data = BarData(dataSet).apply { barWidth = 0.5f }
             setFitBars(true)
             description.isEnabled = false
-            animateY(600)
             legend.isEnabled = false
-
+            animateY(600)
             xAxis.apply {
-                valueFormatter = IndexAxisValueFormatter(daysOfWeek)
-                granularity = 1f
-                position = XAxis.XAxisPosition.BOTTOM
-                setDrawGridLines(false)
-                setDrawAxisLine(false)
+                valueFormatter = IndexAxisValueFormatter(days.keys.toList()); granularity =
+                1f; position = XAxis.XAxisPosition.BOTTOM; setDrawGridLines(false); setDrawAxisLine(
+                false
+            )
             }
-
-            axisLeft.apply {
-                axisMinimum = 0f
-                val maxVal = totalsByDay.maxOrNull() ?: 0f
-                val interval = when {
-                    maxVal >= 1000 -> 1000f
-                    maxVal >= 100 -> 100f
-                    else -> 10f
-                }
-                granularity = interval
-                setDrawGridLines(false)
-                setDrawAxisLine(false)
-            }
-
+            axisLeft.apply { axisMinimum = 0f; setDrawGridLines(false); setDrawAxisLine(false) }
             axisRight.isEnabled = false
             invalidate()
         }
-
-    }
-
-    private fun calculatePercentage(total: Double, amount: Double): Int {
-        val progress = ((amount / total) * 100).toInt()
-        return if (progress > 100) {
-            100
-        } else progress
     }
 
     private fun getDaysWeeksRemaining(date: Long): TimeRemaining {
-        val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-        val dueDateFormatted = dateFormatter.format(date)
-
-        val diffMillis = date - System.currentTimeMillis()
-        val daysRemaining = (diffMillis / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(0)
-
-        val daysRemainingFormatted = when (daysRemaining) {
-            0 -> {
-                "Today"
-            }
-
-            1 -> {
-                "Tomorrow"
-            }
-
-            else -> {
-                "In $daysRemaining days"
-            }
+        val df = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        val diff =
+            ((date - System.currentTimeMillis()) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(0)
+        val daysText = when (diff) {
+            0 -> "Today"; 1 -> "Tomorrow"; else -> "In $diff days"
         }
-
-        val weeksRemaining = (daysRemaining / 7.0).coerceAtLeast(1.0)
-        return TimeRemaining(
-            dueDateFormatted,
-            daysRemaining,
-            daysRemainingFormatted,
-            weeksRemaining
-        )
+        return TimeRemaining(df.format(Date(date)), diff, daysText, (diff / 7.0).coerceAtLeast(1.0))
     }
 
-    private fun formatString(amount: Double): String {
-        return String.format(Locale("en", "PH"), "%.2f", amount)
-    }
+    private fun formatDate(ms: Long) =
+        SimpleDateFormat("dd MMM", Locale.getDefault()).format(Date(ms))
+
+    private fun formatAmount(amount: Double) = String.format(Locale("en", "PH"), "%.2f", amount)
 }
