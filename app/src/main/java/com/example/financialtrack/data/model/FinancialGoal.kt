@@ -18,7 +18,7 @@ data class FinancialGoal(
     val goalName: String,
     val targetAmount: Double,
 
-    val savedAmount: Double = 0.0,
+    var savedAmount: Double = 0.0,
     val createdDate: Long = System.currentTimeMillis(),
     val deadline: Long,
     val status: GoalStatus = GoalStatus.ACTIVE,

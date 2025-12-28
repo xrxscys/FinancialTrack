@@ -7,6 +7,7 @@
         <item name="android:colorForeground">@color/black</item>
 
         <item name="cardBackgroundColor">@color/material_dynamic_primary95</item>
+        <item name="trackColor">@color/neutral</item>
 
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/white</item>
