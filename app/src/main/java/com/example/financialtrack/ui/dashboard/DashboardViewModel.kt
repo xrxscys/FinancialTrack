@@ -18,7 +18,6 @@ import java.util.Calendar
 class DashboardViewModel(application: Application) : AndroidViewModel(application) {
 
     private val userId: String = FirebaseAuth.getInstance().currentUser?.uid.orEmpty()
-
     private val db = AppDatabase.getDatabase(application)
     private val transactionRepo = TransactionRepository(db.transactionDao())
     private val accountRepo = AccountRepository(db.accountDao())
@@ -27,8 +26,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     val totalBalance = MediatorLiveData<Double>()
     val monthIncome = MediatorLiveData<Double>()
     val monthExpense = MediatorLiveData<Double>()
-    val recentTransactions = MediatorLiveData<List<Transaction>>()
-
+    val recentTransactions = MediatorLiveData<List<Transaction>>() // MediatorLiveData to observe recent transactions
     val budgetUsedPercent = MediatorLiveData<Int>()
     val budgetPercentLabel = MediatorLiveData<String>()
 
@@ -46,24 +44,25 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
         // Only attach DB observers if logged in
         if (userId.isNotBlank()) {
-
             val accountsLd = accountRepo.getAccountsByUser(userId)
             totalBalance.addSource(accountsLd) { accounts ->
                 totalBalance.value = accounts.sumOf { it.balance }
             }
 
             val transactionsLd: LiveData<List<Transaction>> = transactionRepo.getAllTransactions(userId)
-            // observe transactions once, update everything
+            // Observe transactions once, update everything
             monthIncome.addSource(transactionsLd) { tx ->
                 lastTransactions = tx ?: emptyList()
                 recomputeFromTransactions()
                 recomputeBudget()
             }
+
             monthExpense.addSource(transactionsLd) { tx ->
                 lastTransactions = tx ?: emptyList()
                 recomputeFromTransactions()
                 recomputeBudget()
             }
+
             recentTransactions.addSource(transactionsLd) { tx ->
                 lastTransactions = tx ?: emptyList()
                 recomputeFromTransactions()
@@ -83,20 +82,17 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun recomputeFromTransactions() {
         val (start, endExclusive) = currentMonthRange()
-
         val monthTx = lastTransactions.filter { it.date in start until endExclusive }
-
         val income = monthTx
             .filter { it.type == TransactionType.INCOME }
             .sumOf { it.amount }
-
         val expense = monthTx
             .filter { it.type == TransactionType.EXPENSE }
             .sumOf { it.amount }
-
         monthIncome.value = income
         monthExpense.value = expense
 
+        // Set recent transactions
         recentTransactions.value = lastTransactions
             .sortedByDescending { it.date }
             .take(5)
@@ -104,12 +100,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun recomputeBudget() {
         val (start, endExclusive) = currentMonthRange()
-
         val monthlyBudgetTotal = lastBudgets
             .filter { it.period == BudgetPeriod.MONTHLY }
             .filter { it.startDate < endExclusive && it.endDate >= start }
             .sumOf { it.amount }
-
         val expenseThisMonth = monthExpense.value ?: 0.0
 
         if (monthlyBudgetTotal <= 0.0) {
@@ -118,27 +112,29 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             return
         }
 
-        val usedPercent = ((expenseThisMonth / monthlyBudgetTotal) * 100.0)
-            .toInt()
-            .coerceIn(0, 100)
-
+        val usedPercent = ((expenseThisMonth / monthlyBudgetTotal) * 100.0).toInt().coerceIn(0, 100)
         budgetUsedPercent.value = usedPercent
         budgetPercentLabel.value = "$usedPercent%"
     }
 
+    // Fetch recent transactions
+    fun fetchRecentTransactions(userId: String) {
+        transactionRepo.getAllTransactions(userId).observeForever { transactions ->
+            // Limit to 5 most recent transactions
+            recentTransactions.value = transactions.take(5)
+        }
+    }
+
     private fun currentMonthRange(): Pair<Long, Long> {
         val cal = Calendar.getInstance()
-
         cal.set(Calendar.DAY_OF_MONTH, 1)
         cal.set(Calendar.HOUR_OF_DAY, 0)
         cal.set(Calendar.MINUTE, 0)
         cal.set(Calendar.SECOND, 0)
         cal.set(Calendar.MILLISECOND, 0)
         val start = cal.timeInMillis
-
         cal.add(Calendar.MONTH, 1)
         val endExclusive = cal.timeInMillis
-
         return start to endExclusive
     }
 }

@@ -23,6 +23,7 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="28dp" />
 
+
     <!-- Blue header background (behind greeting/balance/income-expense) -->
     <View
         android:id="@+id/viewHeaderBg"
@@ -45,45 +46,49 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Profile icon (top-left) -->
-    <ImageButton
-        android:id="@+id/btnProfileTop"
+    <ImageButton android:id="@+id/btnProfileTop"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Profile"
+        android:contentDescription="@string/dash_profile"
         android:src="@drawable/ic_circle_profile"
         app:tint="@android:color/white"
-
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
-        app:layout_constraintBottom_toBottomOf="@id/toolbarDashboard"/>
-
+        app:layout_constraintBottom_toBottomOf="@id/toolbarDashboard" />
     <!-- Greeting (left) -->
-    <TextView
-        android:id="@+id/tvGreeting"
+    <TextView android:id="@+id/tvGreeting"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Hello, there!"
+        android:text="@string/dash_hello_there"
         android:textColor="@android:color/white"
         android:textSize="16sp"
         android:fontFamily="sans-serif-medium"
         android:layout_marginStart="2dp"
-
         app:layout_constraintStart_toEndOf="@id/btnProfileTop"
         app:layout_constraintEnd_toStartOf="@id/btnNotifications"
         app:layout_constraintBottom_toBottomOf="@id/toolbarDashboard"
         android:layout_marginBottom="4dp" />
 
-
     <!-- Notification Bell -->
     <ImageButton
         android:id="@+id/btnNotifications"
-        android:layout_width="20dp"
-        android:layout_height="24dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Notifications"
+        android:contentDescription="@string/dash_notifications"
         android:src="@drawable/ic_notifications"
         app:tint="@android:color/white"
+        app:layout_constraintEnd_toStartOf="@id/btnHamburger"
+        app:layout_constraintBottom_toBottomOf="@id/toolbarDashboard" />
 
+    <!-- Hamburger Icon (new) -->
+    <ImageButton android:id="@+id/btnHamburger"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/dash_hamburger_menu"
+        android:src="@drawable/ic_ham_menu"
+        app:tint="@android:color/white"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
         app:layout_constraintBottom_toBottomOf="@id/toolbarDashboard" />
 
@@ -109,13 +114,16 @@
             android:padding="10dp">
 
             <TextView
-                android:id="@+id/tvTotalBalanceAmount"
+                android:id="@+id/tvTotalBalance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="₱0.00"
+                android:textSize="34sp"
                 android:textColor="@android:color/white"
-                android:textSize="28sp"
                 android:textStyle="bold"
-                tools:text="₱12,500.00" />
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center" />
+
 
             <TextView
                 android:id="@+id/tvTotalBalanceLabel"
@@ -123,9 +131,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:alpha="0.85"
-                android:text="Total Balance"
+                android:text="@string/dash_total_balance"
                 android:textColor="@android:color/white"
-                android:textSize="13sp"
+                android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"/>
 
         </LinearLayout>
@@ -163,9 +171,9 @@
                     android:id="@+id/tvIncomeLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/income_label"
+                    android:text="Income"
                     android:textColor="@color/dark_gray"
-                    android:textSize="11sp"
+                    android:textSize="14sp"
                     android:fontFamily="sans-serif-medium" />
 
                 <TextView
@@ -174,9 +182,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:textColor="@color/income_green"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     android:fontFamily="sans-serif-medium"
                     tools:text="₱18,000.00" />
+
             </LinearLayout>
 
             <!-- Divider -->
@@ -198,23 +207,23 @@
                     android:id="@+id/tvExpenseLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/expense_label"
+                    android:text="Expense"
                     android:textColor="@color/dark_gray"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:fontFamily="sans-serif-medium" />
 
-                <TextView
-                    android:id="@+id/tvExpenseAmount"
+                <TextView android:id="@+id/tvExpenseAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:textColor="@color/expense_red"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     android:fontFamily="sans-serif-medium"
                     tools:text="₱5,500.00" />
             </LinearLayout>
 
         </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Quick Stats (pure transparent container) -->
@@ -222,426 +231,107 @@
         android:id="@+id/cardQuickStats"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="10dp"
         app:cardBackgroundColor="@android:color/transparent"
         app:cardElevation="0dp"
-        app:cardCornerRadius="0dp"
+        app:cardCornerRadius="10dp"
         app:strokeWidth="0dp"
         app:layout_constraintTop_toBottomOf="@id/cardIncomeExpense"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd">
 
         <!-- Make Quick Stats vertical (stacked sections) -->
-        <LinearLayout
-            android:layout_width="355dp"
-            android:layout_height="266dp"
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="6dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp">
-            <!-- =======================
-                 1) Mini pies row
-                 ======================= -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2">
+            android:paddingStart="25dp"
+            android:paddingEnd="25dp">
 
-                <!-- Income breakdown -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvIncomeBreakdownLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:fontFamily="sans-serif-medium"
-                        android:maxLines="1"
-                        android:text="Income Breakdown"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="11sp" />
-
-                    <!-- Placeholder (mini pie chart) -->
-                    <FrameLayout
-                        android:id="@+id/containerIncomePie"
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@color/light_gray" />
+                <!-- ======================= 1) Expense Breakdown (FULL WIDTH) ======================= -->
+                <LinearLayout android:id="@+id/layoutExpenseBreakdown" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                    <TextView android:id="@+id/tvExpenseBreakdownLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:text="Expense Breakdown" android:textColor="@color/dark_gray" android:textSize="14sp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal" android:gravity="center_vertical">
+                        <!-- Donut chart container (wider, shorter) -->
+                        <FrameLayout android:id="@+id/containerExpenseDonut" android:layout_width="160dp" android:layout_height="70dp" android:background="@color/light_gray" />
+                        <!-- Legend (aligned to left, no center alignment) -->
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="14dp" android:layout_weight="1" android:orientation="vertical">
+                            <!-- ===== Row 1 (Food) ===== -->
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="1dp" android:gravity="start">
+                                <View android:id="@+id/dotExp1" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_dot" android:backgroundTint="@color/expense_red" />
+                                <TextView android:id="@+id/tvExpCat1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Food" android:textColor="@color/dark_gray" android:textSize="12sp" android:layout_gravity="start" />
+                                <TextView android:id="@+id/tvExpPct1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="32%" android:textColor="@color/dark_gray" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:layout_gravity="end" />
+                            </LinearLayout>
+                            <!-- ===== Row 2 (Transport) ===== -->
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="1dp" android:gravity="start">
+                                <View android:id="@+id/dotExp2" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_dot" android:backgroundTint="@color/primary" />
+                                <TextView android:id="@+id/tvExpCat2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Transport" android:textColor="@color/dark_gray" android:textSize="12sp" android:layout_gravity="start" />
+                                <TextView android:id="@+id/tvExpPct2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="18%" android:textColor="@color/dark_gray" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:layout_gravity="end" />
+                            </LinearLayout>
+                            <!-- ===== Row 3 (Bills) ===== -->
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="1dp" android:gravity="start">
+                                <View android:id="@+id/dotExp3" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_dot" android:backgroundTint="@color/income_green" />
+                                <TextView android:id="@+id/tvExpCat3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Bills" android:textColor="@color/dark_gray" android:textSize="12sp" android:layout_gravity="start" />
+                                <TextView android:id="@+id/tvExpPct3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="14%" android:textColor="@color/dark_gray" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:layout_gravity="end" />
+                            </LinearLayout>
+                            <!-- ===== Row 4 (Others) ===== -->
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="1dp" android:gravity="start">
+                                <View android:id="@+id/dotExp4" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_dot" android:backgroundTint="@color/dark_gray" />
+                                <TextView android:id="@+id/tvExpCat4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Others" android:textColor="@color/dark_gray" android:textSize="12sp" android:layout_gravity="start" />
+                                <TextView android:id="@+id/tvExpPct4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="36%" android:textColor="@color/dark_gray" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:layout_gravity="end" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <!-- Expense breakdown -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                <!-- ======================= Divider between Expense and Budget ======================= -->
 
-                    <TextView
-                        android:id="@+id/tvExpenseBreakdownLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:fontFamily="sans-serif-medium"
-                        android:maxLines="1"
-                        android:text="Expense Breakdown"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="11sp" />
-
-                    <!-- Placeholder (mini pie chart) -->
-                    <FrameLayout
-                        android:id="@+id/containerExpensePie"
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@color/light_gray" />
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:layout_marginBottom="12dp" android:background="#E0E0E0" />
+            <!-- Budget Health Section -->
+            <LinearLayout android:id="@+id/layoutBudgetHealth" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" >
+                <!-- Title and Percentage -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="start|center_vertical">
+                    <TextView android:id="@+id/tvBudgetHealthLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Budget Health" android:textSize="14sp" android:textColor="@android:color/black" android:fontFamily="sans-serif-medium"/>
+                    <TextView android:id="@+id/tvBudgetHealthPercentage" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="0%" android:textSize="14sp" android:textColor="@color/primary" android:fontFamily="sans-serif-medium"/>
                 </LinearLayout>
-
+                <!-- Progress Bar -->
+                <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="20dp" android:layout_marginTop="8dp">
+                    <!-- Used Portion -->
+                    <View android:id="@+id/barUsed" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0" android:background="@color/primary"/>
+                    <!-- Remaining Portion -->
+                    <View android:id="@+id/barRemaining" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0" android:background="@color/primary_light"/>
+                    <!-- Over Spending (if any) -->
+                    <View android:id="@+id/barOver" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0" android:background="@color/expense_red"/>
+                </LinearLayout>
+                <!-- Amount used vs Total Budget -->
+                <TextView android:id="@+id/tvBudgetAmount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₱0 / ₱0" android:textSize="13sp" android:textColor="@android:color/black" android:layout_marginTop="8dp"/>
             </LinearLayout>
-
-            <!-- spacing -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="10dp" />
-
-            <!-- =======================
-                 2) Budget Health (FULL WIDTH)
-                 ======================= -->
-            <LinearLayout
-                android:id="@+id/layoutBudgetHealth"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvBudgetHealthLabel"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="Budget Health"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="11sp" />
-
-                    <TextView
-                        android:id="@+id/tvBudgetHealthPercentage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/primary_dark"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        tools:text="78%" />
-                </LinearLayout>
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/progressBudget"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:indeterminate="false"
-                    android:max="100"
-                    android:progress="78"
-                    app:indicatorColor="@color/primary"
-                    app:trackColor="@color/primary_light"
-                    app:trackCornerRadius="10dp"
-                    app:trackThickness="10dp" />
-
-                <!-- Used vs Rem -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvBudgetUsed"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Used: ₱820"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="10sp"
-                        tools:text="Used: ₱820" />
-
-                    <TextView
-                        android:id="@+id/tvBudgetRem"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rem: ₱680"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="10sp"
-                        tools:text="Rem: ₱680" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- =======================
-                 Divider between Budget and Debt/Loan
-                 ======================= -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
-                android:background="#E0E0E0" />
-
-            <!-- =======================
-                 3) Debt & Loan (FULL WIDTH)
-                 ======================= -->
-            <LinearLayout
-                android:id="@+id/layoutDebtLoan"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvDebtLoanLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:fontFamily="sans-serif-medium"
-                    android:maxLines="1"
-                    android:text="Debt &amp; Loan"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="11sp" />
-
+            <!-- ======================= Divider between Budget and Debt/Loan ======================= -->
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="12dp" android:layout_marginBottom="12dp" android:background="#E0E0E0" />
+            <!-- ======================= 3) Debt & Loan (FULL WIDTH) ======================= -->
+            <LinearLayout android:id="@+id/layoutDebtLoan" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <TextView android:id="@+id/tvDebtLoanLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:maxLines="1" android:text="Debt &amp; Loan" android:textColor="@color/dark_gray" android:textSize="14sp" />
                 <!-- Row: Next Due -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvDebtNextDueLabel"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Next Due"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="10sp" />
-
-                    <TextView
-                        android:id="@+id/tvDebtNextDueValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="₱250 • 2 days"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="10sp"
-                        tools:text="₱250 • 2 days" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
+                    <TextView android:id="@+id/tvDebtNextDueLabel" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Next Due" android:textColor="@color/dark_gray" android:textSize="13sp" />
+                    <TextView android:id="@+id/tvDebtNextDueValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:text="₱250 • 2 days" android:textColor="@color/dark_gray" android:textSize="13sp" tools:text="₱250 • 2 days" />
                 </LinearLayout>
-
                 <!-- Row: Active -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvDebtActiveLabel"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Active"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="10sp" />
-
-                    <TextView
-                        android:id="@+id/tvDebtActiveValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="2"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="10sp"
-                        tools:text="2" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:orientation="horizontal">
+                    <TextView android:id="@+id/tvDebtActiveLabel" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Active" android:textColor="@color/dark_gray" android:textSize="13sp" />
+                    <TextView android:id="@+id/tvDebtActiveValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:text="2" android:textColor="@color/dark_gray" android:textSize="13sp" tools:text="1" />
                 </LinearLayout>
-
             </LinearLayout>
-
         </LinearLayout>
-
     </com.google.android.material.card.MaterialCardView>
-
-
     <!-- Recent Transactions Header -->
-    <LinearLayout
-        android:id="@+id/layoutRecentHeader"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toBottomOf="@id/cardQuickStats"
-        app:layout_constraintStart_toStartOf="@id/guidelineStart"
-        app:layout_constraintEnd_toEndOf="@id/guidelineEnd">
-
-        <TextView
-            android:id="@+id/tvRecentTransactions"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Recent Transactions"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="@color/dark_gray" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSeeAllTransactions"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="See all" />
+    <LinearLayout android:id="@+id/layoutRecentHeader" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal" android:gravity="center_vertical" app:layout_constraintTop_toBottomOf="@id/cardQuickStats" app:layout_constraintStart_toStartOf="@id/guidelineStart" app:layout_constraintEnd_toEndOf="@id/guidelineEnd">
+        <TextView android:id="@+id/tvRecentTransactions" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Recent Transactions" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/dark_gray" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnSeeAllTransactions" style="@style/Widget.Material3.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="See all" />
     </LinearLayout>
-
     <!-- Recent Transactions List -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvTransactions"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:clipToPadding="false"
-        android:paddingBottom="12dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/layoutRecentHeader"
-        app:layout_constraintStart_toStartOf="@id/guidelineStart"
-        app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
-        tools:listitem="@layout/item_transaction_compact" />
-
-    <!-- Bottom Nav (pill style) -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/bottomNavBar"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="35dp"
-        android:layout_marginEnd="35dp"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="32dp"
-        app:cardElevation="8dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <!-- LEFT SIDE -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:weightSum="2"
-                android:layout_marginStart="20dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btnAddTransaction"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-                <!-- Dashboard -->
-                <ImageButton
-                    android:id="@+id/btnNavDashboard"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/ic_dashboard"
-                    android:contentDescription="Dashboard"
-                    app:tint="@color/primary" />
-
-                <!-- Transactions -->
-                <ImageButton
-                    android:id="@+id/btnNavTransactions"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="Transactions"
-                    android:src="@drawable/ic_transaction"
-                    android:layout_marginEnd="20dp"
-                    app:tint="#9E9E9E" />
-            </LinearLayout>
-
-            <!-- CENTER ADD TRANSACTION BUTTON -->
-            <FrameLayout
-                android:id="@+id/btnAddTransaction"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@drawable/bg_circle_primary_ripple"
-
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-                <ImageView
-                    android:id="@+id/ivAddIcon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_add2"
-                    app:tint="@android:color/white"
-                    android:contentDescription="Add Transaction" />
-            </FrameLayout>
-
-
-            <!-- RIGHT SIDE -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:weightSum="2"
-                app:layout_constraintStart_toEndOf="@id/btnAddTransaction"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-                <!-- Reports -->
-                <ImageButton
-                    android:id="@+id/btnNavReports"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/ic_reports"
-                    android:contentDescription="Reports"
-                    android:layout_marginStart="20dp"
-                    app:tint="#9E9E9E" />
-
-                <!-- More -->
-                <ImageButton
-                    android:id="@+id/btnNavMore"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/ic_more_horiz"
-                    android:contentDescription="More"
-                    android:layout_marginEnd="20dp"
-                    app:tint="#9E9E9E" />
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvTransactions" android:layout_height="0dp" android:layout_width="0dp" android:layout_marginTop="8dp" android:clipToPadding="false" android:paddingBottom="12dp" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" app:layout_constraintTop_toBottomOf="@id/layoutRecentHeader" app:layout_constraintStart_toStartOf="@id/guidelineStart" app:layout_constraintEnd_toEndOf="@id/guidelineEnd" app:layout_constraintBottom_toBottomOf="parent" tools:listitem="@layout/item_transaction_compact" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+

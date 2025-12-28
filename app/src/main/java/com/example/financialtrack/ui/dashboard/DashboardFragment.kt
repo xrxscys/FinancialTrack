@@ -1,37 +1,35 @@
 package com.example.financialtrack.ui.dashboard
 
-import androidx.lifecycle.ViewModelProvider
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.Observer
 import com.example.financialtrack.databinding.FragmentDashboardBinding
-import com.example.financialtrack.ui.accounts.AccountsActivity
-import com.example.financialtrack.ui.debt.DebtActivity
-import com.example.financialtrack.ui.notifications.NotificationActivity
 import com.example.financialtrack.ui.profile.ProfileActivity
-import com.example.financialtrack.ui.reports.ReportsActivity
+import com.example.financialtrack.ui.notifications.NotificationActivity
+import com.example.financialtrack.MainActivity
+import com.example.financialtrack.R
 import com.example.financialtrack.ui.transaction.TransactionActivity
-import com.example.financialtrack.ui.transaction.TransactionAdapter
+import com.example.financialtrack.ui.transaction.TransactionAdapter // Import the TransactionAdapter
 import com.google.firebase.auth.FirebaseAuth
-import java.text.NumberFormat
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
+import android.widget.LinearLayout
 import java.util.Locale
 
 class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: DashboardViewModel by viewModels()
 
-    private val viewModel: DashboardViewModel by viewModels {
-        ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
-    }
-
-    private lateinit var txAdapter: TransactionAdapter
+    // Recent Transaction setup
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var recentTransactionsAdapter: TransactionAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,109 +41,107 @@ class DashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindGreeting() // Bind the greeting message
+        setupClicks() // Setup click listeners for buttons
+        observeUi() // Observe budget usage percentage and update the progress bar
 
-        bindGreeting()
+        // Set up RecyclerView for recent transactions
+        recyclerView = view.findViewById(R.id.rvTransactions)
+        recentTransactionsAdapter = TransactionAdapter(emptyList()) // Specify type explicitly
+        recyclerView.adapter = recentTransactionsAdapter
 
-        setupRecycler()
-        setupClicks()
-        observeUi()
+        // Observe the recent transactions LiveData from ViewModel
+        viewModel.recentTransactions.observe(viewLifecycleOwner, Observer { transactions ->
+            recentTransactionsAdapter.updateTransactions(transactions) // Update the adapter with new data
+        })
+
+        // Fetch recent transactions
+        val userId = FirebaseAuth.getInstance().currentUser?.uid.orEmpty()
+        viewModel.fetchRecentTransactions(userId)
+
+        // See all transactions button
+        val btnSeeAllTransactions: MaterialButton = view.findViewById(R.id.btnSeeAllTransactions)
+        btnSeeAllTransactions.setOnClickListener {
+            // Navigate to the full transaction list (TransactionActivity)
+            val intent = Intent(requireContext(), TransactionActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun bindGreeting() {
         val user = FirebaseAuth.getInstance().currentUser
-
-        val name = user?.displayName
-            ?.takeIf { it.isNotBlank() }
-            ?: user?.email?.substringBefore("@")
-            ?: "there"
-
+        val name = user?.displayName ?: user?.email?.substringBefore("@") ?: "there"
         binding.tvGreeting.text = "Hello, $name!"
     }
 
-
-    private fun setupRecycler() {
-        txAdapter = TransactionAdapter(emptyList())
-        txAdapter.setOnClickListener {
-            // simplest: open the full Transactions screen
-            startActivity(Intent(requireContext(), TransactionActivity::class.java))
-        }
-
-        binding.rvTransactions.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvTransactions.adapter = txAdapter
-    }
-
     private fun setupClicks() {
-        binding.btnSeeAllTransactions.setOnClickListener {
-            startActivity(Intent(requireContext(), TransactionActivity::class.java))
+        // Profile button (navigate to ProfileActivity)
+        binding.btnProfileTop.setOnClickListener {
+            startActivity(Intent(requireContext(), ProfileActivity::class.java))
         }
 
-        binding.toolbarDashboard.setNavigationOnClickListener {
-            showQuickMenu()
+        // Notifications button (navigate to Notifications activity)
+        binding.btnNotifications.setOnClickListener {
+            startActivity(Intent(requireContext(), NotificationActivity::class.java))
+        }
+
+        // Hamburger button (navigate to MainActivity)
+        binding.btnHamburger.setOnClickListener {
+            startActivity(Intent(requireContext(), MainActivity::class.java))
         }
     }
 
     private fun observeUi() {
-        viewModel.totalBalance.observe(viewLifecycleOwner) { total ->
-            binding.tvTotalBalanceAmount.text = formatPhp(total)
+        // Observe total balance from ViewModel
+        viewModel.totalBalance.observe(viewLifecycleOwner) { totalBalance ->
+            binding.tvTotalBalance.text = "₱${formatString(totalBalance)}"
         }
-        viewModel.monthIncome.observe(viewLifecycleOwner) { inc ->
-            binding.tvIncomeAmount.text = formatPhp(inc)
-        }
-        viewModel.monthExpense.observe(viewLifecycleOwner) { exp ->
-            binding.tvExpenseAmount.text = formatPhp(exp)
-        }
-        viewModel.recentTransactions.observe(viewLifecycleOwner) { list ->
-            txAdapter.updateTransactions(list)
-        }
+
+        // Observe budget usage percentage from the ViewModel
         viewModel.budgetUsedPercent.observe(viewLifecycleOwner) { percent ->
-            // LinearProgressIndicator uses 0..100
-            binding.progressBudget.progress = percent
-        }
-        viewModel.budgetPercentLabel.observe(viewLifecycleOwner) { label ->
-            binding.tvBudgetHealthPercentage.text = label
-        }
-    }
+            val usedPercentage = percent.toFloat()
+            val remainingPercentage = 100 - usedPercentage
 
-    private fun showQuickMenu() {
-        val items = arrayOf(
-            "Accounts",
-            "Transactions",
-            "Budgets",
-            "Reports",
-            "Profile",
-            "Notifications",
-            "Debts & Loans"
-        )
+            // Update the progress bar segments
+            val barUsed = binding.barUsed
+            val barRemaining = binding.barRemaining
+            val barOver = binding.barOver
 
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Go to")
-            .setItems(items) { _, which ->
-                when (which) {
-                    0 -> startActivity(Intent(requireContext(), AccountsActivity::class.java))
-                    1 -> startActivity(Intent(requireContext(), TransactionActivity::class.java))
-                    2 -> Toast.makeText(requireContext(), "Budget screen not linked yet", Toast.LENGTH_SHORT).show()
-                    3 -> startActivity(Intent(requireContext(), ReportsActivity::class.java))
-                    4 -> {
-                        val user = FirebaseAuth.getInstance().currentUser
-                        if (user != null) {
-                            val intent = Intent(requireContext(), ProfileActivity::class.java)
-                            intent.putExtra("USER_ID", user.uid)
-                            startActivity(intent)
-                        }
-                    }
-                    5 -> startActivity(Intent(requireContext(), NotificationActivity::class.java))
-                    6 -> startActivity(Intent(requireContext(), DebtActivity::class.java))
+            // Set the layout weight based on the percentage
+            barUsed.layoutParams = (barUsed.layoutParams as LinearLayout.LayoutParams).apply {
+                weight = usedPercentage / 100f
+            }
+
+            barRemaining.layoutParams = (barRemaining.layoutParams as LinearLayout.LayoutParams).apply {
+                weight = remainingPercentage / 100f
+            }
+
+            // Handle over-spending (if any)
+            if (percent > 100) {
+                val overPercentage = percent - 100
+                barOver.layoutParams = (barOver.layoutParams as LinearLayout.LayoutParams).apply {
+                    weight = overPercentage / 100f
                 }
             }
-            .show()
+
+            // Update the text for Budget Health and the amount used vs total
+            binding.tvBudgetHealthPercentage.text = "${usedPercentage.toInt()}% used"
+            binding.tvBudgetAmount.text = "₱${viewModel.monthExpense.value?.toInt() ?: 0} / ₱${viewModel.monthIncome.value?.toInt() ?: 0}"
+        }
+
+        // Observe income from ViewModel
+        viewModel.monthIncome.observe(viewLifecycleOwner) { income ->
+            binding.tvIncomeAmount.text = "₱${formatString(income)}"
+        }
+
+        // Observe expense from ViewModel
+        viewModel.monthExpense.observe(viewLifecycleOwner) { expense ->
+            binding.tvExpenseAmount.text = "₱${formatString(expense)}"
+        }
     }
 
-    private fun formatPhp(amount: Double): String {
-        val nf = NumberFormat.getNumberInstance(Locale.US).apply {
-            minimumFractionDigits = 2
-            maximumFractionDigits = 2
-        }
-        return "₱${nf.format(amount)}"
+    private fun formatString(amount: Double): String {
+        return String.format(Locale("en", "PH"), "%.2f", amount)
     }
 
     override fun onDestroyView() {
