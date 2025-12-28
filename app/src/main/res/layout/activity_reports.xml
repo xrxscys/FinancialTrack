@@ -74,14 +74,15 @@
 
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_account_filter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2sp"
                 android:textAlignment="textStart"
+                android:drawableEnd="@drawable/ic_chevron_down"
+                android:drawableTint="@color/gray"
                 android:text="Account Name"
                 android:textColor="?android:attr/colorForeground"
-                app:icon="@drawable/ic_trash"
-                app:iconTint="@color/gray"
                 app:cornerRadius="12sp"
                 app:strokeWidth="0sp"
                 app:backgroundTint="?attr/cardBackgroundColor" />

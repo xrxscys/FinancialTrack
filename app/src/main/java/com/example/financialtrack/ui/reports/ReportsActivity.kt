@@ -4,12 +4,11 @@ import java.util.Calendar
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.db.williamchart.data.configuration.DonutChartConfiguration
 import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Debt
 import com.example.financialtrack.data.model.FinancialGoal
@@ -17,9 +16,9 @@ import com.example.financialtrack.data.model.GoalStatus
 import com.example.financialtrack.data.model.Transaction
 import com.example.financialtrack.data.model.TransactionType
 import com.example.financialtrack.databinding.ActivityReportsBinding
+import com.example.financialtrack.ui.accounts.AccountsViewModel
 import com.example.financialtrack.ui.debt.DebtViewModel
 import com.example.financialtrack.ui.goals.GoalsViewModel
-import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -29,7 +28,6 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Currency
@@ -49,8 +47,12 @@ class ReportsActivity : AppCompatActivity() {
     private val viewModel: ReportsViewModel by viewModels()
     private val debtViewModel: DebtViewModel by viewModels()
     private val goalViewModel: GoalsViewModel by viewModels()
+    private val accountsViewModel: AccountsViewModel by viewModels()
 
     private val symbol = Currency.getInstance(Locale("en", "PH")).symbol
+    private var selectedAccountId: Int? = null
+    private var allTransactions: List<Transaction> = emptyList()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,10 +69,27 @@ class ReportsActivity : AppCompatActivity() {
         val user = FirebaseAuth.getInstance().currentUser
 
         user?.let { firebaseUser ->
+            accountsViewModel.accounts.observe(this) { accounts ->
+                val accountNames = mutableListOf("All Accounts") + accounts.map { it.name }
+
+                binding.btnAccountFilter.text = "All Accounts"
+
+                binding.btnAccountFilter.setOnClickListener {
+                    AlertDialog.Builder(this)
+                        .setTitle("Select Account")
+                        .setItems(accountNames.toTypedArray()) { _, index ->
+                            selectedAccountId = if (index == 0) null else accounts[index - 1].id
+                            binding.btnAccountFilter.text = accountNames[index]
+
+                            updateAll()
+                        }
+                        .show()
+                }
+            }
+
             viewModel.getAllTransactions(firebaseUser.uid).observe(this) { transactions ->
-                updateOverview(transactions)
-                showBarChart(transactions)
-                showPieChart(transactions)
+                allTransactions = transactions
+                updateAll()
             }
 
             debtViewModel.getActiveDebts(firebaseUser.uid)
@@ -105,6 +124,16 @@ class ReportsActivity : AppCompatActivity() {
         binding.btnBack.setOnClickListener {
             finish()
         }
+    }
+
+    private fun updateAll() {
+        val filteredTransactions = selectedAccountId?.let { accountId ->
+            allTransactions.filter { it.accountId == accountId || it.transferToId == accountId }
+        } ?: allTransactions
+
+        updateOverview(filteredTransactions)
+        showBarChart(filteredTransactions)
+        showPieChart(filteredTransactions)
     }
 
     private fun updateOverview(transactions: List<Transaction>) {
@@ -300,15 +329,6 @@ class ReportsActivity : AppCompatActivity() {
                 granularity = interval
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
-
-                val centerValue = (maxVal / 2f)
-                val centerLine = LimitLine(centerValue)
-                centerLine.lineWidth = 2f
-                centerLine.lineColor = ContextCompat.getColor(context, R.color.gray)
-                centerLine.enableDashedLine(10f, 10f, 0f)
-                centerLine.textSize = 12f
-
-                addLimitLine(centerLine)
             }
 
             axisRight.isEnabled = false
