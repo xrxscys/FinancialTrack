@@ -236,6 +236,7 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
 
     private fun setupTypeDropdown(){
         val types = arrayOf("Expense", "Income", "Transfer")
+        val categories = arrayOf("Food", "Transportation", "Leisure", "Utilities", "Groceries", "Entertainment", "Other")
         val accounts = accountList.map { "Account: ${it.name}" }
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, types)
         binding.actvType.setAdapter(adapter)
@@ -254,6 +255,8 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
                 binding.actvAccount.setText(currAcc.name, false)
             }
         }
+        binding.actvCategory.setAdapter(ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categories))
+        binding.actvCategory.setText(transaction?.category, false)
         // Observe active goals and combine with accounts for transfer-to
         val userId = transaction?.userId ?: ""
         goalsViewModel.goalRepository.getGoalsByUser(userId).observe(this) { allGoals ->
@@ -367,7 +370,7 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
             if (!isNewTrans){
                 binding.etAmount.setText(trans.amount.toString())
                 binding.etDescription.setText(trans.description)
-                binding.etCategory.setText(trans.category)
+                binding.actvCategory.setText(trans.category)
                 binding.etDate.setText("${dateFormatter.format(trans.date)}")
             } else{
                 binding.etDate.setText("${dateFormatter.format(trans.date)}")
@@ -445,7 +448,7 @@ class AddEditTransactionDialogFragment() : DialogFragment(){
                 transferId = foundId
             }
         } else {
-            category = binding.etCategory.text.toString().trim()
+            category = binding.actvCategory.text.toString().trim()
             if (category.isEmpty()){
                 Toast.makeText(context, "Please enter category", Toast.LENGTH_SHORT).show()
                 return
