@@ -142,7 +142,7 @@ class AddEditBudgetDialogFragment() : DialogFragment(){
     private fun populateFields(){
         budget?.let {bud->
             if(!isNewBudget){
-                binding.etCategory.setText(bud.category)
+                binding.actvCategory.setText(bud.category, false)
                 binding.etBudgetLimit.setText(bud.amount.toString())
                 binding.actvPeriod.setText(when(bud.period.name){
                     "DAILY" -> "Daily"
@@ -166,6 +166,7 @@ class AddEditBudgetDialogFragment() : DialogFragment(){
 
     private fun setupPeriodDropdown(){
         val periods = arrayOf("Daily", "Weekly", "Monthly", "Yearly")
+        val categories = arrayOf("Food", "Transportation", "Leisure", "Utilities", "Groceries", "Entertainment", "Other")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, periods)
         binding.actvPeriod.setAdapter(adapter)
 
@@ -179,6 +180,9 @@ class AddEditBudgetDialogFragment() : DialogFragment(){
             endDate = calculateEndDate(selectedPeriod)
             updateDatePicker()
         }
+
+        binding.actvCategory.setAdapter(ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categories))
+        binding.actvCategory.setText(budget?.category, false)
     }
 
     private fun setupClickListeners(){
@@ -273,7 +277,7 @@ class AddEditBudgetDialogFragment() : DialogFragment(){
             else -> BudgetPeriod.YEARLY
         }
         val id = budget?.id ?: 0
-        val category = binding.etCategory.text.toString().trim()
+        val category = binding.actvCategory.text.toString().trim()
         val budgetLimit = binding.etBudgetLimit.text.toString().trim()
         val finalStartDate = selectedDate
         val finalEndDate = endDate
