@@ -20,11 +20,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="16dp">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="12dp">
+
                 <LinearLayout
                     android:layout_centerVertical="true"
                     android:layout_width="wrap_content"
@@ -102,7 +104,8 @@
                     android:textAllCaps="true"
                     android:layout_marginBottom="4sp"
                     android:textStyle="bold"
-                    android:text="2 DEC - 2 JAN"/>
+                    android:text="2 DEC - 2 JAN" />
+
                 <TextView
                     android:id="@+id/tv_net_inc_symbol"
                     android:layout_width="wrap_content"
@@ -111,7 +114,8 @@
                     android:textColor="@color/gray"
                     android:text="+P"
                     app:layout_constraintTop_toBottomOf="@+id/tv_date_range"
-                    app:layout_constraintStart_toStartOf="@+id/tv_date_range"/>
+                    app:layout_constraintStart_toStartOf="@+id/tv_date_range" />
+
                 <TextView
                     android:id="@+id/tv_net_inc"
                     android:layout_width="wrap_content"
@@ -135,6 +139,7 @@
                     android:text="Spent/Day"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
+
                 <TextView
                     android:id="@+id/tv_spent_symbol"
                     android:layout_width="wrap_content"
@@ -144,6 +149,7 @@
                     android:text="P"
                     app:layout_constraintTop_toBottomOf="@+id/tv_spent_per_day"
                     app:layout_constraintEnd_toStartOf="@+id/tv_spent" />
+
                 <TextView
                     android:id="@+id/tv_spent"
                     android:textAlignment="textEnd"
@@ -155,14 +161,16 @@
                     android:text="100"
                     android:textSize="30sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_spent_per_day"/>
+                    app:layout_constraintTop_toBottomOf="@+id/tv_spent_per_day" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginBottom="2sp"
                 android:layout_gravity="center">
+
                 <LinearLayout
                     android:id="@+id/income_card"
                     android:layout_width="0dp"
@@ -174,15 +182,18 @@
                     android:backgroundTint="?attr/cardBackgroundColor"
                     android:orientation="vertical"
                     android:layout_gravity="center">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
+
                         <FrameLayout
                             android:layout_width="wrap_content"
                             android:layout_marginRight="4sp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical">
+
                             <ImageView
                                 android:layout_width="34sp"
                                 android:layout_height="34sp"
@@ -191,6 +202,7 @@
                                 android:background="@drawable/card"
                                 android:alpha="0.2"
                                 android:backgroundTint="@color/income_green" />
+
                             <ImageView
                                 android:rotation="225"
                                 android:layout_gravity="center"
@@ -200,12 +212,14 @@
                                 android:backgroundTint="@color/income_green"
                                 android:background="@drawable/ic_arrow" />
                         </FrameLayout>
+
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:layout_gravity="center"
                             android:orientation="vertical">
+
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
@@ -213,10 +227,12 @@
                                 android:includeFontPadding="false"
                                 android:text="Income"
                                 android:textStyle="bold" />
+
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal">
+
                                 <TextView
                                     android:id="@+id/tv_ti"
                                     android:layout_width="wrap_content"
@@ -225,7 +241,7 @@
                                     android:includeFontPadding="false"
                                     android:textSize="22sp"
                                     android:textStyle="bold"
-                                    android:text="P1,200.00"/>
+                                    android:text="P1,200.00" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -241,15 +257,18 @@
                     android:backgroundTint="?attr/cardBackgroundColor"
                     android:orientation="vertical"
                     android:layout_gravity="center">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
+
                         <FrameLayout
                             android:layout_width="wrap_content"
                             android:layout_marginRight="4sp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical">
+
                             <ImageView
                                 android:layout_width="34sp"
                                 android:layout_height="34sp"
@@ -258,6 +277,7 @@
                                 android:background="@drawable/card"
                                 android:alpha="0.2"
                                 android:backgroundTint="@color/expense_red" />
+
                             <ImageView
                                 android:rotation="315"
                                 android:layout_gravity="center"
@@ -267,12 +287,14 @@
                                 android:backgroundTint="@color/expense_red"
                                 android:background="@drawable/ic_arrow" />
                         </FrameLayout>
+
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:layout_gravity="center"
                             android:orientation="vertical">
+
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
@@ -280,10 +302,12 @@
                                 android:includeFontPadding="false"
                                 android:text="Expenses"
                                 android:textStyle="bold" />
+
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal">
+
                                 <TextView
                                     android:id="@+id/tv_te"
                                     android:layout_width="wrap_content"
@@ -293,7 +317,7 @@
                                     android:includeFontPadding="false"
                                     android:textSize="22sp"
                                     android:textStyle="bold"
-                                    android:text="P1,200.00"/>
+                                    android:text="P1,200.00" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -316,23 +340,33 @@
                     android:layout_height="200dp"
                     android:layout_marginBottom="16dp" />
 
-                <!-- TODO: tab to switch-->
                 <!-- TODO: donut chart for categories -->
-                <!-- TODO: line chart for categories -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
+                        android:id="@+id/categorical_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Categorical"
                         android:textSize="22sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/pie_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="250sp"
+                        android:layout_marginTop="12sp"
+                        app:layout_constraintTop_toBottomOf="@+id/categorical_title" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_marginTop="12sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/tv_debts_and_loans_title"
                         android:layout_width="wrap_content"
@@ -340,12 +374,13 @@
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
                         android:textSize="22sp"
-                        android:text="Debts and Loans"/>
+                        android:text="Debts and Loans" />
 
                     <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="parent">
+
                         <com.google.android.material.progressindicator.CircularProgressIndicator
                             android:id="@+id/progress_debts_loans"
                             android:layout_width="wrap_content"
@@ -356,11 +391,13 @@
                             app:trackColor="?attr/trackColor"
                             app:indicatorColor="@color/primary"
                             android:max="100" />
+
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:layout_gravity="center">
+
                             <TextView
                                 android:id="@+id/tv_debt_percent"
                                 android:layout_width="wrap_content"
@@ -370,6 +407,7 @@
                                 android:textStyle="bold"
                                 android:textSize="22sp"
                                 android:layout_gravity="center" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -389,7 +427,8 @@
                         android:textStyle="bold"
                         android:text="Balance"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_debts_and_loans_title"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_debts_and_loans_title" />
+
                     <TextView
                         android:id="@+id/tv_balance_value"
                         android:layout_width="wrap_content"
@@ -398,7 +437,7 @@
                         android:textSize="18sp"
                         android:text="Value"
                         app:layout_constraintStart_toStartOf="@+id/tv_balance_title"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_balance_title"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_balance_title" />
 
                     <TextView
                         android:id="@+id/tv_next_payment_title"
@@ -408,7 +447,7 @@
                         android:textStyle="bold"
                         android:text="Next Due"
                         app:layout_constraintStart_toStartOf="@+id/tv_balance_value"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_balance_value"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_balance_value" />
 
                     <TextView
                         android:id="@+id/tv_next_payment_value"
@@ -417,13 +456,14 @@
                         android:layout_height="wrap_content"
                         android:text="Value"
                         app:layout_constraintStart_toStartOf="@+id/tv_next_payment_title"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_next_payment_title"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_next_payment_title" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <!-- TODO: Financial Goals Statistics -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/tv_goals_title"
                         android:layout_width="wrap_content"
@@ -431,7 +471,8 @@
                         android:text="Financial Goals"
                         android:textSize="22sp"
                         android:textStyle="bold"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent" />
+
                     <LinearLayout
                         android:id="@+id/progress_goals_container"
                         android:layout_marginTop="12sp"
@@ -440,6 +481,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tv_goals_title">
+
                         <com.google.android.material.progressindicator.LinearProgressIndicator
                             android:id="@+id/progress_goals"
                             android:layout_weight="1"
@@ -450,7 +492,8 @@
                             android:max="100"
                             app:indicatorSize="130sp"
                             app:trackThickness="16sp"
-                            app:trackCornerRadius="12sp"/>
+                            app:trackCornerRadius="12sp" />
+
                         <TextView
                             android:id="@+id/tv_progress_goals_percent"
                             android:layout_width="wrap_content"
@@ -458,8 +501,9 @@
                             android:textStyle="bold"
                             android:textSize="18sp"
                             android:text="100%"
-                            android:layout_gravity="center_vertical"/>
+                            android:layout_gravity="center_vertical" />
                     </LinearLayout>
+
                     <TextView
                         android:id="@+id/tv_total_saved_title"
                         android:layout_width="wrap_content"
@@ -467,14 +511,16 @@
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:text="Total Saved"
-                        app:layout_constraintTop_toBottomOf="@+id/progress_goals_container"/>
+                        app:layout_constraintTop_toBottomOf="@+id/progress_goals_container" />
+
                     <TextView
                         android:id="@+id/tv_total_saved_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="18sp"
                         android:text="Value"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_total_saved_title"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_total_saved_title" />
+
                     <TextView
                         android:id="@+id/tv_remaining_title"
                         android:layout_width="wrap_content"
@@ -483,7 +529,8 @@
                         android:textStyle="bold"
                         android:text="Remaining"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/progress_goals_container"/>
+                        app:layout_constraintTop_toBottomOf="@+id/progress_goals_container" />
+
                     <TextView
                         android:id="@+id/tv_remaining_value"
                         android:layout_width="wrap_content"
@@ -491,7 +538,8 @@
                         android:textSize="18sp"
                         android:text="Value"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_remaining_title"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_remaining_title" />
+
                     <TextView
                         android:id="@+id/tv_avg_per_timep_title"
                         android:layout_width="wrap_content"
@@ -500,7 +548,8 @@
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:text="Avg. to Save to Reach Nearest Goal"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_total_saved_value"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_total_saved_value" />
+
                     <TextView
                         android:id="@+id/tv_nearest_goal_value_title"
                         android:layout_width="wrap_content"
@@ -508,14 +557,16 @@
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:text="Nearest Goal Target"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_avg_per_timep_title"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_avg_per_timep_title" />
+
                     <TextView
                         android:id="@+id/tv_nearest_goal_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="18sp"
                         android:text="Value"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_nearest_goal_value_title"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_nearest_goal_value_title" />
+
                     <TextView
                         android:id="@+id/tv_nearest_goal_deadline_title"
                         android:layout_width="wrap_content"
@@ -524,7 +575,8 @@
                         android:text="Deadline"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_avg_per_timep_title"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_avg_per_timep_title" />
+
                     <TextView
                         android:id="@+id/tv_nearest_goal_deadline_value"
                         android:layout_width="wrap_content"
@@ -532,7 +584,8 @@
                         android:textSize="18sp"
                         android:text="Value"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_nearest_goal_deadline_title"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_nearest_goal_deadline_title" />
+
                     <TextView
                         android:id="@+id/tv_avg_per_timep_daily_value"
                         android:layout_width="wrap_content"
@@ -540,14 +593,15 @@
                         android:textSize="18sp"
                         android:layout_marginTop="8sp"
                         android:text="Daily: Value"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_nearest_goal_value"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_nearest_goal_value" />
+
                     <TextView
                         android:id="@+id/tv_avg_per_timep_weekly_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="18sp"
                         android:text="Weekly: Value"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_avg_per_timep_daily_value"/>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_avg_per_timep_daily_value" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
         </LinearLayout>

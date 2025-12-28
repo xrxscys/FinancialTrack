@@ -5,9 +5,11 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.db.williamchart.data.configuration.DonutChartConfiguration
 import com.example.financialtrack.R
 import com.example.financialtrack.data.model.Debt
 import com.example.financialtrack.data.model.FinancialGoal
@@ -17,17 +19,23 @@ import com.example.financialtrack.data.model.TransactionType
 import com.example.financialtrack.databinding.ActivityReportsBinding
 import com.example.financialtrack.ui.debt.DebtViewModel
 import com.example.financialtrack.ui.goals.GoalsViewModel
+import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Currency
 import java.util.Locale
 import kotlin.math.abs
+
 
 data class TimeRemaining(
     val dueDate: String,
@@ -42,7 +50,7 @@ class ReportsActivity : AppCompatActivity() {
     private val debtViewModel: DebtViewModel by viewModels()
     private val goalViewModel: GoalsViewModel by viewModels()
 
-    private val symbol= Currency.getInstance(Locale("en", "PH")).symbol
+    private val symbol = Currency.getInstance(Locale("en", "PH")).symbol
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,15 +70,16 @@ class ReportsActivity : AppCompatActivity() {
             viewModel.getAllTransactions(firebaseUser.uid).observe(this) { transactions ->
                 updateOverview(transactions)
                 showBarChart(transactions)
+                showPieChart(transactions)
             }
 
             debtViewModel.getActiveDebts(firebaseUser.uid)
 
-           debtViewModel.activeDebts.observe(this) { debts ->
-               updateDebts(debts)
-           }
+            debtViewModel.activeDebts.observe(this) { debts ->
+                updateDebts(debts)
+            }
 
-            goalViewModel.getGoalsByStatus(GoalStatus.ACTIVE).observe(this){ goals ->
+            goalViewModel.getGoalsByStatus(GoalStatus.ACTIVE).observe(this) { goals ->
                 if (goals.isEmpty()) {
                     updateGoals(emptyList())
                     return@observe
@@ -113,7 +122,7 @@ class ReportsActivity : AppCompatActivity() {
         binding.tvTi.text = "$symbol${formatString(totalIncome)}"
         binding.tvTe.text = "$symbol${formatString(totalExpenses)}"
 
-        if(totalExpenses > totalIncome){
+        if (totalExpenses > totalIncome) {
             binding.tvNetIncSymbol.text = "-$symbol"
         } else {
             binding.tvNetIncSymbol.text = "+$symbol"
@@ -121,6 +130,7 @@ class ReportsActivity : AppCompatActivity() {
         val net = totalIncome - totalExpenses
         binding.tvNetInc.text = formatString(abs(net))
     }
+
     private fun updateDebts(debts: List<Debt>) {
         if (debts.isEmpty()) {
             binding.tvBalanceValue.text = "${symbol}0.00"
@@ -136,8 +146,8 @@ class ReportsActivity : AppCompatActivity() {
             .minByOrNull { it.dueDate }
 
         nextDebt?.let { debt ->
-           val dates = getDaysWeeksRemaining(debt.dueDate)
-            val dueDateFormatted= dates.dueDate
+            val dates = getDaysWeeksRemaining(debt.dueDate)
+            val dueDateFormatted = dates.dueDate
             val daysRemainingFormatted = dates.daysRemainingFormatted
 
             binding.tvNextPaymentValue.text = "$dueDateFormatted, $daysRemainingFormatted"
@@ -154,6 +164,12 @@ class ReportsActivity : AppCompatActivity() {
         if (goals.isEmpty()) {
             binding.tvTotalSavedValue.text = "${symbol}0.00"
             binding.tvRemainingValue.text = "${symbol}0.00"
+            binding.tvAvgPerTimepDailyValue.text = "Daily: ${symbol}0.00"
+            binding.tvAvgPerTimepWeeklyValue.text = "Weekly: ${symbol}0.00"
+            binding.tvNearestGoalValue.text = "${symbol}0.00"
+            binding.tvNearestGoalDeadlineValue.text = "No active goals"
+            binding.progressGoals.setProgressCompat(0, true)
+            binding.tvProgressGoalsPercent.text = "0%"
             return
         }
 
@@ -162,7 +178,7 @@ class ReportsActivity : AppCompatActivity() {
         val targetAmount = goals.sumOf { it.targetAmount }
 
         val nearestGoal = goals.filter { it.status == GoalStatus.ACTIVE }
-            .minByOrNull { it.deadline}
+            .minByOrNull { it.deadline }
 
         nearestGoal?.let { goal ->
             val dates = getDaysWeeksRemaining(goal.deadline)
@@ -171,8 +187,10 @@ class ReportsActivity : AppCompatActivity() {
             val dueDateFormatted = dates.dueDate
             val weeksRemaining = dates.weeksRemaining
 
-            binding.tvAvgPerTimepDailyValue.text = "Daily: $symbol${formatString(goal.targetAmount / daysRemaining)}"
-            binding.tvAvgPerTimepWeeklyValue.text = "Weekly: $symbol${formatString(goal.targetAmount / weeksRemaining)}"
+            binding.tvAvgPerTimepDailyValue.text =
+                "Daily: $symbol${formatString(goal.targetAmount / daysRemaining)}"
+            binding.tvAvgPerTimepWeeklyValue.text =
+                "Weekly: $symbol${formatString(goal.targetAmount / weeksRemaining)}"
 
             binding.tvNearestGoalValue.text = "$symbol${formatString(goal.targetAmount)}"
             binding.tvNearestGoalDeadlineValue.text = "$daysRemainingFormatted ($dueDateFormatted)"
@@ -185,6 +203,48 @@ class ReportsActivity : AppCompatActivity() {
 
         binding.progressGoals.setProgressCompat(progress, true)
         binding.tvProgressGoalsPercent.text = String.format("%d%%", progress)
+    }
+
+    private fun showPieChart(transactions: List<Transaction>) {
+        val expenseByCategory: Map<String, Double> =
+            transactions
+                .filter { it.type == TransactionType.EXPENSE }
+                .groupBy { it.category }
+                .mapValues { entry ->
+                    entry.value.sumOf { it.amount }
+                }
+
+        val entries = expenseByCategory.map { (category, total) ->
+            PieEntry(total.toFloat(), category)
+        }
+
+        val dataSet = PieDataSet(entries, "").apply {
+            sliceSpace = 10f
+            setDrawValues(true)
+            colors = listOf(
+                ContextCompat.getColor(this@ReportsActivity, R.color.primary),
+                ContextCompat.getColor(this@ReportsActivity, R.color.income_green),
+                ContextCompat.getColor(this@ReportsActivity, R.color.expense_red),
+                ContextCompat.getColor(this@ReportsActivity, R.color.secondary),
+                ContextCompat.getColor(this@ReportsActivity, R.color.primary_dark)
+            )
+
+            valueTextSize = 12f
+        }
+
+        val data = PieData(dataSet)
+
+        binding.pieChart.apply {
+            this.data = data
+            setUsePercentValues(true)
+
+            description.isEnabled = false
+            legend.isEnabled = true
+
+            setEntryLabelColor(ContextCompat.getColor(context, R.color.transparent))
+
+            invalidate()
+        }
     }
 
     private fun showBarChart(transactions: List<Transaction>) {
@@ -259,10 +319,12 @@ class ReportsActivity : AppCompatActivity() {
 
     private fun calculatePercentage(total: Double, amount: Double): Int {
         val progress = ((amount / total) * 100).toInt()
-        return if (progress > 100) { 100 } else progress
+        return if (progress > 100) {
+            100
+        } else progress
     }
 
-    private fun getDaysWeeksRemaining(date: Long): TimeRemaining{
+    private fun getDaysWeeksRemaining(date: Long): TimeRemaining {
         val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
         val dueDateFormatted = dateFormatter.format(date)
 
@@ -273,16 +335,23 @@ class ReportsActivity : AppCompatActivity() {
             0 -> {
                 "Today"
             }
+
             1 -> {
                 "Tomorrow"
             }
+
             else -> {
                 "In $daysRemaining days"
             }
         }
 
         val weeksRemaining = (daysRemaining / 7.0).coerceAtLeast(1.0)
-        return TimeRemaining(dueDateFormatted, daysRemaining,daysRemainingFormatted, weeksRemaining)
+        return TimeRemaining(
+            dueDateFormatted,
+            daysRemaining,
+            daysRemainingFormatted,
+            weeksRemaining
+        )
     }
 
     private fun formatString(amount: Double): String {
