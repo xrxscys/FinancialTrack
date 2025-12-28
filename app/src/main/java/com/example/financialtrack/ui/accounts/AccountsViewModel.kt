@@ -26,6 +26,7 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
             accountRepository.insert(account)
         }
     }
+
     fun updateAccount(account: Account) {
         viewModelScope.launch {
             accountRepository.update(account)

@@ -47,7 +47,7 @@ android {
         dataBinding = true
     }
 
-    lint{
+    lint {
         abortOnError = false
     }
 }
@@ -93,9 +93,6 @@ dependencies {
     // WorkManager for background tasks
     implementation("androidx.work:work-runtime-ktx:2.8.1")
 
-    // MPAndroidChart for reports
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -107,4 +104,7 @@ dependencies {
     //Charts
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.diogobernardino:williamchart:3.11.0")
+
+    // Calendar
+    implementation("io.github.dzmitry-lakisau:month-year-picker-dialog:1.0.0")
 }
