@@ -281,6 +281,11 @@ class ReportsActivity : AppCompatActivity() {
         binding.tvTe.text = "$symbol${formatAmount(totalExpenses)}"
         binding.tvNetIncSymbol.text = if (totalExpenses > totalIncome) "-$symbol" else "+$symbol"
         binding.tvNetInc.text = formatAmount(abs(totalIncome - totalExpenses))
+        binding.tvSpentSymbol.text = "$symbol"
+
+        val days = ((rangeEnd - rangeStart) / (1000 * 60 * 60 * 24)).toInt() + 1
+        val perDay = if (days > 0) totalExpenses / days else 0.0
+        binding.tvSpent.text = formatAmount(perDay)
     }
 
     private fun updateDebts(debts: List<Debt>) {
