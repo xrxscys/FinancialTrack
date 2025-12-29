@@ -25,7 +25,8 @@ class AccountAdapter(
         holder.bind(getItem(position))
     }
 
-    class AccountViewHolder(itemView: View, private val onItemClick: (Account) -> Unit ) : RecyclerView.ViewHolder(itemView) {
+    class AccountViewHolder(itemView: View, private val onItemClick: (Account) -> Unit) :
+        RecyclerView.ViewHolder(itemView) {
         private val nameText: TextView = itemView.findViewById(R.id.tv_account_name)
         private val typeText: TextView = itemView.findViewById(R.id.tv_account_type)
         private val balanceText: TextView = itemView.findViewById(R.id.tv_account_balance)
@@ -46,7 +47,12 @@ class AccountAdapter(
                 tvBalanceWarning.visibility = View.VISIBLE
             } else {
                 card.strokeColor = com.google.android.material.R.color.design_default_color_primary
-                balanceText.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.black))
+                balanceText.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.primary
+                    )
+                )
                 ivBalanceWarning.visibility = View.GONE
                 tvBalanceWarning.visibility = View.GONE
             }
@@ -59,7 +65,10 @@ class AccountAdapter(
     }
 
     class AccountDiffCallback : DiffUtil.ItemCallback<Account>() {
-        override fun areItemsTheSame(oldItem: Account, newItem: Account): Boolean = oldItem.id == newItem.id
-        override fun areContentsTheSame(oldItem: Account, newItem: Account): Boolean = oldItem == newItem
+        override fun areItemsTheSame(oldItem: Account, newItem: Account): Boolean =
+            oldItem.id == newItem.id
+
+        override fun areContentsTheSame(oldItem: Account, newItem: Account): Boolean =
+            oldItem == newItem
     }
 }

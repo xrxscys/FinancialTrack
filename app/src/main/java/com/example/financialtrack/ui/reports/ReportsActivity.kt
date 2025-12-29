@@ -71,7 +71,6 @@ class ReportsActivity : AppCompatActivity() {
 
         userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-
         val cal = Calendar.getInstance()
 
         cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
@@ -282,6 +281,9 @@ class ReportsActivity : AppCompatActivity() {
             setUsePercentValues(true)
             description.isEnabled = false
             legend.isEnabled = true
+            legend.textColor = if (isDarkModeOn()) ContextCompat.getColor(context, R.color.white)
+            else ContextCompat.getColor(context, R.color.black)
+
             setEntryLabelColor(ContextCompat.getColor(context, R.color.transparent))
             invalidate()
         }
@@ -322,11 +324,16 @@ class ReportsActivity : AppCompatActivity() {
 
             xAxis.apply {
                 valueFormatter = IndexAxisValueFormatter(labels)
+                textColor = if (isDarkModeOn()) ContextCompat.getColor(context, R.color.white)
+                else ContextCompat.getColor(context, R.color.black)
                 granularity = 1f
                 position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
             }
+
+            axisLeft.textColor = if (isDarkModeOn()) ContextCompat.getColor(context, R.color.white)
+            else ContextCompat.getColor(context, R.color.black)
 
             invalidate()
         }
@@ -346,4 +353,10 @@ class ReportsActivity : AppCompatActivity() {
         SimpleDateFormat("dd MMM", Locale.getDefault()).format(Date(ms))
 
     private fun formatAmount(amount: Double) = String.format(Locale("en", "PH"), "%.2f", amount)
+
+    private fun isDarkModeOn(): Boolean {
+        val uiMode = resources.configuration.uiMode
+        val nightModeFlags = uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        return nightModeFlags == android.content.res.Configuration.UI_MODE_NIGHT_YES
+    }
 }

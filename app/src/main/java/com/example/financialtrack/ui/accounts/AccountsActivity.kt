@@ -101,7 +101,13 @@ class AccountsActivity : AppCompatActivity() {
                 viewModel.updateAccount(updatedAccount)
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .setNeutralButton("Delete") { dialog, _ ->
+                viewModel.deleteAccount(account)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
 
