@@ -52,8 +52,9 @@ class AccountsActivity : AppCompatActivity() {
         val etBalance = dialogView.findViewById<EditText>(R.id.et_initial_balance)
 
         // Set up spinner with AccountType values
-        val types = AccountType.values().map { it.name }
-        spinnerType.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, types)
+        val types = AccountType.entries.map { it.name }
+        spinnerType.adapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, types)
 
         AlertDialog.Builder(this)
             .setTitle("Add Account")
@@ -64,7 +65,8 @@ class AccountsActivity : AppCompatActivity() {
                 val balance = etBalance.text.toString().toDoubleOrNull() ?: 0.0
                 val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
                 if (name.isNotEmpty() && userId.isNotEmpty()) {
-                    val account = Account(userId = userId, name = name, type = type, balance = balance)
+                    val account =
+                        Account(userId = userId, name = name, type = type, balance = balance)
                     viewModel.insertAccount(account)
                 }
                 dialog.dismiss()
@@ -82,8 +84,9 @@ class AccountsActivity : AppCompatActivity() {
         etName.setText(account.name)
         etBalance.setText(account.balance.toString())
 
-        val types = AccountType.values().map { it.name }
-        spinnerType.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, types)
+        val types = AccountType.entries.map { it.name }
+        spinnerType.adapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, types)
         spinnerType.setSelection(types.indexOf(account.type.name))
 
         AlertDialog.Builder(this)

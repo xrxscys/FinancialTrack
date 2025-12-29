@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.LiveData
 import com.example.financialtrack.R
 import com.example.financialtrack.data.model.*
 import com.example.financialtrack.databinding.ActivityReportsBinding
@@ -39,9 +40,8 @@ class ReportsActivity : AppCompatActivity() {
     private var selectedAccountId: Int? = null
     private var allTransactions: List<Transaction> = emptyList()
 
-    private enum class StatsRange { WEEKLY, MONTHLY, RANGE }
+    private lateinit var userId: String
 
-    private var selectedRange: StatsRange = StatsRange.MONTHLY
     private var rangeStart: Long = 0
     private var rangeEnd: Long = 0
 
@@ -64,23 +64,13 @@ class ReportsActivity : AppCompatActivity() {
             insets
         }
 
-        setInitialMonth()
-        setupAccountFilter()
-        observeTransactions()
-        observeDebts()
-        observeGoals()
+        userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-        binding.btnBack.setOnClickListener { finish() }
-        binding.btnStatsRange.setOnClickListener { showStatsRangeDialog() }
-    }
-
-    private fun setInitialMonth() {
         val cal = Calendar.getInstance()
         cal.set(Calendar.DAY_OF_MONTH, 1)
         rangeStart = cal.timeInMillis
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
         rangeEnd = cal.timeInMillis
-        selectedRange = StatsRange.MONTHLY
 
         val now = Calendar.getInstance()
         binding.btnStatsRange.text = if (
@@ -93,10 +83,17 @@ class ReportsActivity : AppCompatActivity() {
         )
 
         updateDateRangeLabel()
+
+        setupAccountFilter()
+        observeTransactions()
+        observeDebts()
+        observeGoals()
+
+        binding.btnBack.setOnClickListener { finish() }
+        binding.btnStatsRange.setOnClickListener { showCustomRangeDialog() }
     }
 
     private fun setupAccountFilter() {
-        val user = FirebaseAuth.getInstance().currentUser ?: return
         accountsViewModel.accounts.observe(this) { accounts ->
             val accountNames = mutableListOf("All Accounts") + accounts.map { it.name }
             binding.btnAccountFilter.text = "All Accounts"
@@ -115,16 +112,14 @@ class ReportsActivity : AppCompatActivity() {
     }
 
     private fun observeTransactions() {
-        val user = FirebaseAuth.getInstance().currentUser ?: return
-        viewModel.getAllTransactions(user.uid).observe(this) {
+        viewModel.getAllTransactions(userId).observe(this) {
             allTransactions = it
             updateAll()
         }
     }
 
     private fun observeDebts() {
-        val user = FirebaseAuth.getInstance().currentUser ?: return
-        debtViewModel.getActiveDebts(user.uid)
+        debtViewModel.getActiveDebts(userId)
         debtViewModel.activeDebts.observe(this) { updateDebts(it) }
     }
 
@@ -146,93 +141,6 @@ class ReportsActivity : AppCompatActivity() {
         }
     }
 
-    private fun showStatsRangeDialog() {
-        val options = arrayOf("Weekly", "Monthly", "Custom Range")
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Select Stats Range")
-            .setItems(options) { _, index ->
-                when (index) {
-                    0 -> showWeeklyDialog()
-                    1 -> showMonthlyDialog()
-                    2 -> showCustomRangeDialog()
-                }
-            }
-            .show()
-    }
-
-    private fun showWeeklyDialog() {
-        val cal = Calendar.getInstance()
-        val month = cal.get(Calendar.MONTH)
-        val year = cal.get(Calendar.YEAR)
-        val maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
-        val weeks = mutableListOf<Pair<Long, Long>>()
-        val labels = mutableListOf<String>()
-        var day = 1
-
-        while (day <= maxDay) {
-            val start = Calendar.getInstance().apply { set(year, month, day, 0, 0, 0) }
-            val endDay = (day + 6).coerceAtMost(maxDay)
-            val end = Calendar.getInstance().apply { set(year, month, endDay, 23, 59, 59) }
-            weeks.add(start.timeInMillis to end.timeInMillis)
-            labels.add("${formatDate(start.timeInMillis)} - ${formatDate(end.timeInMillis)}")
-            day += 7
-        }
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Select Week")
-            .setItems(labels.toTypedArray()) { _, index ->
-                rangeStart = weeks[index].first
-                rangeEnd = weeks[index].second
-                selectedRange = StatsRange.WEEKLY
-                binding.btnStatsRange.text = "Week ${index + 1}"
-                updateDateRangeLabel()
-                updateAll()
-            }
-            .show()
-    }
-
-    private fun showMonthlyDialog() {
-        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-        val years = (currentYear - 5..currentYear + 5).map { it.toString() }.toTypedArray()
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Select Year")
-            .setItems(years) { _, yearIndex ->
-                val selectedYear = currentYear - 5 + yearIndex
-                val months = arrayOf(
-                    "January", "February", "March", "April", "May", "June",
-                    "July", "August", "September", "October", "November", "December"
-                )
-                MaterialAlertDialogBuilder(this)
-                    .setTitle("Select Month")
-                    .setItems(months) { _, monthIndex ->
-                        val cal = Calendar.getInstance().apply {
-                            set(selectedYear, monthIndex, 1, 0, 0, 0)
-                            rangeStart = timeInMillis
-                            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
-                            set(Calendar.HOUR_OF_DAY, 23)
-                            set(Calendar.MINUTE, 59)
-                            set(Calendar.SECOND, 59)
-                            rangeEnd = timeInMillis
-                        }
-                        selectedRange = StatsRange.MONTHLY
-                        binding.btnStatsRange.text =
-                            if (monthIndex == Calendar.getInstance().get(Calendar.MONTH) &&
-                                selectedYear == Calendar.getInstance().get(Calendar.YEAR)
-                            ) "This Month"
-                            else SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(
-                                Date(
-                                    rangeStart
-                                )
-                            )
-                        updateDateRangeLabel()
-                        updateAll()
-                    }
-                    .show()
-            }
-            .show()
-    }
-
     private fun showCustomRangeDialog() {
         val selection = androidx.core.util.Pair(rangeStart, rangeEnd)
         MaterialDatePicker.Builder.dateRangePicker()
@@ -243,7 +151,6 @@ class ReportsActivity : AppCompatActivity() {
                 addOnPositiveButtonClickListener { range ->
                     rangeStart = range.first
                     rangeEnd = range.second
-                    selectedRange = StatsRange.RANGE
                     binding.btnStatsRange.text =
                         "${formatDate(rangeStart)} - ${formatDate(rangeEnd)}"
                     updateDateRangeLabel()
@@ -371,38 +278,45 @@ class ReportsActivity : AppCompatActivity() {
 
     private fun showBarChart(transactions: List<Transaction>) {
         val cal = Calendar.getInstance()
-        val days = mutableMapOf<String, Float>()
-        val sdf = SimpleDateFormat("EEE", Locale.getDefault())
-        var current = Calendar.getInstance().apply { timeInMillis = rangeStart }
-        while (current.timeInMillis <= rangeEnd) {
-            days[sdf.format(current.time)] = 0f
-            current.add(Calendar.DAY_OF_MONTH, 1)
+        val labels = mutableListOf<String>()
+        val totals = mutableListOf<Float>()
+        val sdf = SimpleDateFormat("dd MMM", Locale.getDefault())
+
+        cal.timeInMillis = rangeStart
+        while (cal.timeInMillis <= rangeEnd) {
+            labels.add(sdf.format(cal.time))
+            totals.add(0f)
+            cal.add(Calendar.DAY_OF_MONTH, 1)
         }
 
-        transactions.forEach {
-            val day = sdf.format(Date(it.date))
-            days[day] = days.getOrDefault(day, 0f) + it.amount.toFloat()
+        transactions.filter { it.type == TransactionType.EXPENSE }.forEach { tx ->
+            val index = ((tx.date - rangeStart) / (24 * 60 * 60 * 1000)).toInt()
+            if (index in totals.indices) {
+                totals[index] += tx.amount.toFloat()
+            }
         }
 
-        val entries = days.entries.mapIndexed { idx, e -> BarEntry(idx.toFloat(), e.value) }
-        val dataSet = BarDataSet(entries, "Spending").apply {
-            color = ContextCompat.getColor(this@ReportsActivity, R.color.primary); valueTextSize =
-            0f
+        val entries = totals.mapIndexed { i, v -> BarEntry(i.toFloat(), v) }
+
+        val dataSet = BarDataSet(entries, "").apply {
+            color = ContextCompat.getColor(this@ReportsActivity, R.color.primary)
+            valueTextSize = 0f
         }
+
         binding.barChart.apply {
-            data = BarData(dataSet).apply { barWidth = 0.5f }
-            setFitBars(true)
+            data = BarData(dataSet).apply { barWidth = 0.6f }
             description.isEnabled = false
             legend.isEnabled = false
-            animateY(600)
-            xAxis.apply {
-                valueFormatter = IndexAxisValueFormatter(days.keys.toList()); granularity =
-                1f; position = XAxis.XAxisPosition.BOTTOM; setDrawGridLines(false); setDrawAxisLine(
-                false
-            )
-            }
-            axisLeft.apply { axisMinimum = 0f; setDrawGridLines(false); setDrawAxisLine(false) }
             axisRight.isEnabled = false
+
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(labels)
+                granularity = 1f
+                position = XAxis.XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                setDrawAxisLine(false)
+            }
+
             invalidate()
         }
     }
