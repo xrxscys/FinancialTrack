@@ -18,6 +18,13 @@ import com.example.financialtrack.ui.transaction.TransactionAdapter // Import th
 import com.google.firebase.auth.FirebaseAuth
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.components.Legend
+import androidx.core.content.ContextCompat
+import com.example.financialtrack.data.model.Transaction  // Import the Transaction model
+import com.example.financialtrack.data.model.TransactionType  // Import the TransactionType enum
 import android.widget.LinearLayout
 import java.util.Locale
 
@@ -41,8 +48,11 @@ class DashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         bindGreeting() // Bind the greeting message
         setupClicks() // Setup click listeners for buttons
+        // Call recomputeBudget to make sure budget data is calculated on fragment creation
+        viewModel.recomputeBudget()
         observeUi() // Observe budget usage percentage and update the progress bar
 
         // Set up RecyclerView for recent transactions
@@ -53,6 +63,10 @@ class DashboardFragment : Fragment() {
         // Observe the recent transactions LiveData from ViewModel
         viewModel.recentTransactions.observe(viewLifecycleOwner, Observer { transactions ->
             recentTransactionsAdapter.updateTransactions(transactions) // Update the adapter with new data
+        })
+
+        viewModel.recentTransactions.observe(viewLifecycleOwner, Observer { transactions ->
+            showExpensePieChart(transactions)  // Call function to update the pie chart
         })
 
         // Fetch recent transactions
@@ -126,7 +140,12 @@ class DashboardFragment : Fragment() {
 
             // Update the text for Budget Health and the amount used vs total
             binding.tvBudgetHealthPercentage.text = "${usedPercentage.toInt()}% used"
-            binding.tvBudgetAmount.text = "₱${viewModel.monthExpense.value?.toInt() ?: 0} / ₱${viewModel.monthIncome.value?.toInt() ?: 0}"
+        }
+
+        // Observe monthly budget total from ViewModel
+        viewModel.monthlyBudgetTotal.observe(viewLifecycleOwner) { monthlyBudgetTotal ->
+            // Update the budget amount (used vs total)
+            binding.tvBudgetAmount.text = "₱${viewModel.monthExpense.value?.toInt() ?: 0} / ₱${monthlyBudgetTotal.toInt()}"
         }
 
         // Observe income from ViewModel
@@ -139,6 +158,59 @@ class DashboardFragment : Fragment() {
             binding.tvExpenseAmount.text = "₱${formatString(expense)}"
         }
     }
+
+
+    private fun showExpensePieChart(transactions: List<Transaction>) {
+        // Group expenses by category
+        val expenseByCategory = transactions.filter { it.type == TransactionType.EXPENSE }
+            .groupBy { it.category }
+            .mapValues { it.value.sumOf { t -> t.amount } }
+
+        // Prepare pie chart entries
+        val entries = expenseByCategory.map { PieEntry(it.value.toFloat(), it.key) }
+
+        // Update the pie chart with the entries
+        updatePieChart(entries)
+    }
+
+    private fun updatePieChart(entries: List<PieEntry>) {
+        val colors = listOf(
+            R.color.primary,  // Use your own colors
+            R.color.expense_red,
+            R.color.income_green,
+            R.color.secondary
+        ).map { ContextCompat.getColor(requireContext(), it) }
+
+        binding.pieChart.apply {
+            // Set the data for the pie chart
+            data = PieData(PieDataSet(entries, "").apply {
+                sliceSpace = 10f
+                setDrawValues(true)
+                this.colors = colors
+                valueTextSize = 12f
+            })
+            setUsePercentValues(true)
+
+            // Disable description
+            description.isEnabled = false
+
+            // Adjust the position of the legend (labels)
+            legend.apply {
+                isEnabled = true
+                verticalAlignment = Legend.LegendVerticalAlignment.TOP
+                horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
+                orientation = Legend.LegendOrientation.VERTICAL
+                yEntrySpace = 10f // Add some space between entries
+                xEntrySpace = 10f // Add space between legend items
+            }
+
+            // Optionally, adjust chart settings like label color, etc.
+            setEntryLabelColor(ContextCompat.getColor(requireContext(), R.color.transparent))  // Adjust as needed
+            invalidate()  // Refresh the chart
+        }
+    }
+
+
 
     private fun formatString(amount: Double): String {
         return String.format(Locale("en", "PH"), "%.2f", amount)

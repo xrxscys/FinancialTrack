@@ -29,6 +29,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     val recentTransactions = MediatorLiveData<List<Transaction>>() // MediatorLiveData to observe recent transactions
     val budgetUsedPercent = MediatorLiveData<Int>()
     val budgetPercentLabel = MediatorLiveData<String>()
+    val monthlyBudgetTotal = MediatorLiveData<Double>() // LiveData to observe the total monthly budget
+
 
     private var lastTransactions: List<Transaction> = emptyList()
     private var lastBudgets: List<Budget> = emptyList()
@@ -98,23 +100,28 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             .take(5)
     }
 
-    private fun recomputeBudget() {
+    fun recomputeBudget() {
         val (start, endExclusive) = currentMonthRange()
-        val monthlyBudgetTotal = lastBudgets
+
+        val monthlyBudgetTotalValue = lastBudgets
             .filter { it.period == BudgetPeriod.MONTHLY }
             .filter { it.startDate < endExclusive && it.endDate >= start }
             .sumOf { it.amount }
+
         val expenseThisMonth = monthExpense.value ?: 0.0
 
-        if (monthlyBudgetTotal <= 0.0) {
+        if (monthlyBudgetTotalValue <= 0.0) {
             budgetUsedPercent.value = 0
             budgetPercentLabel.value = "—"
             return
         }
 
-        val usedPercent = ((expenseThisMonth / monthlyBudgetTotal) * 100.0).toInt().coerceIn(0, 100)
+        val usedPercent = ((expenseThisMonth / monthlyBudgetTotalValue) * 100.0).toInt().coerceIn(0, 100)
         budgetUsedPercent.value = usedPercent
         budgetPercentLabel.value = "$usedPercent%"
+
+        // Update the LiveData for monthly budget total
+        monthlyBudgetTotal.value = monthlyBudgetTotalValue // Now it's exposed as LiveData
     }
 
     // Fetch recent transactions

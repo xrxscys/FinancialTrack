@@ -209,7 +209,7 @@
                     android:layout_height="wrap_content"
                     android:text="Expense"
                     android:textColor="@color/dark_gray"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:fontFamily="sans-serif-medium" />
 
                 <TextView android:id="@+id/tvExpenseAmount"
@@ -244,54 +244,64 @@
         <LinearLayout android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="6dp"
             android:paddingStart="25dp"
             android:paddingEnd="25dp">
 
-                <!-- ======================= 1) Expense Breakdown (FULL WIDTH) ======================= -->
-                <LinearLayout android:id="@+id/layoutExpenseBreakdown" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-                    <TextView android:id="@+id/tvExpenseBreakdownLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:text="Expense Breakdown" android:textColor="@color/dark_gray" android:textSize="14sp" />
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal" android:gravity="center_vertical">
-                        <!-- Donut chart container (wider, shorter) -->
-                        <FrameLayout android:id="@+id/containerExpenseDonut" android:layout_width="160dp" android:layout_height="70dp" android:background="@color/light_gray" />
-                        <!-- Legend (aligned to left, no center alignment) -->
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="14dp" android:layout_weight="1" android:orientation="vertical">
-                            <!-- ===== Row 1 (Food) ===== -->
-                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="1dp" android:gravity="start">
-                                <View android:id="@+id/dotExp1" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_dot" android:backgroundTint="@color/expense_red" />
-                                <TextView android:id="@+id/tvExpCat1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Food" android:textColor="@color/dark_gray" android:textSize="12sp" android:layout_gravity="start" />
-                                <TextView android:id="@+id/tvExpPct1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="32%" android:textColor="@color/dark_gray" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:layout_gravity="end" />
-                            </LinearLayout>
-                            <!-- ===== Row 2 (Transport) ===== -->
-                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="1dp" android:gravity="start">
-                                <View android:id="@+id/dotExp2" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_dot" android:backgroundTint="@color/primary" />
-                                <TextView android:id="@+id/tvExpCat2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Transport" android:textColor="@color/dark_gray" android:textSize="12sp" android:layout_gravity="start" />
-                                <TextView android:id="@+id/tvExpPct2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="18%" android:textColor="@color/dark_gray" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:layout_gravity="end" />
-                            </LinearLayout>
-                            <!-- ===== Row 3 (Bills) ===== -->
-                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="1dp" android:gravity="start">
-                                <View android:id="@+id/dotExp3" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_dot" android:backgroundTint="@color/income_green" />
-                                <TextView android:id="@+id/tvExpCat3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Bills" android:textColor="@color/dark_gray" android:textSize="12sp" android:layout_gravity="start" />
-                                <TextView android:id="@+id/tvExpPct3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="14%" android:textColor="@color/dark_gray" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:layout_gravity="end" />
-                            </LinearLayout>
-                            <!-- ===== Row 4 (Others) ===== -->
-                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="1dp" android:gravity="start">
-                                <View android:id="@+id/dotExp4" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_dot" android:backgroundTint="@color/dark_gray" />
-                                <TextView android:id="@+id/tvExpCat4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Others" android:textColor="@color/dark_gray" android:textSize="12sp" android:layout_gravity="start" />
-                                <TextView android:id="@+id/tvExpPct4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="36%" android:textColor="@color/dark_gray" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:layout_gravity="end" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
+            <!-- ======================= 1) Expense Breakdown (FULL WIDTH) ======================= -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp">
 
-                <!-- ======================= Divider between Expense and Budget ======================= -->
+                <!-- Expense Breakdown Title -->
+                <TextView
+                    android:id="@+id/tvExpenseBreakdownLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Expense Breakdown"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- Pie Chart Layout -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Pie Chart (Move to Left) -->
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/pieChart"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="0.7" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+
+        <!-- ======================= Divider between Expense and Budget ======================= -->
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:layout_marginBottom="12dp" android:background="#E0E0E0" />
             <!-- Budget Health Section -->
             <LinearLayout android:id="@+id/layoutBudgetHealth" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" >
                 <!-- Title and Percentage -->
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="start|center_vertical">
-                    <TextView android:id="@+id/tvBudgetHealthLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Budget Health" android:textSize="14sp" android:textColor="@android:color/black" android:fontFamily="sans-serif-medium"/>
+
+                    <TextView
+                        android:id="@+id/tvBudgetHealthLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Budget Health"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
                     <TextView android:id="@+id/tvBudgetHealthPercentage" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="0%" android:textSize="14sp" android:textColor="@color/primary" android:fontFamily="sans-serif-medium"/>
                 </LinearLayout>
                 <!-- Progress Bar -->
@@ -309,19 +319,83 @@
             <!-- ======================= Divider between Budget and Debt/Loan ======================= -->
             <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="12dp" android:layout_marginBottom="12dp" android:background="#E0E0E0" />
             <!-- ======================= 3) Debt & Loan (FULL WIDTH) ======================= -->
-            <LinearLayout android:id="@+id/layoutDebtLoan" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-                <TextView android:id="@+id/tvDebtLoanLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:maxLines="1" android:text="Debt &amp; Loan" android:textColor="@color/dark_gray" android:textSize="14sp" />
-                <!-- Row: Next Due -->
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
-                    <TextView android:id="@+id/tvDebtNextDueLabel" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Next Due" android:textColor="@color/dark_gray" android:textSize="13sp" />
-                    <TextView android:id="@+id/tvDebtNextDueValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:text="₱250 • 2 days" android:textColor="@color/dark_gray" android:textSize="13sp" tools:text="₱250 • 2 days" />
+            <LinearLayout
+                android:id="@+id/layoutDebtLoan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="?attr/colorSurface">
+
+                <!-- Debt & Loan Title -->
+                <TextView
+                    android:id="@+id/tvDebtLoanLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-medium"
+                    android:maxLines="1"
+                    android:text="@string/dash_debt_loan"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="7dp" />
+
+                <!-- Row: Next Due (Aligned left for amount, right for due date) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="start|center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvDebtNextDueLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Next Due: Car Loan P250"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="13sp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tvDebtNextDueDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2 days"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="13sp"
+                        android:gravity="end"/>
                 </LinearLayout>
-                <!-- Row: Active -->
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:orientation="horizontal">
-                    <TextView android:id="@+id/tvDebtActiveLabel" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Active" android:textColor="@color/dark_gray" android:textSize="13sp" />
-                    <TextView android:id="@+id/tvDebtActiveValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:text="2" android:textColor="@color/dark_gray" android:textSize="13sp" tools:text="1" />
+
+                <!-- Row: Active (Aligned left for label, right for value) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal"
+                    android:gravity="start|center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvDebtActiveLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Active:"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="13sp"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tvDebtActiveValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="13sp"
+                        android:gravity="end"/>
                 </LinearLayout>
             </LinearLayout>
+
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <!-- Recent Transactions Header -->
