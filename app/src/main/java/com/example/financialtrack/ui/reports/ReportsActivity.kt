@@ -31,20 +31,25 @@ import kotlin.math.abs
 
 class ReportsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReportsBinding
+
+    // view models
     private val viewModel: ReportsViewModel by viewModels()
     private val debtViewModel: DebtViewModel by viewModels()
     private val goalViewModel: GoalsViewModel by viewModels()
     private val accountsViewModel: AccountsViewModel by viewModels()
 
-    private val symbol = Currency.getInstance(Locale("en", "PH")).symbol
-    private var selectedAccountId: Int? = null
-    private var allTransactions: List<Transaction> = emptyList()
-
+    // variables
     private lateinit var userId: String
 
+    private val symbol = Currency.getInstance(Locale("en", "PH")).symbol
+    private var allTransactions: List<Transaction> = emptyList()
+
+    // filters
+    private var selectedAccountId: Int? = null
     private var rangeStart: Long = 0
     private var rangeEnd: Long = 0
 
+    // classes
     private data class TimeRemaining(
         val dueDate: String,
         val daysRemaining: Int,
@@ -66,21 +71,18 @@ class ReportsActivity : AppCompatActivity() {
 
         userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
+
         val cal = Calendar.getInstance()
-        cal.set(Calendar.DAY_OF_MONTH, 1)
+
+        cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
         rangeStart = cal.timeInMillis
-        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
+
+        cal.add(Calendar.DAY_OF_WEEK, 6)
         rangeEnd = cal.timeInMillis
 
-        val now = Calendar.getInstance()
-        binding.btnStatsRange.text = if (
-            cal.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
-            cal.get(Calendar.YEAR) == now.get(Calendar.YEAR)
-        ) "This Month" else SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(
-            Date(
-                rangeStart
-            )
-        )
+        val sdf = SimpleDateFormat("dd MMM", Locale.getDefault())
+        binding.btnStatsRange.text =
+            "${sdf.format(Date(rangeStart))} - ${sdf.format(Date(rangeEnd))}"
 
         updateDateRangeLabel()
 
@@ -252,10 +254,16 @@ class ReportsActivity : AppCompatActivity() {
     }
 
     private fun showPieChart(transactions: List<Transaction>) {
-        val expenseByCategory = transactions.filter { it.type == TransactionType.EXPENSE }
-            .groupBy { it.category }.mapValues { it.value.sumOf { t -> t.amount } }
+        val expenseByCategory = transactions
+            .filter { it.type == TransactionType.EXPENSE }
+            .groupBy { it.category }
+            .mapValues { it.value.sumOf { t -> t.amount } }
+            .entries
+            .sortedByDescending { it.value }
+            .take(5)
 
         val entries = expenseByCategory.map { PieEntry(it.value.toFloat(), it.key) }
+
         val colors = listOf(
             R.color.primary,
             R.color.income_green,
@@ -266,7 +274,10 @@ class ReportsActivity : AppCompatActivity() {
 
         binding.pieChart.apply {
             data = PieData(PieDataSet(entries, "").apply {
-                sliceSpace = 10f; setDrawValues(true); this.colors = colors; valueTextSize = 12f
+                this.colors = colors
+
+                setDrawValues(true)
+                valueTextSize = 12f
             })
             setUsePercentValues(true)
             description.isEnabled = false
